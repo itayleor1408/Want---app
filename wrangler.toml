@@ -1,3 +1,7 @@
 name = "want"
 main = "worker.js"
 compatibility_date = "2026-01-01"
+
+[[kv_namespaces]]
+binding = "WANT_KV"
+id = "824a051377e942d886532d76caeb5353"
