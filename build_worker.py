@@ -21,10 +21,16 @@ app=app.replace('<title>WANT.</title>','<title>WANT.</title>'+head_add,1)
 app=app.replace('<script>','<script>window.WANT_API="/api/product";</script><script>',1)
 extract=open('extract.js',encoding='utf-8').read()+'\n'+open('sync_api.js',encoding='utf-8').read()
 manifest=json.dumps({"name":"WANT.","short_name":"WANT.","start_url":"/","display":"standalone","background_color":"#f4f4f6","theme_color":"#f4f4f6","icons":[{"src":"/icon-180.png","sizes":"180x180","type":"image/png"},{"src":"/icon-512.png","sizes":"512x512","type":"image/png","purpose":"any maskable"}]})
-sw="""const C='want-v2';self.addEventListener('install',e=>{e.waitUntil(caches.open(C).then(c=>c.addAll(['/','/manifest.webmanifest','/icon-180.png','/icon-512.png'])));self.skipWaiting()});
-self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(k=>Promise.all(k.filter(x=>x!==C).map(x=>caches.delete(x)))));self.clients.claim()});
-self.addEventListener('fetch',e=>{const u=new URL(e.request.url);if(e.request.method!=='GET'||u.origin!==location.origin||u.pathname.startsWith('/api/'))return;
-e.respondWith(fetch(e.request).then(r=>{const cp=r.clone();caches.open(C).then(c=>c.put(e.request,cp));return r}).catch(()=>caches.match(e.request).then(r=>r||caches.match('/'))))});"""
+sw="""const C='want-v3',F='want-fonts-v1';
+self.addEventListener('install',e=>{e.waitUntil(caches.open(C).then(c=>c.addAll(['/','/manifest.webmanifest','/icon-180.png','/icon-512.png'])));self.skipWaiting()});
+self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(k=>Promise.all(k.filter(x=>x!==C&&x!==F).map(x=>caches.delete(x)))).then(()=>self.clients.claim()))});
+self.addEventListener('fetch',e=>{const q=e.request,u=new URL(q.url);if(q.method!=='GET')return;
+if(u.hostname==='fonts.googleapis.com'||u.hostname==='fonts.gstatic.com'){e.respondWith(caches.open(F).then(c=>c.match(q).then(h=>h||fetch(q).then(r=>{if(r.ok)c.put(q,r.clone());return r}))));return}
+if(u.origin!==location.origin||u.pathname.startsWith('/api/'))return;
+const nav=q.mode==='navigate',key=nav?'/':q;
+const net=fetch(q).then(r=>{if(r.ok){const cp=r.clone();caches.open(C).then(c=>c.put(key,cp))}return r});
+e.waitUntil(net.then(()=>{},()=>{}));
+e.respondWith(caches.match(key,{ignoreSearch:nav}).then(h=>h||net.catch(()=>caches.match('/'))))});"""
 worker=f"""// WANT. — your own free link, with automatic product reading.
 // HOW TO DEPLOY (free, about 2 minutes):
 // 1. Go to dash.cloudflare.com and sign up / sign in (free plan is enough).
