@@ -18,14 +18,18 @@ i180,i512=b64(icon(180)),b64(icon(512))
 app=open('want3.html',encoding='utf-8').read()
 head_add='<link rel="manifest" href="/manifest.webmanifest"><link rel="apple-touch-icon" href="/icon-180.png"><meta name="theme-color" content="#f4f4f6"><meta name="apple-mobile-web-app-status-bar-style" content="default"><meta name="apple-mobile-web-app-title" content="WANT.">'
 app=app.replace('<title>WANT.</title>','<title>WANT.</title>'+head_add,1)
+# Serve the Inter font from the app itself (not Google), so a slow or missing connection never blocks the page
+FONT_LINK='<link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700;800;900&display=swap" rel="stylesheet">'
+assert FONT_LINK in app
+app=app.replace(FONT_LINK,'<link rel="preload" href="/inter.woff2" as="font" type="font/woff2" crossorigin><style>@font-face{font-family:Inter;font-style:normal;font-weight:500 900;font-display:swap;src:url(/inter.woff2) format("woff2")}</style>',1)
+FONT=base64.b64encode(open('assets/inter-latin.woff2','rb').read()).decode()
 app=app.replace('<script>','<script>window.WANT_API="/api/product";</script><script>',1)
 extract=open('extract.js',encoding='utf-8').read()+'\n'+open('sync_api.js',encoding='utf-8').read()
 manifest=json.dumps({"name":"WANT.","short_name":"WANT.","start_url":"/","display":"standalone","background_color":"#f4f4f6","theme_color":"#f4f4f6","icons":[{"src":"/icon-180.png","sizes":"180x180","type":"image/png"},{"src":"/icon-512.png","sizes":"512x512","type":"image/png","purpose":"any maskable"}]})
-sw="""const C='want-v3',F='want-fonts-v1';
-self.addEventListener('install',e=>{e.waitUntil(caches.open(C).then(c=>c.addAll(['/','/manifest.webmanifest','/icon-180.png','/icon-512.png'])));self.skipWaiting()});
-self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(k=>Promise.all(k.filter(x=>x!==C&&x!==F).map(x=>caches.delete(x)))).then(()=>self.clients.claim()))});
+sw="""const C='want-v4';
+self.addEventListener('install',e=>{e.waitUntil(caches.open(C).then(c=>c.addAll(['/','/manifest.webmanifest','/icon-180.png','/icon-512.png','/inter.woff2'])));self.skipWaiting()});
+self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(k=>Promise.all(k.filter(x=>x!==C).map(x=>caches.delete(x)))).then(()=>self.clients.claim()))});
 self.addEventListener('fetch',e=>{const q=e.request,u=new URL(q.url);if(q.method!=='GET')return;
-if(u.hostname==='fonts.googleapis.com'||u.hostname==='fonts.gstatic.com'){e.respondWith(caches.open(F).then(c=>c.match(q).then(h=>h||fetch(q).then(r=>{if(r.ok)c.put(q,r.clone());return r}))));return}
 if(u.origin!==location.origin||u.pathname.startsWith('/api/'))return;
 const nav=q.mode==='navigate',key=nav?'/':q;
 const net=fetch(q).then(r=>{if(r.ok){const cp=r.clone();caches.open(C).then(c=>c.put(key,cp))}return r});
@@ -93,7 +97,7 @@ async function product(u){{const d=await productData(u);return J(d,d.error=='bad
 const APP={json.dumps(app,ensure_ascii=False)};
 const MANIFEST={json.dumps(manifest)};
 const SW={json.dumps(sw)};
-const I180='{i180}',I512='{i512}';
+const I180='{i180}',I512='{i512}',FONT='{FONT}';
 const png=b=>new Response(Uint8Array.from(atob(b),c=>c.charCodeAt(0)),{{headers:{{'content-type':'image/png','cache-control':'public, max-age=604800'}}}});
 export default {{
   async fetch(req,env){{env=env||{{}};
@@ -106,6 +110,7 @@ export default {{
       case '/sw.js':return new Response(SW,{{headers:{{'content-type':'text/javascript','cache-control':'no-cache'}}}});
       case '/icon-180.png':return png(I180);
       case '/icon-512.png':return png(I512);
+      case '/inter.woff2':return new Response(Uint8Array.from(atob(FONT),c=>c.charCodeAt(0)),{{headers:{{'content-type':'font/woff2','cache-control':'public, max-age=31536000'}}}});
       default:return new Response(APP,{{headers:{{'content-type':'text/html; charset=utf-8','cache-control':'no-cache'}}}});
     }}
   }}
