@@ -580,7 +580,7 @@ function ejp(k){EJP=k;segSet($('[data-sid="ep"]'),['pers','work','both'].indexOf
 function ejf(k){EJF=k;document.querySelectorAll('#efq .pill').forEach(b=>b.classList.toggle('on',b.dataset.k==k));document.querySelectorAll('.eu').forEach(e=>e.textContent=unit(k,1));vib(3)}
 function saveJarEdit(id){const q=S.jars.find(x=>x.id==id),tg=P($('#ej').value),nm=$('#en').value.trim();if(!nm)return need('en',t('Goal name is required'));if(tg<=0)return need('ej',t('Add a target amount'));
 const old=q.prof||'pers',np=EJP;let pl;
-if(np=='both'){const a=P($('#epp').value)||0,b=P($('#epw').value)||0;q.planBy={pers:a,work:b};pl=a+b;if(old!='both')S.tx.forEach(x=>{if(x.jar==id&&!x.prof)x.prof=old})}else{pl=P($('#epn').value)||0;delete q.planBy}
+if(np=='both'){const a=P($('#epp').value)||0,b=P($('#epw').value)||0;q.planBy={pers:a,work:b};pl=a+b;if(old!='both')S.tx.forEach(x=>{if(x.jar==id)x.prof=old})/* a single-profile jar's deposits are all its profile's, whatever they were tagged with on load */}else{pl=P($('#epn').value)||0;delete q.planBy}
 const dv=$('#end').value,dt=dv?new Date(dv+'T09:00:00').getTime():0;
 q.name=nm;q.target=tg;q.prof=np;q.freq=EJF;q.plan=pl;q.next=pl?(dt||q.next||addP(EJF,1).getTime()):0;if(EJN)q.pin=true;else delete q.pin;sv();render();if(jarsF().some(x=>x.id==id))jarSheet(id);else{close();toast(t('Moved to')+' '+PN(np))}}
 function confirmPlan(id){const j=S.jars.find(x=>x.id==id),b0=C().jv[id]||0;setTimeout(()=>celebrate(id,b0,b0+j.plan,j.target),380);if(isBoth(j)&&j.planBy){const tid=uid();['pers','work'].forEach(q=>{if(j.planBy[q]>0)add('dep',j.planBy[q],{jar:id,prof:q,tid})})}else add('dep',j.plan,{jar:id});j.next=addP(j.freq,1,j.next).getTime();sv();render();flash=id;jarSheet(id)}
