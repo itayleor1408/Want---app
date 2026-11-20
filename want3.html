@@ -639,7 +639,6 @@ function explain(){const c=C(),rows=[[t('In jars'),c.saved,t("Money you've put a
 sheet(`<div class="shd">${t("How it's calculated")}</div><div class="ex">${t("Available to Spend is the smaller of two numbers: your free money after set-asides, and what's left of this month's budget.")}</div><div class="gc">${rows.map(r=>`<div class="gr"><span class="gt">${r[0]}<small>${r[2]}</small></span><b class="n" dir="ltr">${F(r[1])}</b></div>`).join('')}<div class="gr"><span class="gt" style="font-weight:800">${t(ov?'Over budget':'Available to Spend')}</span><b class="n" dir="ltr" style="font-size:18px;color:${ov?'var(--r)':'var(--t)'}">${F(ov?-ov:c.safe)}</b></div></div>`)}
 const grp=(l,h)=>`<div class="grp">${l?`<div class="gl">${l}</div>`:''}<div class="gc">${h}</div></div>`;
 const ib=()=>`<button class="ii" aria-label="info" onclick="return infoT(event,this)">${ic('info',19)}</button>`;
-const rNum=(l,k,inf)=>`<label class="gr"><span class="gt" style="display:flex;align-items:center;gap:6px">${l}${inf?ib():''}</span><input class="gv" inputmode="decimal" dir="ltr" placeholder="₪0" value="${S[k]?F(S[k]):''}" onchange="S.${k}=P(this.value);sv();render()"></label>${inf?`<div class="ginfo" hidden>${inf}</div>`:''}`;
 const rTog=(l,k,sm)=>`<button class="gr" onclick="S.${k}=!S.${k};sv();this.querySelector('.tg').classList.toggle('on',!!S.${k});render();vib(5)"><span class="gt">${l}${sm?`<small>${sm}</small>`:''}</span><span class="tg ${S[k]?'on':''}"></span></button>`;
 const rBtn=(l,icn,fn,sm)=>`<button class="gr" onclick="${fn}"><span class="gt">${l}${sm?`<small>${sm}</small>`:''}</span><span style="color:var(--s)">${ic(icn,20)}</span></button>`;
 let RC=null;
@@ -661,12 +660,11 @@ else if(r.freq=='weekly')due=now.getDay()==(+r.day||0)&&!S.tx.some(x=>x.src=='re
 else{const dim=new Date(now.getFullYear(),now.getMonth()+1,0).getDate(),day=Math.min(+r.day||1,dim);due=now.getDate()>=day&&!S.tx.some(x=>x.src=='recur:'+r.id&&cm(x.ts))}
 if(!due)return;
 add(r.type,r.amt,{cat:r.cat||(r.type=='exp'?'subs':'salary'),src:'recur:'+r.id,title:r.title,prof:r.prof||'pers'});sv();if(!$('#sh'))silentSync=true;render();notify((r.type=='exp'?'−':'+')+F(r.amt)+' · '+r.title,r.type=='exp'?'bolt':'star')})}
-const moneyRows=()=>rNum(t('Monthly budget'),'allow',t("How much you allow yourself to spend each month. Available to Spend never goes above what's left of it."))+rNum(t('Safety buffer'),'buf',t("Money you never want to touch, like an emergency cushion. It's kept out of Available to Spend."))+rNum(t('Bills still to pay'),'bills',t("Bills still coming this month that you haven't logged yet, like rent or phone. They're set aside so you don't spend them by accident. Lower it as you pay."));
 function setOpt(k,v){S[k]=v;sv();render();settings()}
 const cp=(txt,ok)=>{try{navigator.clipboard.writeText(txt).then(()=>toast(ok||t('Copied')),()=>toast('✕'))}catch(e){toast('✕')}};
 function settings(){sheet(`<div class="shd">${t('Settings')}</div>`+
 grp(t('General'),`<div class="gr"><span class="gt">${t('Language')}</span>${segH('s_lang',[['en','English'],['he','עברית']],S.lang,k=>`setOpt('lang','${k}')`)}</div><div class="gr"><span class="gt">${t('Appearance')}</span>${segH('s_th',[['light',t('Light')],['system',t('System')],['dark',t('Dark')]],S.theme,k=>`setOpt('theme','${k}')`)}</div>`)+
-grp(t('Money'),moneyRows()+rTog(t("Ask me to save what's left"),'askLeft',t('At the start of each month, offer to move leftover budget to a jar.')))+
+(S.allow>0?grp(t('Money'),rTog(t("Ask me to save what's left"),'askLeft',t('At the start of each month, offer to move leftover budget to a jar.'))):'')+
 grp(t('Jars'),rTog(t('Whole-number percent'),'pint',t('Show 12% instead of 12.4%')))+
 grp(t('Recurring'),recurRows())+
 grp(t('Connections'),connRows())+
