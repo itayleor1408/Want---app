@@ -73,6 +73,37 @@ SE.lerp = function (v1, v2, f) {
     return out;
 };
 
+/*
+ * For 2D values (Position, Anchor Point) the motion may follow a curved path.
+ * Sample the existing path before touching it, then move along it by arc length,
+ * so the ease changes only the timing, never the shape of the path.
+ * Returns null when the path can't be read (falls back to a straight line).
+ */
+SE.samplePath = function (param, s, e) {
+    if (!param.getValueAtTime) return null;
+    var N = 64, pts = [], len = [0], i, v;
+    try {
+        for (i = 0; i <= N; i++) {
+            v = param.getValueAtTime(SE.time(s + (e - s) * i / N));
+            if (!(v instanceof Array) || v.length !== 2) return null;
+            pts.push(v);
+            if (i) len.push(len[i - 1] + Math.sqrt(Math.pow(v[0] - pts[i - 1][0], 2) + Math.pow(v[1] - pts[i - 1][1], 2)));
+        }
+    } catch (err) { return null; }
+    if (len[N] < 1e-9) return null;
+    return { pts: pts, len: len };
+};
+
+SE.pathAt = function (path, f) {
+    var L = path.len, target = f * L[L.length - 1], i = 1;
+    if (f <= 0) return path.pts[0];
+    if (f >= 1) return path.pts[path.pts.length - 1];
+    while (i < L.length - 1 && L[i] < target) i++;
+    var seg = L[i] - L[i - 1], u = seg > 0 ? (target - L[i - 1]) / seg : 0;
+    var p0 = path.pts[i - 1], p1 = path.pts[i];
+    return [p0[0] + (p1[0] - p0[0]) * u, p0[1] + (p1[1] - p0[1]) * u];
+};
+
 SE.clips = function (seq) {
     var sel = seq.getSelection(), out = [], i;
     if (!sel) return out;
@@ -196,13 +227,15 @@ SE.apply = function (a, b, registryJson) {
             if (!SE.isNumeric(v1) || !SE.isNumeric(v2) ||
                 (v1 instanceof Array && v1.length !== v2.length)) { skipped++; continue; }
 
+            var path = (v1 instanceof Array && v1.length === 2) ? SE.samplePath(p, tg.s, tg.e) : null;
             SE.clearBetween(p, tg.kt, tg.s, tg.e);
 
             var span = tg.e - tg.s;
             for (var t = tg.s + frame; t < tg.e - frame * 0.5; t += frame) {
                 var T = SE.time(t);
                 p.addKey(T);
-                p.setValueAtKey(T, SE.lerp(v1, v2, SE.ease(a, b, (t - tg.s) / span)), false);
+                var f = SE.ease(a, b, (t - tg.s) / span);
+                p.setValueAtKey(T, path ? SE.pathAt(path, f) : SE.lerp(v1, v2, f), false);
                 if (p.setInterpolationTypeAtKey) p.setInterpolationTypeAtKey(T, SE.KF_LINEAR, false);
             }
             // nudge the UI once per property

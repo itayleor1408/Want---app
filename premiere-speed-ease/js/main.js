@@ -50,7 +50,7 @@
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     ctx.clearRect(0, 0, w, h);
 
-    var padX = 12, padTop = 22, padBot = 12;
+    var padX = 16, padTop = 26, padBot = 16;
     var gw = w - padX * 2, gh = h - padTop - padBot;
     if (gw <= 0 || gh <= 0) return;
 
@@ -69,18 +69,18 @@
     var Y = function (s) { return padTop + gh - (s / max) * gh; };
 
     // baseline + midline
-    ctx.strokeStyle = '#2f2f2f'; ctx.lineWidth = 1;
+    ctx.strokeStyle = '#333'; ctx.lineWidth = 1.5; ctx.lineCap = 'round';
     ctx.beginPath();
     ctx.moveTo(padX, Y(0) + 0.5); ctx.lineTo(padX + gw, Y(0) + 0.5);
     ctx.stroke();
-    ctx.setLineDash([2, 3]);
+    ctx.setLineDash([1, 4]);
     ctx.beginPath(); ctx.moveTo(X(0.5) + 0.5, padTop); ctx.lineTo(X(0.5) + 0.5, Y(0)); ctx.stroke();
     ctx.setLineDash([]);
 
     // area
     var grad = ctx.createLinearGradient(0, padTop, 0, Y(0));
-    grad.addColorStop(0, 'rgba(111,168,255,0.22)');
-    grad.addColorStop(1, 'rgba(111,168,255,0)');
+    grad.addColorStop(0, 'rgba(116,171,255,0.26)');
+    grad.addColorStop(1, 'rgba(116,171,255,0)');
     ctx.beginPath();
     ctx.moveTo(X(0), Y(0));
     for (i = 0; i < pts.length; i++) ctx.lineTo(X(pts[i][0]), Y(pts[i][1]));
@@ -94,25 +94,25 @@
       var px = X(pts[i][0]), py = Y(pts[i][1]);
       if (i) ctx.lineTo(px, py); else ctx.moveTo(px, py);
     }
-    ctx.strokeStyle = '#6fa8ff'; ctx.lineWidth = 1.6; ctx.lineJoin = 'round';
+    ctx.strokeStyle = '#74abff'; ctx.lineWidth = 2.8; ctx.lineJoin = 'round'; ctx.lineCap = 'round';
     ctx.stroke();
 
     // keyframe dots
-    ctx.fillStyle = '#cfcfcf';
     [0, 1].forEach(function (x) {
-      ctx.save(); ctx.translate(X(x), Y(0)); ctx.rotate(Math.PI / 4);
-      ctx.fillRect(-3, -3, 6, 6); ctx.restore();
+      ctx.beginPath(); ctx.arc(X(x), Y(0), 5, 0, Math.PI * 2);
+      ctx.fillStyle = '#252525'; ctx.fill();
+      ctx.lineWidth = 2.2; ctx.strokeStyle = '#d6d6d6'; ctx.stroke();
     });
   }
 
   // ---------- controls ----------
   function render() {
     // left knob lives in the left half, right knob in the right half; 100% = at the centre
-    // (each half stops 14px short of the centre icon)
-    var lp = 'calc((50% - 14px) * ' + state.a + ')';
-    var rw = 'calc((50% - 14px) * ' + state.b + ')';
+    // (each half stops 18px short of the centre icon)
+    var lp = 'calc((50% - 18px) * ' + state.a + ')';
+    var rw = 'calc((50% - 18px) * ' + state.b + ')';
     knobL.style.left = lp;
-    knobR.style.left = 'calc(100% - (50% - 14px) * ' + state.b + ')';
+    knobR.style.left = 'calc(100% - (50% - 18px) * ' + state.b + ')';
     fillL.style.left = '0'; fillL.style.width = lp;
     fillR.style.left = 'auto'; fillR.style.right = '0'; fillR.style.width = rw;
     if (document.activeElement !== numL) numL.value = fmt(state.a);
@@ -132,7 +132,7 @@
       e.preventDefault();
       el.setPointerCapture && el.setPointerCapture(e.pointerId);
       el.classList.add('drag');
-      var x0 = e.clientX, half = track.getBoundingClientRect().width / 2 - 14, moved = false;
+      var x0 = e.clientX, half = track.getBoundingClientRect().width / 2 - 18, moved = false;
       var start = { a: state.a, b: state.b };
       function move(ev) {
         var dx = ev.clientX - x0;
@@ -254,6 +254,20 @@
       refresh();
     });
   });
+
+  // ---------- ⋯ menu ----------
+  var menu = $('menu'), moreBtn = $('moreBtn');
+  function showMenu(open) {
+    menu.hidden = !open;
+    moreBtn.classList.toggle('open', open);
+  }
+  moreBtn.addEventListener('click', function (e) { e.stopPropagation(); showMenu(menu.hidden); });
+  menu.addEventListener('click', function (e) {
+    e.stopPropagation();
+    if (e.target.closest('.item:not(:disabled)')) showMenu(false);
+  });
+  document.addEventListener('click', function () { showMenu(false); });
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape') showMenu(false); });
 
   // ---------- what's under the playhead ----------
   function refresh() {
@@ -409,6 +423,7 @@
 
   $('libBtn').addEventListener('click', function () { openLib(true); });
   $('libBack').addEventListener('click', function () { openLib(false); });
+  $('savePreset').addEventListener('click', function () { openLib(true); $('libAdd').click(); });
   $('libAdd').addEventListener('click', function () {
     var n = library.length + 1, names = library.map(function (x) { return x.name; });
     while (names.indexOf('Curve ' + n) !== -1) n++;

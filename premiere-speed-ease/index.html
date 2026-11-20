@@ -28,19 +28,30 @@
     </div>
 
     <div class="actions">
-      <button id="copy" class="icon" title="Copy curve">
-        <svg viewBox="0 0 16 16"><rect x="5" y="5" width="8.5" height="8.5" rx="1.5"/><path d="M3 10.5V3.8C3 3.4 3.4 3 3.8 3h6.7"/></svg>
-      </button>
-      <button id="paste" class="icon" title="Paste curve onto keyframes at playhead" disabled>
-        <svg viewBox="0 0 16 16"><rect x="3.5" y="3" width="9" height="11" rx="1.5"/><path d="M6 3V2h4v1M6 7.5h4M6 10h2.5"/></svg>
-      </button>
-      <button id="clear" class="icon" title="Remove ease (back to linear)">
-        <svg viewBox="0 0 16 16"><path d="M2.5 13.5 13.5 2.5"/></svg>
-      </button>
       <button id="libBtn" class="icon" title="Library">
         <svg viewBox="0 0 16 16"><path d="M3 2.5h3.5v11H3zM8 2.5h2.5v11H8zM11.6 3.2l2.3-.6 2 10.6-2.3.5"/></svg>
       </button>
       <span class="spacer"></span>
+      <div class="menu-wrap">
+        <button id="moreBtn" class="icon" title="More">
+          <svg viewBox="0 0 16 16"><circle cx="3.5" cy="8" r="1.1"/><circle cx="8" cy="8" r="1.1"/><circle cx="12.5" cy="8" r="1.1"/></svg>
+        </button>
+        <div id="menu" class="menu" hidden>
+          <button id="copy" class="item">
+            <svg viewBox="0 0 16 16"><rect x="5" y="5" width="8.5" height="8.5" rx="2"/><path d="M3 10.5V4.5C3 3.7 3.7 3 4.5 3h6"/></svg>Copy curve
+          </button>
+          <button id="paste" class="item" disabled>
+            <svg viewBox="0 0 16 16"><rect x="3.5" y="3" width="9" height="11" rx="2"/><path d="M6 3V2h4v1M6 7.5h4M6 10h2.5"/></svg>Paste &amp; apply
+          </button>
+          <button id="savePreset" class="item">
+            <svg viewBox="0 0 16 16"><path d="M4 2.5h8v11l-4-3-4 3z"/></svg>Save as preset
+          </button>
+          <div class="sep"></div>
+          <button id="clear" class="item">
+            <svg viewBox="0 0 16 16"><path d="M3 13 13 3"/></svg>Make linear
+          </button>
+        </div>
+      </div>
       <button id="apply" class="apply" title="Apply to keyframes around the playhead (selected clip)">Apply</button>
     </div>
     <div id="status" class="status"></div>
