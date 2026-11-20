@@ -88,6 +88,47 @@ function extract(html, base) {
       try { walk(JSON.parse(raw.replace(/[\u0000-\u001f]+/g, ' '))); } catch (e2) {}
     }
   }
+  // 1b) site-specific readers, for stores whose server HTML doesn't carry clean JSON-LD/OG data
+  let host0 = '';
+  try { host0 = new URL(base).hostname.replace(/^(www|m|shop)\./, ''); } catch (e) {}
+  if (/aliexpress\./i.test(host0)) {
+    // AliExpress hydrates the page from window.runParams = {... data: {...}}; pull the fields
+    // directly out of that blob by key (it's not strict JSON, so we don't try to JSON.parse it).
+    const run = (html.match(/runParams\s*=\s*\{[\s\S]{0,400000}?\n\s*<\/script>/i) || [html])[0];
+    // keys in this blob may or may not be quoted (it's a JS object literal, not JSON)
+    if (!out.price) {
+      const p = run.match(/"?(?:formatedActivityPrice|formatedPrice|salePrice|minActivityAmount|minAmount)"?\s*:\s*"?([^",}]+)"?/i);
+      if (p && numPrice(p[1])) { out.price = numPrice(p[1]); out.currency = out.currency || curOf(p[1]); }
+      const c = run.match(/"?currency"?\s*:\s*"([A-Z]{3})"/i);
+      if (c && !out.currency) out.currency = curOf(c[1]);
+    }
+    if (!out.title) {
+      const t = run.match(/"?subject"?\s*:\s*"([^"]+)"/i);
+      if (t) out.title = decodeEnt(t[1].replace(/\\u([0-9a-f]{4})/gi, (_, h) => String.fromCharCode(parseInt(h, 16))).replace(/\\\//g, '/'));
+    }
+    if (!out.image) {
+      const i = run.match(/"?imagePathList"?\s*:\s*\[\s*"([^"]+)"/i) || run.match(/"?imageUrl"?\s*:\s*"([^"]+)"/i);
+      if (i) out.image = imgOf(i[1].replace(/\\\//g, '/'), base);
+    }
+  } else if (/amazon\./i.test(host0)) {
+    if (!out.image) {
+      const dyn = html.match(/id\s*=\s*["']landingImage["'][^>]*data-old-hires\s*=\s*["']([^"']+)["']/i);
+      if (dyn && dyn[1]) out.image = imgOf(dyn[1], base);
+      if (!out.image) {
+        const dynMap = html.match(/id\s*=\s*["']landingImage["'][^>]*data-a-dynamic-image\s*=\s*["']([^"']+)["']/i);
+        if (dynMap) { const k = Object.keys(JSON.parse(decodeEnt(dynMap[1]).replace(/&quot;/g, '"')) || {})[0]; if (k) out.image = imgOf(k, base); }
+      }
+    }
+    if (!out.price) {
+      const whole = html.match(/class\s*=\s*["'][^"']*a-price-whole[^"']*["'][^>]*>\s*([\d.,]+)/i);
+      const frac = html.match(/class\s*=\s*["'][^"']*a-price-fraction[^"']*["'][^>]*>\s*(\d+)/i);
+      if (whole) { out.price = numPrice(whole[1] + (frac ? '.' + frac[1] : '')); }
+      if (!out.price) {
+        const blk = html.match(/id\s*=\s*["'](?:priceblock_ourprice|priceblock_dealprice|priceblock_saleprice)["'][^>]*>\s*([^<]{1,30})</i);
+        if (blk && numPrice(blk[1])) { out.price = numPrice(blk[1]); out.currency = out.currency || curOf(blk[1]); }
+      }
+    }
+  }
   // 2) Open Graph / product meta tags
   out.title = out.title || meta('og:title') || meta('twitter:title') || meta('name');
   out.image = out.image || imgOf(meta('og:image:secure_url') || meta('og:image') || meta('twitter:image') || meta('twitter:image:src') || meta('image'), base);
@@ -113,6 +154,11 @@ function extract(html, base) {
   }
   if (!out.image) {
     const m = html.match(/<link[^>]+rel\s*=\s*["']image_src["'][^>]*href\s*=\s*["']([^"']+)["']/i);
+    if (m) out.image = imgOf(m[1], base);
+  }
+  if (!out.image) {
+    const m = html.match(/<(?:img|link)[^>]+itemprop\s*=\s*["']image["'][^>]*(?:src|href|content)\s*=\s*["']([^"']+)["']/i)
+      || html.match(/<(?:img|link)[^>]+(?:src|href|content)\s*=\s*["']([^"']+)["'][^>]*itemprop\s*=\s*["']image["']/i);
     if (m) out.image = imgOf(m[1], base);
   }
   if (!out.title) { const m = html.match(/<title[^>]*>([^<]*)<\/title>/i); if (m) out.title = decodeEnt(m[1]); }
