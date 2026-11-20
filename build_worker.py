@@ -1,4 +1,4 @@
-import base64,io,json
+import base64,io,json,hashlib
 from PIL import Image,ImageDraw
 def icon(sz):
     S=4*sz;im=Image.new('RGB',(S,S),(17,17,19));d=ImageDraw.Draw(im)
@@ -23,14 +23,16 @@ FONT_LINK='<link rel="preconnect" href="https://fonts.googleapis.com"><link href
 assert FONT_LINK in app
 app=app.replace(FONT_LINK,'<link rel="preload" href="/inter.woff2" as="font" type="font/woff2" crossorigin><style>@font-face{font-family:Inter;font-style:normal;font-weight:500 900;font-display:swap;src:url(/inter.woff2) format("woff2")}</style>',1)
 FONT=base64.b64encode(open('assets/inter-latin.woff2','rb').read()).decode()
-app=app.replace('<script>','<script>window.WANT_API="/api/product";</script><script>',1)
+# a short id of this exact page: the app asks /version to learn whether a newer build exists
+BUILD=hashlib.sha1(app.encode('utf-8')).hexdigest()[:8]
+app=app.replace('<script>','<script>window.WANT_API="/api/product";window.WANT_BUILD="'+BUILD+'";</script><script>',1)
 extract=open('extract.js',encoding='utf-8').read()+'\n'+open('sync_api.js',encoding='utf-8').read()
 manifest=json.dumps({"name":"WANT.","short_name":"WANT.","start_url":"/","display":"standalone","background_color":"#f4f4f6","theme_color":"#f4f4f6","icons":[{"src":"/icon-180.png","sizes":"180x180","type":"image/png"},{"src":"/icon-512.png","sizes":"512x512","type":"image/png","purpose":"any maskable"}]})
-sw="""const C='want-v4';
+sw="""const C='want-v5';
 self.addEventListener('install',e=>{e.waitUntil(caches.open(C).then(c=>c.addAll(['/','/manifest.webmanifest','/icon-180.png','/icon-512.png','/inter.woff2'])));self.skipWaiting()});
 self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(k=>Promise.all(k.filter(x=>x!==C).map(x=>caches.delete(x)))).then(()=>self.clients.claim()))});
 self.addEventListener('fetch',e=>{const q=e.request,u=new URL(q.url);if(q.method!=='GET')return;
-if(u.origin!==location.origin||u.pathname.startsWith('/api/'))return;
+if(u.origin!==location.origin||u.pathname.startsWith('/api/')||u.pathname==='/version'||u.searchParams.has('b'))return;
 const nav=q.mode==='navigate',key=nav?'/':q;
 const net=fetch(q).then(r=>{if(r.ok){const cp=r.clone();caches.open(C).then(c=>c.put(key,cp))}return r});
 e.waitUntil(net.then(()=>{},()=>{}));
@@ -94,6 +96,7 @@ async function productData(u){{
   return out;
 }}
 async function product(u){{const d=await productData(u);return J(d,d.error=='bad_url'?400:200)}}
+const BUILD='{BUILD}';
 const APP={json.dumps(app,ensure_ascii=False)};
 const MANIFEST={json.dumps(manifest)};
 const SW={json.dumps(sw)};
@@ -107,6 +110,7 @@ export default {{
       case '/api/product':return product(url.searchParams.get('u')||'');
       case '/api/ping':case '/api/state':case '/api/ingest':case '/api/bank':case '/api/card':case '/api/ack':case '/api/reset-seen':case '/api/wish':return syncApi(req,env,url.pathname);
       case '/manifest.webmanifest':return new Response(MANIFEST,{{headers:{{'content-type':'application/manifest+json'}}}});
+      case '/version':return new Response(BUILD,{{headers:{{'content-type':'text/plain','cache-control':'no-store'}}}});
       case '/sw.js':return new Response(SW,{{headers:{{'content-type':'text/javascript','cache-control':'no-cache'}}}});
       case '/icon-180.png':return png(I180);
       case '/icon-512.png':return png(I512);
