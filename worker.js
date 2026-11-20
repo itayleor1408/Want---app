@@ -279,7 +279,11 @@ async function rates(cur){
 async function product(u){
   let target;try{target=new URL(u)}catch(e){return J({error:'bad_url'},400)}
   if(!/^https?:$/.test(target.protocol))return J({error:'bad_url'},400);
-  let res;try{res=await fetch(target.href,{headers:{'user-agent':UA,'accept':'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8','accept-language':'he-IL,he;q=0.9,en-US;q=0.8,en;q=0.7'},redirect:'follow',cf:{cacheTtl:900,cacheEverything:true}})}catch(e){return J({error:'fetch_failed'},502)}
+  const fopts={headers:{'user-agent':UA,'accept':'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8','accept-language':'he-IL,he;q=0.9,en-US;q=0.8,en;q=0.7'},redirect:'follow',cf:{cacheTtl:900,cacheEverything:true}};
+  let res;try{res=await fetch(target.href,fopts)}catch(e){
+    // some sites (seen on AliExpress) reject a fetch to a bare URL with no query string at all; a harmless one avoids it
+    if(!target.search){try{res=await fetch(target.href+'?_w=1',fopts)}catch(e2){return J({error:'fetch_failed'},502)}}else return J({error:'fetch_failed'},502);
+  }
   const html=(await res.text()).slice(0,2000000);
   const d=extract(html,res.url||target.href);
   const blocked=res.status>=400||(!d.price&&!d.image&&/denied|captcha|robot|blocked|forbidden|attention required|just a moment/i.test(d.title));
