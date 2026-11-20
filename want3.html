@@ -314,13 +314,17 @@ requestAnimationFrame(()=>requestAnimationFrame(()=>{o.classList.add('o');s.clas
 function close(){const o=$('#ov'),s=$('#sh');if(!o)return;o.id=s.id='';o.classList.remove('o');s.classList.remove('o');unlockBody();setTimeout(()=>{o.remove();s.remove()},450)}
 addEventListener('keydown',e=>{if(e.key=='Escape')close()});
 const RV={};let boot=true,silentSync=false;setTimeout(()=>boot=false,1500);
-const od=(k,v,cls='')=>`<span class="od ${cls}" data-k="${k}" data-v="${v}" dir="ltr">${F(v)}</span>`;
-function roll(el){const k=el.dataset.k,v=+el.dataset.v;el.removeAttribute('data-v');
-if(RV[k]==null||boot||silentSync){RV[k]=v;const b0=F(v);el.innerHTML=[...b0].map(ch=>/\d/.test(ch)?`<span class="dx">${ch}</span>`:ch=='-'?`<span class="dx cu mn">−</span>`:`<span class="dx${ch=='₪'?' cu':''}">${ch}</span>`).join('');el.setAttribute('aria-label',b0);return}
-const o=RV[k];RV[k]=v;
-const a=F(o),b=F(v),off=b.length-a.length;let h='';
-for(let i=0;i<b.length;i++){const ch=b[i];if(/\d/.test(ch)){const oc=a[i-off],fr=/\d/.test(oc||'')?+oc:0;h+=`<span class="dc"><span class="dr" data-to="${ch}" style="transform:translateY(-${fr*10}%)">${'0123456789'.split('').map(d=>`<span>${d}</span>`).join('')}</span></span>`}else h+=ch=='-'?`<span class="dx cu mn">−</span>`:`<span class="dx${ch=='₪'?' cu':''}">${ch}</span>`}
-el.innerHTML=h;el.setAttribute('aria-label',b);if(a!=b){el.classList.add('rolling');const hv=el.closest('.hv');if(hv&&o){hv.classList.remove('pulse');void hv.offsetWidth;hv.classList.add('pulse')}setTimeout(()=>el.classList.remove('rolling'),1500)}requestAnimationFrame(()=>requestAnimationFrame(()=>{const ds=el.querySelectorAll('.dr');ds.forEach((d,i)=>{d.style.transitionDelay=((ds.length-1-i)*.035+(+el.dataset.d||0))+'s';d.style.transform=`translateY(-${d.dataset.to*10}%)`})}))}
+// Odometer numbers. The digit markup is built right here, while the page HTML is being built, so the very first
+// painted frame already shows the right thing: the final number when nothing changed, or the OLD digits ready to roll.
+// (It used to be filled in two frames later, which flashed the new number as plain text, then the old number, then rolled.)
+const odCh=ch=>ch=='-'?`<span class="dx cu mn">−</span>`:`<span class="dx${ch=='₪'?' cu':''}">${ch}</span>`;
+const od=(k,v,cls='',d=0)=>{const o=RV[k],b=F(v);RV[k]=v;
+if(o==null||boot||silentSync||o==v)return`<span class="od ${cls}" data-k="${k}" dir="ltr" aria-label="${b}">${[...b].map(odCh).join('')}</span>`;
+const a=F(o),off=b.length-a.length;let h='';
+for(let i=0;i<b.length;i++){const ch=b[i];if(/\d/.test(ch)){const oc=a[i-off],fr=/\d/.test(oc||'')?+oc:0;h+=`<span class="dc"><span class="dr" data-to="${ch}" style="transform:translateY(-${fr*10}%)">${'0123456789'.split('').map(q=>`<span>${q}</span>`).join('')}</span></span>`}else h+=odCh(ch)}
+return`<span class="od rolling ${cls}" data-k="${k}" data-go="1" data-o="${o}" data-d="${d}" dir="ltr" aria-label="${b}">${h}</span>`};
+function roll(el){el.removeAttribute('data-go');const hv=el.closest('.hv');if(hv&&+el.dataset.o){hv.classList.remove('pulse');void hv.offsetWidth;hv.classList.add('pulse')}setTimeout(()=>el.classList.remove('rolling'),1500);
+const ds=el.querySelectorAll('.dr');ds.forEach((q,i)=>{q.style.transitionDelay=((ds.length-1-i)*.035+(+el.dataset.d||0))+'s';q.style.transform=`translateY(-${q.dataset.to*10}%)`})}
 const SEGP={};
 function segH(id,items,cur,fn){const i=Math.max(0,items.findIndex(x=>x[0]==cur)),pi=SEGP[id]!=null?SEGP[id]:i;return`<div class="seg ${id.startsWith('s_')?'sm':''}" data-sid="${id}" data-i="${i}"><i style="width:calc((100% - 6px)/${items.length});transform:translateX(${(document.documentElement.dir=='rtl'?-1:1)*pi*100}%)"></i>${items.map((x,k)=>`<button class="${k==i?'on':''}" onclick="${fn(x[0])}">${E(x[1])}</button>`).join('')}</div>`}
 function segSet(el,i){if(!el)return;el.dataset.i=i;el.querySelectorAll('button').forEach((b,k)=>b.classList.toggle('on',k==i));el.querySelector('i').style.transform=`translateX(${(document.documentElement.dir=='rtl'?-1:1)*i*100}%)`;SEGP[el.dataset.sid]=i}
@@ -332,7 +336,7 @@ function anim(){requestAnimationFrame(()=>requestAnimationFrame(()=>{
 document.querySelectorAll('.fill').forEach(g=>{g.style.transform=`translateY(${98*(1-g.dataset.p)}px)`;LV[g.dataset.id]=+g.dataset.p});
 document.querySelectorAll('[data-w]').forEach(b=>{if((boot||silentSync)&&b.dataset.k){b.style.transition='none';b.style.width=b.dataset.w+'%';void b.offsetWidth;b.style.transition=''}else b.style.width=b.dataset.w+'%';if(b.dataset.k)BW[b.dataset.k]=b.dataset.w;b.removeAttribute('data-w')});
 document.querySelectorAll('.seg[data-sid]').forEach(s=>segSet(s,+s.dataset.i));
-document.querySelectorAll('.od[data-v]').forEach(roll);silentSync=false}));flash=null}
+document.querySelectorAll('.od[data-go]').forEach(roll);silentSync=false}));flash=null}
 const pct=(a,b)=>b>0?Math.max(0,Math.min(100,Math.round(a/b*100))):0;
 function tr(x,opt={}){let icon,title,sub,amt,cls='';
 if(x.type=='exp'||x.type=='inc'){icon=catI(x.type,x.cat);const cl=catL(x.type,x.cat);title=x.title||cl||t(x.type=='inc'?'Income':'Expense');sub=[x.title?cl:'',x.src=='applepay'?'Apple Pay':x.src=='bank'?((S.sync.bank&&S.sync.bank.name)||t('Bank transfer')):x.src=='card'?((S.sync.card&&S.sync.card.name)||t('Card')):payL(x.pay)].filter(Boolean).join(' · ');amt=(x.type=='inc'?'+':'-')+F(x.amt);cls=x.type=='inc'?'pos':''}
@@ -499,7 +503,7 @@ if(mode=='dep')setTimeout(()=>celebrate(id,c.jv[id],c.jv[id]+a,j.target),380);el
 function jarSheet(id){const j=S.jars.find(x=>x.id==id);if(!j)return;const v=C().jv[id],r=j.target-v,h=S.tx.filter(x=>x.jar==id).slice(0,8);let est='';
 if(r<=0)est=`<b class="pos">${t('Goal reached')} ✓</b>`;else if(j.plan){const n=Math.ceil(r/j.plan);est=`<span dir="ltr">${F(j.plan)}</span> / ${unit(j.freq,1)} · ${n} ${unit(j.freq,n)} · ${mon(addP(j.freq,n))}`}
 const due=j.plan&&j.next&&Date.now()>=j.next,dly=flash==id?.45:0;
-sheet(`<div class="sp"><button class="ib s" aria-label="${t('Edit jar')}" onclick="editJar('${id}')">${ic('edit',21)}</button><button class="ib s" aria-label="${t('Delete')}" onclick="delJar('${id}')">${ic('trash',21)}</button></div><div style="width:54%;margin:-8px auto 0">${jar(v/j.target,id,pl(v,j.target))}</div><div style="text-align:center;margin:8px 0 20px"><div class="sub" style="font-size:16px">${E(j.name)}</div><div style="font-size:46px;font-weight:800;letter-spacing:-.045em"><span class="od" data-k="j${id}" data-v="${v}" data-d="${dly}" dir="ltr">${F(v)}</span></div><div class="sub n" dir="ltr">/ ${F(j.target)}</div>${est?`<div class="sub" style="margin-top:6px">${est}</div>`:''}</div><div class="trio"><button class="ib p" aria-label="${t('Add money')}" onclick="amtSheet('${id}','dep')">${ic('plus',26,2.2)}</button><button class="ib" aria-label="${t('Remove money')}" onclick="amtSheet('${id}','wd')">${ic('minus',26,2.2)}</button><button class="ib" aria-label="${t('Transfer')}" onclick="xfer('${id}')">${ic('swap',24,2)}</button></div>${due?`<button class="lnk pos" onclick="confirmPlan('${id}')">+ <span dir="ltr">${F(j.plan)}</span></button>`:''}${h.length?`<div style="margin-top:18px">${h.map(x=>tr(x,{date:1})).join('')}</div>`:''}`)}
+sheet(`<div class="sp"><button class="ib s" aria-label="${t('Edit jar')}" onclick="editJar('${id}')">${ic('edit',21)}</button><button class="ib s" aria-label="${t('Delete')}" onclick="delJar('${id}')">${ic('trash',21)}</button></div><div style="width:54%;margin:-8px auto 0">${jar(v/j.target,id,pl(v,j.target))}</div><div style="text-align:center;margin:8px 0 20px"><div class="sub" style="font-size:16px">${E(j.name)}</div><div style="font-size:46px;font-weight:800;letter-spacing:-.045em">${od('j'+id,v,'',dly)}</div><div class="sub n" dir="ltr">/ ${F(j.target)}</div>${est?`<div class="sub" style="margin-top:6px">${est}</div>`:''}</div><div class="trio"><button class="ib p" aria-label="${t('Add money')}" onclick="amtSheet('${id}','dep')">${ic('plus',26,2.2)}</button><button class="ib" aria-label="${t('Remove money')}" onclick="amtSheet('${id}','wd')">${ic('minus',26,2.2)}</button><button class="ib" aria-label="${t('Transfer')}" onclick="xfer('${id}')">${ic('swap',24,2)}</button></div>${due?`<button class="lnk pos" onclick="confirmPlan('${id}')">+ <span dir="ltr">${F(j.plan)}</span></button>`:''}${h.length?`<div style="margin-top:18px">${h.map(x=>tr(x,{date:1})).join('')}</div>`:''}`)}
 let XT=null;
 function xfer(id){const o=S.jars.filter(j=>j.id!=id);if(!o.length)return toast(t('No other jars'));XT=o[0].id;sheet(`<div class="shd">${t('Move between jars')}</div><div class="chips" style="justify-content:center">${o.map(j=>`<button class="pill ${j.id==XT?'on':''}" data-j="${j.id}" onclick="XT='${j.id}';document.querySelectorAll('[data-j]').forEach(q=>q.classList.toggle('on',q.dataset.j==XT))">${ic('jar',16)}${E(j.name)}</button>`).join('')}</div><input class="f" id="aa" inputmode="decimal" placeholder="₪0" dir="ltr" style="text-align:center;font-size:40px;font-weight:800;background:none"><div class="chips" style="justify-content:center">${[50,100,250,500].map(a=>`<button class="pill" onclick="bump(${a})">${a}</button>`).join('')}</div><div class="trio"><button class="ib" aria-label="‹" onclick="jarSheet('${id}')">${ic('chevL',22)}</button><button class="ib p" aria-label="${t('Save')}" onclick="doX('${id}')">${ic('check',24,2.4)}</button></div>`)}
 function doX(id){const a=P($('#aa').value),c0=C(),v=c0.jv[id];if(!a)return need('aa',t('Enter an amount'));if(a>v)return need('aa',F(v),0);const tid=uid(),snap=S.tx.slice(),fromJ=S.jars.find(x=>x.id==id),toJ=S.jars.find(x=>x.id==XT);add('wd',a,{jar:id,tid});add('dep',a,{jar:XT,tid});render();flash=XT;jarSheet(XT);setTimeout(()=>celebrate(XT,c0.jv[XT]||0,(c0.jv[XT]||0)+a,toJ.target),380);
@@ -601,7 +605,7 @@ function doRestore(){try{const d=JSON.parse($('#rs').value);if(!Array.isArray(d.
 const SYNCOK=()=>!!(window.WANT_API&&S.sync.key);let syncing=0;
 async function syncNow(manual){if(!SYNCOK()){if(manual)toast(t('Add a sync key first.'));return}if(syncing)return;syncing=1;
 try{const r=await fetch('/api/state',{headers:{authorization:'Bearer '+S.sync.key}});const d=await r.json().catch(()=>({}));if(!r.ok)throw d.error||('http'+r.status);
-S.sync.err='';S.sync.last=Date.now();if(d.bank){if(!S.sync.bank)S.sync.useBank=true;S.sync.bank=d.bank}if(d.card)S.sync.card=d.card;
+S.sync.err='';S.sync.last=Date.now();const bank0=JSON.stringify(S.sync.bank||null)+S.sync.useBank;if(d.bank){if(!S.sync.bank)S.sync.useBank=true;S.sync.bank=d.bank}if(d.card)S.sync.card=d.card;
 const auto=[],pend=[],ids=[];for(const it of d.inbox||[]){ids.push(it.id);if(S.tx.some(x=>x.ext==it.id)||S.pending.some(x=>x.ext==it.id))continue;
 const m=S.tx.find(x=>!x.ext&&!x.src&&x.type==it.type&&x.amt==it.amt&&Math.abs(x.ts-it.ts)<3*864e5);if(m){m.ext=it.id;continue}
 const mem=S.mem[it.type+'|'+String(it.title||'').toLowerCase()];
@@ -611,7 +615,7 @@ if(auto.length){S.tx.push(...auto);sortTx()}
 if(pend.length)S.pending.push(...pend);
 sv();
 if(ids.length)fetch('/api/ack',{method:'POST',headers:{authorization:'Bearer '+S.sync.key,'content-type':'application/json'},body:JSON.stringify({ids})}).catch(()=>{});
-if(auto.length||pend.length||manual||d.bank){if(!$('#sh')){if(!manual)silentSync=true;render()}}
+if(auto.length||pend.length||manual||JSON.stringify(S.sync.bank||null)+S.sync.useBank!=bank0){if(!$('#sh')){if(!manual)silentSync=true;render()}}
 if(auto.length){const g=auto[0];notify(auto.length==1?(g.type=='inc'?'+':'-')+F(g.amt)+(g.title?' · '+g.title:''):auto.length+' '+t('new payments'),g.src=='bank'?'bank':'card');vib([12,50,12])}
 if(pend.length&&!$('#sh'))reviewOpen();
 if(!auto.length&&!pend.length&&manual)toast(t('Connected')+' ✓')}
