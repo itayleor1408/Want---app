@@ -276,6 +276,151 @@
   document.addEventListener('mouseleave', function () { clearInterval(poll); poll = null; });
   window.addEventListener('focus', refresh);
 
+  // ---------- library ----------
+  var library = load('se.library', []);   // [{id, name, a, b}]
+  var libEl = $('lib'), libList = $('libList');
+  var SVGNS = 'http://www.w3.org/2000/svg';
+  var clickT = null;
+
+  function saveLib() { save('se.library', library); }
+
+  function thumb(a, b) {
+    var W = 40, H = 22, N = 60, pts = [], max = 1, i;
+    for (i = 0; i <= N; i++) {
+      var t = i / N, dx = dbez(a, 1 - b, t), dy = dbez(0, 1, t);
+      var sp = Math.min(dx > 1e-4 ? dy / dx : 40, 40);
+      pts.push([bez(a, 1 - b, t), sp]);
+      if (sp > max) max = sp;
+    }
+    var d = pts.map(function (p, k) {
+      return (k ? 'L' : 'M') + (1 + p[0] * (W - 2)).toFixed(1) + ' ' + (H - 1 - p[1] / max * (H - 3)).toFixed(1);
+    }).join('');
+    var svg = document.createElementNS(SVGNS, 'svg');
+    svg.setAttribute('viewBox', '0 0 ' + W + ' ' + H);
+    svg.setAttribute('class', 'lib-thumb');
+    var area = document.createElementNS(SVGNS, 'path');
+    area.setAttribute('class', 'area'); area.setAttribute('d', d + 'L' + (W - 1) + ' ' + (H - 1) + 'L1 ' + (H - 1) + 'Z');
+    var line = document.createElementNS(SVGNS, 'path');
+    line.setAttribute('class', 'line'); line.setAttribute('d', d);
+    svg.appendChild(area); svg.appendChild(line);
+    return svg;
+  }
+
+  function iconBtn(title, path, cls) {
+    var b = document.createElement('button');
+    b.className = 'icon' + (cls ? ' ' + cls : '');
+    b.title = title;
+    b.innerHTML = '<svg viewBox="0 0 16 16"><path d="' + path + '"/></svg>';
+    return b;
+  }
+
+  function same(item) { return Math.abs(item.a - state.a) < 1e-4 && Math.abs(item.b - state.b) < 1e-4; }
+
+  function renderLib(editId) {
+    var toFocus = null;
+    libList.innerHTML = '';
+    $('libEmpty').style.display = library.length ? 'none' : '';
+    library.forEach(function (item) {
+      var li = document.createElement('li');
+      li.className = 'lib-row' + (same(item) ? ' active' : '');
+      li.appendChild(thumb(item.a, item.b));
+
+      if (item.id === editId) {
+        li.classList.add('editing');
+        var inp = document.createElement('input');
+        inp.className = 'lib-name-input';
+        inp.value = item.name;
+        inp.maxLength = 40;
+        var done = false;
+        var finish = function (ok) {
+          if (done) return; done = true;
+          var v = inp.value.trim();
+          if (ok && v) { item.name = v; saveLib(); }
+          if (!ok && item.isNew) library = library.filter(function (x) { return x !== item; });
+          delete item.isNew;
+          saveLib();
+          renderLib();
+        };
+        inp.addEventListener('keydown', function (e) {
+          if (e.key === 'Enter') finish(true);
+          if (e.key === 'Escape') { e.stopPropagation(); finish(false); }
+        });
+        inp.addEventListener('blur', function () { finish(true); });
+        inp.addEventListener('click', function (e) { e.stopPropagation(); });
+        li.appendChild(inp);
+        toFocus = inp;
+      } else {
+        var name = document.createElement('span');
+        name.className = 'lib-name';
+        name.textContent = item.name;
+        name.title = item.name;
+        li.appendChild(name);
+
+        var vals = document.createElement('span');
+        vals.className = 'lib-vals';
+        vals.textContent = fmt(item.a) + ' / ' + fmt(item.b);
+        li.appendChild(vals);
+
+        var acts = document.createElement('span');
+        acts.className = 'lib-acts';
+
+        var ren = iconBtn('Rename', 'M10.5 3l2.5 2.5L6 12.5H3.5V10z');
+        ren.addEventListener('click', function (e) { e.stopPropagation(); renderLib(item.id); });
+
+        var upd = iconBtn('Replace with current curve', 'M13 8a5 5 0 1 1-1.5-3.5M13 2.5v3h-3');
+        upd.addEventListener('click', function (e) {
+          e.stopPropagation();
+          item.a = state.a; item.b = state.b; saveLib(); renderLib();
+          status('Updated “' + item.name + '”');
+        });
+
+        var del = iconBtn('Delete', 'M4 4l8 8M12 4l-8 8');
+        del.addEventListener('click', function (e) {
+          e.stopPropagation();
+          if (!del.classList.contains('danger')) {      // first click arms, second deletes
+            del.classList.add('danger'); del.title = 'Click again to delete';
+            setTimeout(function () { del.classList.remove('danger'); del.title = 'Delete'; }, 2000);
+            return;
+          }
+          library = library.filter(function (x) { return x !== item; });
+          saveLib(); renderLib();
+        });
+
+        acts.appendChild(ren); acts.appendChild(upd); acts.appendChild(del);
+        li.appendChild(acts);
+
+        // single click = load and go back; double click = rename
+        li.addEventListener('click', function (e) {
+          if (e.detail > 1) return;
+          clearTimeout(clickT);
+          clickT = setTimeout(function () { set(item.a, item.b); openLib(false); status(item.name); }, 230);
+        });
+        li.addEventListener('dblclick', function (e) { e.preventDefault(); clearTimeout(clickT); renderLib(item.id); });
+      }
+      libList.appendChild(li);
+    });
+    if (toFocus) { toFocus.focus(); toFocus.select(); }
+  }
+
+  function openLib(open) {
+    libEl.hidden = !open;
+    if (open) renderLib();
+  }
+
+  $('libBtn').addEventListener('click', function () { openLib(true); });
+  $('libBack').addEventListener('click', function () { openLib(false); });
+  $('libAdd').addEventListener('click', function () {
+    var n = library.length + 1, names = library.map(function (x) { return x.name; });
+    while (names.indexOf('Curve ' + n) !== -1) n++;
+    var item = { id: Date.now().toString(36), name: 'Curve ' + n, a: state.a, b: state.b, isNew: true };
+    library.unshift(item);
+    renderLib(item.id);
+    libList.scrollTop = 0;
+  });
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape' && !libEl.hidden && document.activeElement.tagName !== 'INPUT') openLib(false);
+  });
+
   window.addEventListener('resize', draw);
   if (clip) $('paste').disabled = false;
   render();

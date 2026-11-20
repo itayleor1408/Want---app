@@ -37,11 +37,29 @@
       <button id="clear" class="icon" title="Remove ease (back to linear)">
         <svg viewBox="0 0 16 16"><path d="M2.5 13.5 13.5 2.5"/></svg>
       </button>
+      <button id="libBtn" class="icon" title="Library">
+        <svg viewBox="0 0 16 16"><path d="M3 2.5h3.5v11H3zM8 2.5h2.5v11H8zM11.6 3.2l2.3-.6 2 10.6-2.3.5"/></svg>
+      </button>
       <span class="spacer"></span>
       <button id="apply" class="apply" title="Apply to keyframes around the playhead (selected clip)">Apply</button>
     </div>
     <div id="status" class="status"></div>
   </main>
+
+  <section id="lib" class="lib" hidden>
+    <header class="lib-head">
+      <button id="libBack" class="icon" title="Back">
+        <svg viewBox="0 0 16 16"><path d="M10 3 5 8l5 5"/></svg>
+      </button>
+      <span class="lib-title">Library</span>
+      <span class="spacer"></span>
+      <button id="libAdd" class="icon" title="Save current curve">
+        <svg viewBox="0 0 16 16"><path d="M8 3v10M3 8h10"/></svg>
+      </button>
+    </header>
+    <ul id="libList" class="lib-list"></ul>
+    <div id="libEmpty" class="lib-empty">No saved curves yet.<br>Press + to save the current one.</div>
+  </section>
   <script src="js/main.js"></script>
 </body>
 </html>
