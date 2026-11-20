@@ -39,6 +39,13 @@ FONT_LINK='<link rel="preconnect" href="https://fonts.googleapis.com"><link href
 assert FONT_LINK in app
 app=app.replace(FONT_LINK,'<link rel="preload" href="/inter.woff2" as="font" type="font/woff2" crossorigin><style>@font-face{font-family:Inter;font-style:normal;font-weight:500 900;font-display:swap;src:url(/inter.woff2) format("woff2")}</style>',1)
 FONT=base64.b64encode(open('assets/inter-latin.woff2','rb').read()).decode()
+# never ship a page whose script does not parse (a stray apostrophe would blank the whole app)
+import re,subprocess,tempfile,os,shutil
+if shutil.which('node'):
+    js=max(re.findall(r'<script>(.*?)</script>',app,re.S),key=len)
+    with tempfile.NamedTemporaryFile('w',suffix='.js',delete=False,encoding='utf-8') as f:f.write(js)
+    r=subprocess.run(['node','--check',f.name],capture_output=True,text=True);os.unlink(f.name)
+    if r.returncode:raise SystemExit('Syntax error in the page script - not building:\n'+r.stderr[:700])
 # a short id of this exact page: the app asks /version to learn whether a newer build exists
 BUILD=hashlib.sha1(app.encode('utf-8')).hexdigest()[:8]
 app=app.replace('<script>','<script>window.WANT_API="/api/product";window.WANT_BUILD="'+BUILD+'";</script><script>',1)
