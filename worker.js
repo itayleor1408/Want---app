@@ -286,7 +286,7 @@ async function product(u){
   }
   const html=(await res.text()).slice(0,2000000);
   const d=extract(html,res.url||target.href);
-  const blocked=res.status>=400||(!d.price&&!d.image&&/denied|captcha|robot|blocked|forbidden|attention required|just a moment/i.test(d.title));
+  const blocked=res.status>=400||(!d.title&&!d.price&&!d.image)||(!d.price&&!d.image&&/denied|captcha|robot|blocked|forbidden|attention required|just a moment/i.test(d.title));
   if(blocked)return J({error:'blocked',store:d.store});
   if(d.price&&d.currency&&d.currency!=='ILS'){try{const r=await rates(d.currency);if(r&&r.ils){d.priceILS=String(Math.round(parseFloat(d.price)*r.ils*100)/100);d.rateAt=r.at}}catch(e){}}
   return J(d);
