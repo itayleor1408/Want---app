@@ -35,9 +35,31 @@ async function syncApi(req, env, path) {
   if (!env.WANT_KV || !env.WANT_TOKEN) return JS({ error: 'not_set_up', need: [!env.WANT_KV && 'WANT_KV', !env.WANT_TOKEN && 'WANT_TOKEN'].filter(Boolean) }, 503);
   if (!authed(req, env)) return JS({ error: 'bad_key' }, 401);
   if (path === '/api/ping') return JS({ ok: true, bank: await kvGet(env, 'bank', null), card: await kvGet(env, 'card', null) });
-  if (path === '/api/state') return JS({ ok: true, bank: await kvGet(env, 'bank', null), card: await kvGet(env, 'card', null), inbox: await kvGet(env, 'inbox', []) });
+  if (path === '/api/state') return JS({ ok: true, bank: await kvGet(env, 'bank', null), card: await kvGet(env, 'card', null), inbox: await kvGet(env, 'inbox', []), wishbox: await kvGet(env, 'wishbox', []) });
   if (req.method !== 'POST') return JS({ error: 'post_only' }, 405);
   const b = await readBody(req);
+  if (path === '/api/wish') { // "Add to WANT." in Safari's Share menu: the product as read from the live page on the phone
+    let p = b.page;
+    if (typeof p === 'string') { try { p = JSON.parse(p); } catch (e) { p = null; } }
+    p = p && typeof p === 'object' ? p : {};
+    const url = String(p.url || b.url || '').slice(0, 2000);
+    const firstNum = v => { const m = String(v || '').match(/\d[\d.,]*/); return m ? numPrice(m[0]) : ''; };
+    const d = { title: String(p.title || '').replace(/\s+/g, ' ').trim().slice(0, 120), price: firstNum(p.price), currency: curOf(p.currency) || curOf(p.price), image: /^https?:/.test(p.image || '') && !/HTB18eCBQXXXXXXfXXXX760XFXXXa|\/(logo|sprite|placeholder)[^/]*$/i.test(p.image) ? String(p.image).slice(0, 2000) : '', store: String(p.store || '').slice(0, 40) };
+    // anything the page didn't give us, try to read from the link on the server
+    if ((!d.title || !d.price || !d.image) && /^https?:/.test(url) && typeof productData === 'function') {
+      try { const s = await productData(url); if (s && !s.error) for (const k of ['title', 'price', 'currency', 'image', 'store']) if (!d[k] && s[k]) d[k] = s[k]; } catch (e) { }
+    }
+    if (!d.title || /^(aliexpress|amazon)(\.[a-z.]+)?$/i.test(d.title) || /not found|can ?not be found|\b404\b|error page|access denied|captcha|just a moment/i.test(d.title)) return JS({ ok: false, msg: "Couldn't find a product on this page. Nothing was added." });
+    if (/^[a-z0-9-]+(\.[a-z0-9-]+)+$/i.test(d.store)) { // "aliexpress.com" -> "AliExpress"
+      const n = d.store.replace(/^(www|m|he|il|shop)\./i, '').split('.')[0], NICE = { aliexpress: 'AliExpress', amazon: 'Amazon', ebay: 'eBay', ikea: 'IKEA', shein: 'SHEIN', temu: 'Temu', ksp: 'KSP', zara: 'Zara' };
+      d.store = NICE[n.toLowerCase()] || (n.length <= 4 ? n.toUpperCase() : n[0].toUpperCase() + n.slice(1));
+    }
+    if (d.price && d.currency && d.currency !== 'ILS' && typeof rates === 'function') { try { const r = await rates(d.currency); if (r && r.ils) d.priceILS = String(Math.round(parseFloat(d.price) * r.ils * 100) / 100); } catch (e) { } }
+    const box = await kvGet(env, 'wishbox', []);
+    box.push(Object.assign({ id: 'wi_' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6), url, ts: Date.now() }, d));
+    await kvPut(env, 'wishbox', box.slice(-50));
+    return JS({ ok: true, msg: 'Sent to WANT.: ' + d.title.slice(0, 50) + (d.price ? '' : ' (add the price in the app)') + '. Open WANT. to save it.' });
+  }
   if (path === '/api/ingest') { // Apple Pay automation or quick add from a Shortcut
     const amt = agorot(b.amount), title = String(b.merchant || b.title || '').trim().slice(0, 60);
     if (!amt) return JS({ error: 'no_amount' }, 400);
@@ -65,6 +87,8 @@ async function syncApi(req, env, path) {
     const inbox = await kvGet(env, 'inbox', []);
     const left = inbox.filter(x => !ids.has(x.id));
     if (left.length !== inbox.length) await kvPut(env, 'inbox', left);
+    const wb = await kvGet(env, 'wishbox', []), wl = wb.filter(x => !ids.has(x.id));
+    if (wl.length !== wb.length) await kvPut(env, 'wishbox', wl);
     return JS({ ok: true, left: left.length });
   }
   if (path === '/api/card') { // a credit-card company's scraper on your computer (per-purchase items, never a balance)

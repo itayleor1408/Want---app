@@ -50,21 +50,40 @@ async function rates(cur){{
     r=new Response(JSON.stringify({{ils:d.rates.ILS,at:d.time_last_update_utc}}),{{headers:{{'cache-control':'max-age=21600'}}}});await cache.put(key,r.clone())}}
   return r.json();
 }}
-async function product(u){{
-  let target;try{{target=new URL(u)}}catch(e){{return J({{error:'bad_url'}},400)}}
-  if(!/^https?:$/.test(target.protocol))return J({{error:'bad_url'}},400);
-  const fopts={{headers:{{'user-agent':UA,'accept':'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8','accept-language':'he-IL,he;q=0.9,en-US;q=0.8,en;q=0.7'}},redirect:'follow',cf:{{cacheTtl:900,cacheEverything:true}}}};
-  let res;try{{res=await fetch(target.href,fopts)}}catch(e){{
-    // some sites (seen on AliExpress) reject a fetch to a bare URL with no query string at all; a harmless one avoids it
-    if(!target.search){{try{{res=await fetch(target.href+'?_w=1',fopts)}}catch(e2){{return J({{error:'fetch_failed'}},502)}}}}else return J({{error:'fetch_failed'}},502);
+// Several stores answer differently depending on who asks: try a phone, then a desktop browser, then a link-preview
+// reader (what chat apps use to show a link's photo and title), and keep the first good value found for each field.
+const UAS=[UA,'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36','facebookexternalhit/1.1 (+http://www.facebook.com/externalhit_uatext.php)'];
+const BAD_TITLE=/denied|captcha|robot|blocked|forbidden|attention required|just a moment|page not found|error page|^amazon\\.com$/i;
+async function productData(u){{
+  let target;try{{target=new URL(u)}}catch(e){{return{{error:'bad_url'}}}}
+  if(!/^https?:$/.test(target.protocol))return{{error:'bad_url'}};
+  const out={{title:'',image:'',price:'',currency:'',store:'',brand:''}};let finalUrl=target.href;
+  const merge=d=>{{if(!d)return;if(d.title&&BAD_TITLE.test(d.title))d.title='';for(const k in out)if(!out[k]&&d[k])out[k]=d[k];if(d.price&&!out.currency&&d.currency)out.currency=d.currency}};
+  const done=()=>out.title&&out.price&&out.image;
+  for(const ua of UAS){{
+    const fopts={{headers:{{'user-agent':ua,'accept':'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8','accept-language':'he-IL,he;q=0.9,en-US;q=0.8,en;q=0.7'}},redirect:'follow',cf:{{cacheTtl:900,cacheEverything:true}}}};
+    let res;try{{res=await fetch(target.href,fopts)}}catch(e){{
+      // some sites (seen on AliExpress) reject a fetch to a bare URL with no query string at all; a harmless one avoids it
+      if(!target.search){{try{{res=await fetch(target.href+'?_w=1',fopts)}}catch(e2){{continue}}}}else continue;
+    }}
+    if(res.status>=400)continue;
+    finalUrl=res.url||target.href;
+    const html=(await res.text()).slice(0,2000000);
+    merge(extract(html,finalUrl));
+    // Shopify stores (a big share of small shops) publish every product as clean JSON at <product url>.js
+    if(!done()&&/\\/products\\/[^/?#]+/.test(new URL(finalUrl).pathname)&&/shopify/i.test(html)){{
+      try{{const p=new URL(finalUrl);const r=await fetch(p.origin+p.pathname.replace(/\\/$/,'')+'.js',{{headers:{{'user-agent':ua,accept:'application/json'}}}});
+        if(r.ok){{const j=await r.json();const img=j.featured_image||(j.images&&j.images[0])||'';
+          out.title=j.title||out.title;if(j.price)out.price=String(j.price/100);if(img&&!out.image)out.image=img.startsWith('//')?'https:'+img:img;
+          if(!out.currency){{const c=html.match(/Shopify\\.currency\\s*=\\s*\\{{[^}}]*"active"\\s*:\\s*"([A-Z]{{3}})"/);if(c)out.currency=c[1]}}}}}}catch(e){{}}
+    }}
+    if(done())break;
   }}
-  const html=(await res.text()).slice(0,2000000);
-  const d=extract(html,res.url||target.href);
-  const blocked=res.status>=400||(!d.title&&!d.price&&!d.image)||(!d.price&&!d.image&&/denied|captcha|robot|blocked|forbidden|attention required|just a moment/i.test(d.title));
-  if(blocked)return J({{error:'blocked',store:d.store}});
-  if(d.price&&d.currency&&d.currency!=='ILS'){{try{{const r=await rates(d.currency);if(r&&r.ils){{d.priceILS=String(Math.round(parseFloat(d.price)*r.ils*100)/100);d.rateAt=r.at}}}}catch(e){{}}}}
-  return J(d);
+  if(!out.title&&!out.price&&!out.image)return{{error:'blocked',store:out.store}};
+  if(out.price&&out.currency&&out.currency!=='ILS'){{try{{const r=await rates(out.currency);if(r&&r.ils){{out.priceILS=String(Math.round(parseFloat(out.price)*r.ils*100)/100);out.rateAt=r.at}}}}catch(e){{}}}}
+  return out;
 }}
+async function product(u){{const d=await productData(u);return J(d,d.error=='bad_url'?400:200)}}
 const APP={json.dumps(app,ensure_ascii=False)};
 const MANIFEST={json.dumps(manifest)};
 const SW={json.dumps(sw)};
@@ -76,7 +95,7 @@ export default {{
     if(req.method==='OPTIONS')return new Response(null,{{headers:{{'access-control-allow-origin':'*','access-control-allow-methods':'GET,POST','access-control-allow-headers':'authorization,content-type'}}}});
     switch(url.pathname){{
       case '/api/product':return product(url.searchParams.get('u')||'');
-      case '/api/ping':case '/api/state':case '/api/ingest':case '/api/bank':case '/api/card':case '/api/ack':case '/api/reset-seen':return syncApi(req,env,url.pathname);
+      case '/api/ping':case '/api/state':case '/api/ingest':case '/api/bank':case '/api/card':case '/api/ack':case '/api/reset-seen':case '/api/wish':return syncApi(req,env,url.pathname);
       case '/manifest.webmanifest':return new Response(MANIFEST,{{headers:{{'content-type':'application/manifest+json'}}}});
       case '/sw.js':return new Response(SW,{{headers:{{'content-type':'text/javascript','cache-control':'no-cache'}}}});
       case '/icon-180.png':return png(I180);

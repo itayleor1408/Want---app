@@ -83,6 +83,10 @@ function extract(html, base) {
     const run = (html.match(/runParams\s*=\s*\{[\s\S]{0,400000}?\n\s*<\/script>/i) || [html])[0];
     // keys in this blob may or may not be quoted (it's a JS object literal, not JSON)
     if (!out.price) {
+      const v = run.match(/"(?:skuActivityAmount|skuAmount|minActivityAmount|minAmount|discountPrice)"\s*:\s*\{[^{}]*?"value"\s*:\s*"?([\d.]+)/i);
+      if (v && numPrice(v[1])) { out.price = numPrice(v[1]); const c = v[0].match(/"currency"\s*:\s*"([A-Z]{3})"/i); if (c) out.currency = curOf(c[1]); }
+    }
+    if (!out.price) {
       const p = run.match(/"?(?:formatedActivityPrice|formatedPrice|salePrice|minActivityAmount|minAmount)"?\s*:\s*"?([^",}]+)"?/i);
       if (p && numPrice(p[1])) { out.price = numPrice(p[1]); out.currency = out.currency || curOf(p[1]); }
       const c = run.match(/"?currency"?\s*:\s*"([A-Z]{3})"/i);
@@ -97,6 +101,12 @@ function extract(html, base) {
       if (i) out.image = imgOf(i[1].replace(/\\\//g, '/'), base);
     }
   } else if (/amazon\./i.test(host0)) {
+    if (!out.title) { const t = html.match(/id\s*=\s*["']productTitle["'][^>]*>([\s\S]{1,400}?)<\/span>/i); if (t) out.title = decodeEnt(t[1].replace(/<[^>]+>/g, '')).trim(); }
+    if (!out.price) {
+      const a = html.match(/"priceAmount"\s*:\s*([\d.]+)/) || html.match(/id\s*=\s*["']twister-plus-price-data-price["'][^>]*value\s*=\s*["']([\d.]+)["']/i);
+      if (a && numPrice(a[1])) { out.price = numPrice(a[1]); const c = html.match(/"currencyCode"\s*:\s*"([A-Z]{3})"/) || html.match(/"currency"\s*:\s*"([A-Z]{3})"/); if (c) out.currency = curOf(c[1]); }
+    }
+    if (!out.image) { const h = html.match(/"hiRes"\s*:\s*"(https:[^"]+)"/) || html.match(/"large"\s*:\s*"(https:[^"]+)"/); if (h) out.image = imgOf(h[1], base); }
     if (!out.image) {
       const dyn = html.match(/id\s*=\s*["']landingImage["'][^>]*data-old-hires\s*=\s*["']([^"']+)["']/i);
       if (dyn && dyn[1]) out.image = imgOf(dyn[1], base);
@@ -147,11 +157,23 @@ function extract(html, base) {
       || html.match(/<(?:img|link)[^>]+(?:src|href|content)\s*=\s*["']([^"']+)["'][^>]*itemprop\s*=\s*["']image["']/i);
     if (m) out.image = imgOf(m[1], base);
   }
+  if (!out.image) { // WooCommerce and many galleries keep the full-size photo in a data attribute
+    const m = html.match(/data-(?:large_image|zoom-image|large-image|full-image)\s*=\s*["']([^"']+)["']/i);
+    if (m) out.image = imgOf(m[1], base);
+  }
+  if (!out.title) { const m = html.match(/<h1[^>]*>([\s\S]{1,400}?)<\/h1>/i); if (m) out.title = decodeEnt(m[1].replace(/<[^>]+>/g, ' ')).replace(/\s+/g, ' ').trim(); }
   if (!out.title) { const m = html.match(/<title[^>]*>([^<]*)<\/title>/i); if (m) out.title = decodeEnt(m[1]); }
+  if (!out.price && out.title && !/amazon\.|aliexpress\./i.test(host0)) { // last resort: the first shekel amount in the visible page text (only ₪: "$10 off"-style promos made other currencies unreliable)
+    const body = (html.split(/<body[^>]*>/i)[1] || '').slice(0, 400000).replace(/<(script|style|noscript)[\s\S]*?<\/\1>/gi, ' ').replace(/<[^>]+>/g, ' ').replace(/&nbsp;|&#160;/g, ' ');
+    const m = body.match(/(₪)\s?(\d{1,3}(?:[,.]\d{3})*(?:[.,]\d{1,2})?)(?!\d)/) || body.match(/(?<![\d.,])(\d{1,3}(?:[,.]\d{3})*(?:[.,]\d{1,2})?)\s?(₪|ש"ח|ש״ח)/);
+    if (m) { const num = /\d/.test(m[1]) ? m[1] : m[2], sym = /\d/.test(m[1]) ? m[2] : m[1]; if (numPrice(num)) { out.price = numPrice(num); out.currency = out.currency || curOf(sym); } }
+  }
+  // generic site logos / placeholders are not product photos (AliExpress serves its logo to bots)
+  if (/HTB18eCBQXXXXXXfXXXX760XFXXXa|\/(?:logo|sprite|placeholder|no[-_]?image)[^/]*$/i.test(out.image)) out.image = '';
   // tidy
   let host = '';
   try { host = new URL(base).hostname.replace(/^(www|m|shop)\./, ''); } catch (e) {}
-  const sn = meta('og:site_name') || meta('application-name');
+  const sn = (meta('og:site_name') || meta('application-name')).replace(/\.+$/, '');
   out.store = sn || (host ? host.split('.')[0].replace(/^./, c => c.toUpperCase()) : '');
   if (!sn && out.store.length <= 4) out.store = out.store.toUpperCase();
   out.title = out.title.replace(/\s+/g, ' ').trim();
