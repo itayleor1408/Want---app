@@ -1,0 +1,47 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Speed Ease</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <main id="app">
+    <div class="graph-wrap">
+      <canvas id="graph"></canvas>
+      <span id="info" class="info"></span>
+    </div>
+
+    <div class="controls">
+      <input id="numL" class="num" type="number" min="1" max="100" step="1" value="33" title="Left influence (out of first keyframe)">
+      <div id="track" class="track">
+        <div class="rail"></div>
+        <div id="fillL" class="fill"></div>
+        <div id="fillR" class="fill"></div>
+        <div id="knobL" class="knob" title="Left: drag right for a sharper peak on the right"></div>
+        <div id="knobR" class="knob" title="Right: drag left for a sharper peak on the left"></div>
+        <div id="center" class="center" title="Drag left / right: both sides equal">
+          <svg viewBox="0 0 16 16" width="14" height="14"><path d="M5 4 1 8l4 4M11 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+      </div>
+      <input id="numR" class="num" type="number" min="1" max="100" step="1" value="33" title="Right influence (into second keyframe)">
+    </div>
+
+    <div class="actions">
+      <button id="copy" class="icon" title="Copy curve">
+        <svg viewBox="0 0 16 16"><rect x="5" y="5" width="8.5" height="8.5" rx="1.5"/><path d="M3 10.5V3.8C3 3.4 3.4 3 3.8 3h6.7"/></svg>
+      </button>
+      <button id="paste" class="icon" title="Paste curve onto keyframes at playhead" disabled>
+        <svg viewBox="0 0 16 16"><rect x="3.5" y="3" width="9" height="11" rx="1.5"/><path d="M6 3V2h4v1M6 7.5h4M6 10h2.5"/></svg>
+      </button>
+      <button id="clear" class="icon" title="Remove ease (back to linear)">
+        <svg viewBox="0 0 16 16"><path d="M2.5 13.5 13.5 2.5"/></svg>
+      </button>
+      <span class="spacer"></span>
+      <button id="apply" class="apply" title="Apply to keyframes around the playhead (selected clip)">Apply</button>
+    </div>
+    <div id="status" class="status"></div>
+  </main>
+  <script src="js/main.js"></script>
+</body>
+</html>
