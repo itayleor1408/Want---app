@@ -299,7 +299,7 @@
   function saveLib() { save('se.library', library); }
 
   function thumb(a, b) {
-    var W = 40, H = 22, N = 60, pts = [], max = 1, i;
+    var W = 100, H = 52, N = 80, pts = [], max = 1, i;
     for (i = 0; i <= N; i++) {
       var t = i / N, dx = dbez(a, 1 - b, t), dy = dbez(0, 1, t);
       var sp = Math.min(dx > 1e-4 ? dy / dx : 40, 40);
@@ -307,28 +307,117 @@
       if (sp > max) max = sp;
     }
     var d = pts.map(function (p, k) {
-      return (k ? 'L' : 'M') + (1 + p[0] * (W - 2)).toFixed(1) + ' ' + (H - 1 - p[1] / max * (H - 3)).toFixed(1);
+      return (k ? 'L' : 'M') + (3 + p[0] * (W - 6)).toFixed(1) + ' ' + (H - 4 - p[1] / max * (H - 14)).toFixed(1);
     }).join('');
     var svg = document.createElementNS(SVGNS, 'svg');
     svg.setAttribute('viewBox', '0 0 ' + W + ' ' + H);
-    svg.setAttribute('class', 'lib-thumb');
+    svg.setAttribute('preserveAspectRatio', 'none');
+    svg.setAttribute('class', 'card-thumb');
     var area = document.createElementNS(SVGNS, 'path');
-    area.setAttribute('class', 'area'); area.setAttribute('d', d + 'L' + (W - 1) + ' ' + (H - 1) + 'L1 ' + (H - 1) + 'Z');
+    area.setAttribute('class', 'area'); area.setAttribute('d', d + 'L' + (W - 3) + ' ' + (H - 3) + 'L3 ' + (H - 3) + 'Z');
     var line = document.createElementNS(SVGNS, 'path');
     line.setAttribute('class', 'line'); line.setAttribute('d', d);
+    line.setAttribute('vector-effect', 'non-scaling-stroke');
     svg.appendChild(area); svg.appendChild(line);
     return svg;
   }
 
-  function iconBtn(title, path, cls) {
-    var b = document.createElement('button');
-    b.className = 'icon' + (cls ? ' ' + cls : '');
-    b.title = title;
-    b.innerHTML = '<svg viewBox="0 0 16 16"><path d="' + path + '"/></svg>';
-    return b;
-  }
-
   function same(item) { return Math.abs(item.a - state.a) < 1e-4 && Math.abs(item.b - state.b) < 1e-4; }
+  function byId(id) { for (var i = 0; i < library.length; i++) if (library[i].id === id) return library[i]; return null; }
+
+  // ----- card ⋯ menu (one shared popover) -----
+  var cardMenu = $('cardMenu'), menuItem = null, menuBtn = null;
+  function closeCardMenu() {
+    cardMenu.hidden = true;
+    if (menuBtn) menuBtn.classList.remove('open');
+    var del = $('cmDelete'); del.classList.remove('confirm'); del.querySelector('span').textContent = 'Delete';
+    menuItem = menuBtn = null;
+  }
+  function openCardMenu(item, btn) {
+    if (menuItem === item) return closeCardMenu();
+    closeCardMenu();
+    menuItem = item; menuBtn = btn; btn.classList.add('open');
+    cardMenu.hidden = false;
+    var r = btn.getBoundingClientRect(), mw = cardMenu.offsetWidth, mh = cardMenu.offsetHeight;
+    var left = Math.min(r.right - mw, window.innerWidth - mw - 6);
+    var top = r.bottom + 4;
+    if (top + mh > window.innerHeight - 6) top = r.top - mh - 4;
+    cardMenu.style.left = Math.max(6, left) + 'px';
+    cardMenu.style.top = Math.max(6, top) + 'px';
+  }
+  cardMenu.addEventListener('click', function (e) { e.stopPropagation(); });
+  cardMenu.addEventListener('pointerdown', function (e) { e.stopPropagation(); });
+  $('cmRename').addEventListener('click', function () { var it = menuItem; closeCardMenu(); renderLib(it.id); });
+  $('cmUpdate').addEventListener('click', function () {
+    var it = menuItem; closeCardMenu();
+    it.a = state.a; it.b = state.b; saveLib(); renderLib();
+  });
+  $('cmDelete').addEventListener('click', function () {
+    var del = $('cmDelete');
+    if (!del.classList.contains('confirm')) {          // first click asks, second deletes
+      del.classList.add('confirm'); del.querySelector('span').textContent = 'Click to confirm';
+      return;
+    }
+    var it = menuItem; closeCardMenu();
+    library = library.filter(function (x) { return x !== it; });
+    saveLib(); renderLib();
+  });
+  document.addEventListener('pointerdown', function () { if (!cardMenu.hidden) closeCardMenu(); });
+  libList.addEventListener('scroll', function () { if (!cardMenu.hidden) closeCardMenu(); });
+
+  // ----- drag to reorder -----
+  function dragCard(li, e) {
+    var startX = e.clientX, startY = e.clientY, dragging = false, offX = 0, offY = 0;
+    function place(ev) {
+      li.style.transform = '';
+      var r = li.getBoundingClientRect();
+      li.style.transform = 'translate(' + (ev.clientX - offX - r.left) + 'px,' + (ev.clientY - offY - r.top) + 'px) scale(1.04)';
+    }
+    function move(ev) {
+      if (!dragging) {
+        if (Math.abs(ev.clientX - startX) + Math.abs(ev.clientY - startY) < 6) return;
+        dragging = true;
+        clearTimeout(clickT);
+        var r = li.getBoundingClientRect();
+        offX = startX - r.left; offY = startY - r.top;
+        li.classList.add('dragging');
+        libList.classList.add('sorting');
+      }
+      // which card is under the pointer?
+      var cards = libList.querySelectorAll('.card');
+      for (var i = 0; i < cards.length; i++) {
+        var c = cards[i];
+        if (c === li) continue;
+        var r2 = c.getBoundingClientRect();
+        if (ev.clientX >= r2.left && ev.clientX <= r2.right && ev.clientY >= r2.top && ev.clientY <= r2.bottom) {
+          var kids = Array.prototype.slice.call(libList.children);
+          if (kids.indexOf(li) < kids.indexOf(c)) libList.insertBefore(li, c.nextSibling);
+          else libList.insertBefore(li, c);
+          break;
+        }
+      }
+      // auto-scroll near the edges
+      var lr = libList.getBoundingClientRect();
+      if (ev.clientY < lr.top + 20) libList.scrollTop -= 8;
+      else if (ev.clientY > lr.bottom - 20) libList.scrollTop += 8;
+      place(ev);
+    }
+    function up() {
+      window.removeEventListener('pointermove', move);
+      window.removeEventListener('pointerup', up);
+      if (!dragging) return;
+      li.classList.remove('dragging');
+      libList.classList.remove('sorting');
+      li.style.transform = '';
+      li._dragged = true;
+      setTimeout(function () { li._dragged = false; }, 0);
+      var order = Array.prototype.map.call(libList.querySelectorAll('.card'), function (c) { return byId(c.dataset.id); });
+      library = order.filter(Boolean);
+      saveLib();
+    }
+    window.addEventListener('pointermove', move);
+    window.addEventListener('pointerup', up);
+  }
 
   function renderLib(editId) {
     var toFocus = null;
@@ -336,20 +425,29 @@
     $('libEmpty').style.display = library.length ? 'none' : '';
     library.forEach(function (item) {
       var li = document.createElement('li');
-      li.className = 'lib-row' + (same(item) ? ' active' : '');
-      li.appendChild(thumb(item.a, item.b));
+      li.className = 'card' + (same(item) ? ' active' : '');
+      li.dataset.id = item.id;
+
+      var g = document.createElement('div');
+      g.className = 'card-graph';
+      g.appendChild(thumb(item.a, item.b));
+      li.appendChild(g);
+
+      var foot = document.createElement('div');
+      foot.className = 'card-foot';
+      li.appendChild(foot);
 
       if (item.id === editId) {
         li.classList.add('editing');
         var inp = document.createElement('input');
-        inp.className = 'lib-name-input';
+        inp.className = 'card-input';
         inp.value = item.name;
         inp.maxLength = 40;
         var done = false;
         var finish = function (ok) {
           if (done) return; done = true;
           var v = inp.value.trim();
-          if (ok && v) { item.name = v; saveLib(); }
+          if (ok && v) item.name = v;
           if (!ok && item.isNew) library = library.filter(function (x) { return x !== item; });
           delete item.isNew;
           saveLib();
@@ -361,55 +459,35 @@
         });
         inp.addEventListener('blur', function () { finish(true); });
         inp.addEventListener('click', function (e) { e.stopPropagation(); });
-        li.appendChild(inp);
+        inp.addEventListener('pointerdown', function (e) { e.stopPropagation(); });
+        foot.appendChild(inp);
         toFocus = inp;
       } else {
         var name = document.createElement('span');
-        name.className = 'lib-name';
+        name.className = 'card-name';
         name.textContent = item.name;
-        name.title = item.name;
-        li.appendChild(name);
+        name.title = item.name + '  ·  ' + fmt(item.a) + ' / ' + fmt(item.b);
+        foot.appendChild(name);
 
-        var vals = document.createElement('span');
-        vals.className = 'lib-vals';
-        vals.textContent = fmt(item.a) + ' / ' + fmt(item.b);
-        li.appendChild(vals);
+        var more = document.createElement('button');
+        more.className = 'card-more';
+        more.title = 'Options';
+        more.innerHTML = '<svg viewBox="0 0 16 16"><circle cx="3.5" cy="8" r="1.2"/><circle cx="8" cy="8" r="1.2"/><circle cx="12.5" cy="8" r="1.2"/></svg>';
+        more.addEventListener('pointerdown', function (e) { e.stopPropagation(); });
+        more.addEventListener('click', function (e) { e.stopPropagation(); openCardMenu(item, more); });
+        li.appendChild(more);
 
-        var acts = document.createElement('span');
-        acts.className = 'lib-acts';
-
-        var ren = iconBtn('Rename', 'M10.5 3l2.5 2.5L6 12.5H3.5V10z');
-        ren.addEventListener('click', function (e) { e.stopPropagation(); renderLib(item.id); });
-
-        var upd = iconBtn('Replace with current curve', 'M13 8a5 5 0 1 1-1.5-3.5M13 2.5v3h-3');
-        upd.addEventListener('click', function (e) {
-          e.stopPropagation();
-          item.a = state.a; item.b = state.b; saveLib(); renderLib();
-          status('Updated “' + item.name + '”');
-        });
-
-        var del = iconBtn('Delete', 'M4 4l8 8M12 4l-8 8');
-        del.addEventListener('click', function (e) {
-          e.stopPropagation();
-          if (!del.classList.contains('danger')) {      // first click arms, second deletes
-            del.classList.add('danger'); del.title = 'Click again to delete';
-            setTimeout(function () { del.classList.remove('danger'); del.title = 'Delete'; }, 2000);
-            return;
-          }
-          library = library.filter(function (x) { return x !== item; });
-          saveLib(); renderLib();
-        });
-
-        acts.appendChild(ren); acts.appendChild(upd); acts.appendChild(del);
-        li.appendChild(acts);
-
+        li.addEventListener('pointerdown', function (e) { if (e.button === 0) dragCard(li, e); });
         // single click = load and go back; double click = rename
         li.addEventListener('click', function (e) {
-          if (e.detail > 1) return;
+          if (li._dragged || e.detail > 1) return;
           clearTimeout(clickT);
           clickT = setTimeout(function () { set(item.a, item.b); openLib(false); status(item.name); }, 230);
         });
-        li.addEventListener('dblclick', function (e) { e.preventDefault(); clearTimeout(clickT); renderLib(item.id); });
+        li.addEventListener('dblclick', function (e) {
+          if (li._dragged) return;
+          e.preventDefault(); clearTimeout(clickT); renderLib(item.id);
+        });
       }
       libList.appendChild(li);
     });
@@ -417,6 +495,7 @@
   }
 
   function openLib(open) {
+    closeCardMenu();
     libEl.hidden = !open;
     if (open) renderLib();
   }
@@ -433,7 +512,8 @@
     libList.scrollTop = 0;
   });
   document.addEventListener('keydown', function (e) {
-    if (e.key === 'Escape' && !libEl.hidden && document.activeElement.tagName !== 'INPUT') openLib(false);
+    if (e.key !== 'Escape' || libEl.hidden || document.activeElement.tagName === 'INPUT') return;
+    if (!cardMenu.hidden) closeCardMenu(); else openLib(false);
   });
 
   window.addEventListener('resize', draw);
