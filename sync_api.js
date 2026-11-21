@@ -52,13 +52,17 @@ async function googleLogin(req, env, path) {
   let b = {}; if (redirect) { const f = await req.formData().catch(() => null); if (f) f.forEach((v, k) => (b[k] = v)); const ck = (req.headers.get('cookie') || '').match(/g_csrf_token=([^;]+)/); if (!ck || ck[1] !== b.g_csrf_token) return new Response('bad request', { status: 400 }); } else b = await readBody(req);
   const fail = (e, st) => redirect ? new Response('<!doctype html><meta charset=utf-8><meta name=viewport content="width=device-width"><body style="font:16px system-ui;padding:40px;text-align:center"><p>Sign-in failed.</p><a href="/">Back</a>', { status: st, headers: { 'content-type': 'text/html; charset=utf-8' } }) : JS({ error: e }, st);
   const g = await verifyGoogle(env, b.credential); if (!g) return fail('bad_google', 401);
-  const gh = await hashKey('google:' + g.sub), gk = 'gacct:' + gh;
+  return finishLogin(req, env, 'google:' + g.sub, g.email, redirect, fail);
+}
+// shared by every way of signing in (Google, email code): an identity -> one private data prefix, plus a fresh key for this device
+async function finishLogin(req, env, ident, email, redirect, fail) {
+  const gh = await hashKey(ident), gk = 'gacct:' + gh;
   let rec = await kvGet(env, gk, null);
   const who = redirect ? null : await resolve(req, env);
   if (who) { // link mode: an app that already has a key attaches this Google account to the same data
     if (rec && rec.pfx !== who.pfx) return fail('already_linked', 409);
     if (!rec) await kvPut(env, gk, { pfx: who.pfx, keys: [], at: Date.now() });
-    return JS({ ok: true, linked: true, email: g.email });
+    return JS({ ok: true, linked: true, email: email });
   }
   let isNew = false;
   if (!rec) {
@@ -71,9 +75,44 @@ async function googleLogin(req, env, path) {
   await env.WANT_KV.put('acct:' + kh, JSON.stringify({ at: Date.now(), pfx: rec.pfx, g: gh }));
   rec.keys = (rec.keys || []).concat(kh); while (rec.keys.length > 20) await env.WANT_KV.delete('acct:' + rec.keys.shift()); // one key per signed-in device; the oldest fall away
   await kvPut(env, gk, rec);
-  if (!redirect) return JS({ ok: true, key, email: g.email, isNew });
-  const page = '<!doctype html><meta charset=utf-8><body style="font:16px system-ui;padding:40px;text-align:center">Signing in…<script>try{var k="want.v1",s=JSON.parse(localStorage.getItem(k)||"{}");s.sync=s.sync||{};s.sync.key=' + JSON.stringify(key) + ';s.sync.google=' + JSON.stringify(g.email).replace(/</g, '\\u003c') + ';s.sync.fresh=1;localStorage.setItem(k,JSON.stringify(s))}catch(e){}location.replace("/")</script>';
+  if (!redirect) return JS({ ok: true, key, email: email, isNew });
+  const page = '<!doctype html><meta charset=utf-8><body style="font:16px system-ui;padding:40px;text-align:center">Signing in…<script>try{var k="want.v1",s=JSON.parse(localStorage.getItem(k)||"{}");s.sync=s.sync||{};s.sync.key=' + JSON.stringify(key) + ';s.sync.google=' + JSON.stringify(email).replace(/</g, '\\u003c') + ';s.sync.fresh=1;localStorage.setItem(k,JSON.stringify(s))}catch(e){}location.replace("/")</script>';
   return new Response(page, { headers: { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'no-store' } });
+}
+// Email sign-in: a 6-digit code is emailed (Brevo, needs BREVO_API_KEY + MAIL_FROM secrets). Same accounts as Google sign-in.
+const emailOn = env => !!(env.BREVO_API_KEY && env.MAIL_FROM);
+async function sendCode(env, to, code) {
+  try {
+    const r = await fetch('https://api.brevo.com/v3/smtp/email', { method: 'POST', headers: { 'api-key': env.BREVO_API_KEY, 'content-type': 'application/json', accept: 'application/json' }, body: JSON.stringify({
+      sender: { email: env.MAIL_FROM, name: 'Brim.' }, to: [{ email: to }], subject: 'Your Brim. code: ' + code,
+      textContent: 'Your Brim. sign-in code is ' + code + '. It works for 10 minutes. If you did not ask for it, ignore this email.\n\nקוד הכניסה שלך ל-Brim. הוא ' + code + '. הוא תקף ל-10 דקות.',
+      htmlContent: '<div style="font-family:system-ui,sans-serif;max-width:420px;margin:auto;padding:24px;text-align:center"><div style="font-size:26px;font-weight:800">Brim.</div><p style="color:#555">Your sign-in code</p><div style="font-size:38px;font-weight:800;letter-spacing:8px;margin:8px 0 18px">' + code + '</div><p style="color:#777;font-size:13px">It works for 10 minutes. If you did not ask for it, ignore this email.</p><p style="color:#777;font-size:13px" dir="rtl">קוד הכניסה שלך. הוא תקף ל-10 דקות.</p></div>' }) });
+    return r.ok;
+  } catch (e) { return false; }
+}
+async function emailLogin(req, env, path) {
+  if (req.method !== 'POST') return JS({ error: 'post_only' }, 405);
+  if (!emailOn(env)) return JS({ error: 'email_off' }, 503);
+  const b = await readBody(req), email = String(b.email || '').trim().toLowerCase();
+  if (email.length > 254 || !/^[^\s@<>"]+@[^\s@<>"]+\.[^\s@<>"]+$/.test(email)) return JS({ error: 'bad_email' }, 400);
+  const eh = await hashKey('email:' + email);
+  if (path === '/api/email-start') {
+    if (await env.WANT_KV.get('ecd:' + eh)) return JS({ error: 'wait' }, 429); // one code a minute per address
+    const day = 'emails:' + new Date().toISOString().slice(0, 10), n = parseInt(await env.WANT_KV.get(day) || '0', 10);
+    if (n >= (parseInt(env.MAX_EMAILS_PER_DAY, 10) || 300)) return JS({ error: 'busy' }, 429);
+    const code = String(100000 + crypto.getRandomValues(new Uint32Array(1))[0] % 900000);
+    await env.WANT_KV.put('ecode:' + eh, JSON.stringify({ c: await hashKey(code + ':' + eh), tries: 0 }), { expirationTtl: 600 });
+    await env.WANT_KV.put('ecd:' + eh, '1', { expirationTtl: 60 });
+    await env.WANT_KV.put(day, String(n + 1), { expirationTtl: 172800 });
+    if (!(await sendCode(env, email, code))) { await env.WANT_KV.delete('ecode:' + eh); return JS({ error: 'send_failed' }, 502); }
+    return JS({ ok: true }); // same answer whether or not this address has an account
+  }
+  const rec = await kvGet(env, 'ecode:' + eh, null);
+  if (!rec) return JS({ error: 'bad_code' }, 400);
+  if (rec.tries >= 5) { await env.WANT_KV.delete('ecode:' + eh); return JS({ error: 'too_many' }, 429); }
+  if ((await hashKey(String(b.code || '').trim() + ':' + eh)) !== rec.c) { rec.tries++; await env.WANT_KV.put('ecode:' + eh, JSON.stringify(rec), { expirationTtl: 600 }); return JS({ error: 'bad_code' }, 400); }
+  await env.WANT_KV.delete('ecode:' + eh);
+  return finishLogin(req, env, 'email:' + email, email, false, (e, st) => JS({ error: e }, st));
 }
 async function syncApi(req, env, path) {
   if (!env.WANT_KV) return JS({ error: 'not_set_up', need: ['WANT_KV'] }, 503);
@@ -88,7 +127,8 @@ async function syncApi(req, env, path) {
     await env.WANT_KV.put(day, String(n + 1), { expirationTtl: 172800 });
     return JS({ ok: true, key });
   }
-  if (path === '/api/config') return JS({ ok: true, google: env.GOOGLE_CLIENT_ID || '' });
+  if (path === '/api/config') return JS({ ok: true, google: env.GOOGLE_CLIENT_ID || '', email: emailOn(env) });
+  if (path === '/api/email-start' || path === '/api/email-verify') return emailLogin(req, env, path);
   if (path === '/api/google' || path === '/api/google-cb') return googleLogin(req, env, path);
   const who = await resolve(req, env);
   if (!who) return JS({ error: 'bad_key' }, 401);
@@ -96,8 +136,9 @@ async function syncApi(req, env, path) {
   return syncCore(req, scoped(env, pfx), path, pfx, env);
 }
 async function syncCore(req, env, path, pfx, root) {
-  if (path === '/api/ping') return JS({ ok: true, bank: await kvGet(env, 'bank', null), card: await kvGet(env, 'card', null) });
-  if (path === '/api/state') return JS({ ok: true, bank: await kvGet(env, 'bank', null), card: await kvGet(env, 'card', null), inbox: await kvGet(env, 'inbox', []), wishbox: await kvGet(env, 'wishbox', []) });
+  if ((path === '/api/bank' || path === '/api/card') && pfx !== '') return JS({ error: 'owner_only' }, 403); // bank/card sync is only for the owner's account
+  if (path === '/api/ping') return JS({ ok: true, owner: pfx === '', bank: await kvGet(env, 'bank', null), card: await kvGet(env, 'card', null) });
+  if (path === '/api/state') return JS({ ok: true, owner: pfx === '', bank: await kvGet(env, 'bank', null), card: await kvGet(env, 'card', null), inbox: await kvGet(env, 'inbox', []), wishbox: await kvGet(env, 'wishbox', []) });
   if (path === '/api/backup' && req.method === 'GET') { // list snapshots, or ?n=0|1|2 to fetch one
     const n = new URL(req.url).searchParams.get('n');
     if (n !== null) { const o = await kvGet(env, 'bk' + (parseInt(n, 10) || 0), null); return o ? JS({ ok: true, at: o.at, state: o.state }) : JS({ error: 'none' }, 404); }

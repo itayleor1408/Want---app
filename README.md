@@ -12,7 +12,7 @@ Push to `main` to auto-deploy (connected to Cloudflare Workers Builds).
   `localStorage` persistence). This is the file to edit.
 - `extract.js` — shared product-link reader (JSON-LD, Open Graph, microdata, plus
   site-specific readers for AliExpress/Amazon) used by the Worker's `/api/product` endpoint.
-- `sync_api.js` — the `/api/*` endpoints (KV-backed): `join`, `google`, `google-cb`, `config`,
+- `sync_api.js` — the `/api/*` endpoints (KV-backed): `join`, `google`, `google-cb`, `email-start`, `email-verify`, `config`,
   `ping`, `state`, `ingest`, `bank`, `card`, `ack`, `wish`, `backup`, `forget`, `reset-seen`.
   Apple Pay quick-add, bank/card sync, cloud backup, private accounts.
 - `build_worker.py` — bundles the three files above (plus a generated manifest, service
@@ -62,6 +62,19 @@ stored under a hash of their own key, so nobody can read anyone else's.
   Settings on its own. Each device gets its own key; the Google account itself is only a hash of
   Google's user id (the email is never stored). An existing key can be linked to Google from
   Settings, so a new phone can sign in and restore the backup.
+- **First screen + email codes (optional):** a brand-new install opens on a sign-in screen
+  (Google and/or "send me a code"; there's a small "Use without an account" link). The code is a
+  6-digit number valid for 10 minutes, emailed through [Brevo](https://www.brevo.com) (free tier,
+  300 emails/day). In Brevo, verify a sender address, create an API key, then add two Worker
+  variables in Cloudflare: secret `BREVO_API_KEY` and variable `MAIL_FROM` (the verified sender).
+  Until they exist the email option is hidden. Without your own domain, mail from a Gmail sender
+  can land in spam; Google sign-in avoids that. Limits: one code a minute per address, 5 wrong
+  tries, `MAX_EMAILS_PER_DAY` (default 300). Both ways of signing in create the same kind of
+  account, and each device gets its own key.
+- **Owner:** only the owner account (the original `WANT_TOKEN` data) has bank and card sync
+  (`/api/bank`, `/api/card` return 403 for everyone else, and the bank rows are hidden in the
+  app). The owner phone is asked once to "Connect your account" (Google or email); that email is
+  then remembered, and signing in with it on any new phone gives the owner account back.
 - **Owner key:** the `WANT_TOKEN` secret keeps working and maps to the original un-prefixed
   data. **Rotate it** if it was ever exposed (an old version of the app had it inside the page):
   Cloudflare → Variables and Secrets → set a new `WANT_TOKEN`, then paste the new value into

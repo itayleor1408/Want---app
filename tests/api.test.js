@@ -29,6 +29,12 @@ module.exports = async () => {
   ok('cannot link a Google account that already has other data', (await call('/api/google', { key: bob.key, body: { credential: 'good-alice' } })).st === 409);
   const csrf = await fetch(U + '/api/google-cb', { method: 'POST', body: new URLSearchParams({ credential: 'good-dave' }) });
   ok('redirect login without csrf cookie refused', csrf.status === 400);
+  // owner-only bank
+  ok('config says email sign-in is on', (await call('/api/config')).j.email === true);
+  ok('non-owner cannot push bank data', (await call('/api/bank', { key: A, body: { balance: 5 } })).st === 403);
+  ok('non-owner cannot push card data', (await call('/api/card', { key: A, body: { txns: [] } })).st === 403);
+  ok('owner can push bank data', (await call('/api/bank', { key: 'test-key-123456', body: { balance: 5 } })).st === 200);
+  ok('state tells who the owner is', (await call('/api/state', { key: 'test-key-123456' })).j.owner === true && (await call('/api/state', { key: A })).j.owner === false);
   await call('/api/forget', { key: g1.key, body: {} });
   ok('deleting an account revokes all its devices', (await call('/api/state', { key: g2.key })).st === 401);
   ok('owner data cannot be deleted through the API', (await call('/api/forget', { key: 'test-key-123456', body: {} })).st === 400);

@@ -20,8 +20,7 @@ module.exports = async b => {
   await p.evaluate(() => { Storage.prototype.setItem = () => { throw new Error('QuotaExceededError') }; sv() }); await p.waitForTimeout(2200);
   ok('storage full shows a warning', await p.evaluate(() => /Storage is full/.test(document.getElementById('tt').innerText)));
   // onboarding
-  const c = await b.newContext({ viewport: { width: 390, height: 844 } }); p = await c.newPage(); p.errs = []; p.on('pageerror', e => p.errs.push(e.message));
-  await p.goto('http://localhost:8787/'); await p.waitForTimeout(1200);
+  p = await openPage(b, {}); await p.waitForTimeout(1500);
   await p.evaluate(() => { O.s = 1; onb() }); await p.waitForTimeout(300);
   ok('onboarding is 2 steps (no monthly-spending question)', await p.evaluate(() => !/monthly spending/i.test(document.body.innerText) && /Open Brim/.test(document.body.innerText)));
   await p.fill('input.f', '1500'); await p.click('.btn.g'); await p.waitForTimeout(500);

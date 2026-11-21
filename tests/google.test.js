@@ -11,8 +11,9 @@ module.exports = async b => {
   ok('signed in: key and email stored', await p.evaluate(() => S.sync.key.length >= 30 && S.sync.google === 'eve@example.com'));
   ok('first backup uploaded', await p.evaluate(() => S.bk.last > 0));
   const k1 = await p.evaluate(() => S.sync.key);
-  const q = await openPage(b, { routes, init: "window.__cred='good-eve'" }); await q.waitForTimeout(1200);
-  await q.evaluate(() => { S.ob = 1; sv(); settings() }); await q.waitForTimeout(900);
+  // a brand-new phone: the very first screen is the sign-in screen
+  const q = await openPage(b, { routes, init: "window.__cred='good-eve'" }); await q.waitForTimeout(1500);
+  ok('fresh phone opens on the sign-in screen, not onboarding', await q.evaluate(() => /Sign in to start/.test(document.body.innerText) && !/Get started/.test(document.body.innerText)));
   await q.click('#fg'); await q.waitForTimeout(2500);
   ok('second phone is offered the cloud backup', await q.evaluate(() => /Latest backup/.test(document.body.innerText)));
   ok('second phone gets its own key', await q.evaluate(k => S.sync.key && S.sync.key !== k, k1));
