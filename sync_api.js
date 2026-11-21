@@ -29,6 +29,52 @@ async function enqueue(env, items) {
 const hashKey = async k => [...new Uint8Array(await crypto.subtle.digest('SHA-256', new TextEncoder().encode(k)))].map(x => x.toString(16).padStart(2, '0')).join('');
 const bearer = req => (req.headers.get('authorization') || '').replace(/^Bearer\s+/i, '').trim();
 function scoped(env, pfx) { const K = env.WANT_KV; return { WANT_KV: { get: k => K.get(pfx + k), put: (k, v) => K.put(pfx + k, v), delete: k => K.delete(pfx + k) } }; }
+// who is calling? the owner's WANT_TOKEN -> '' (the original data); a person's key -> their own prefix (own account, or the prefix of the Google account the key was issued for)
+async function resolve(req, env) {
+  const k = bearer(req); if (!k) return null;
+  if (env.WANT_TOKEN && k.length === env.WANT_TOKEN.length) { let d = 0; for (let i = 0; i < k.length; i++) d |= k.charCodeAt(i) ^ env.WANT_TOKEN.charCodeAt(i); if (d === 0) return { pfx: '', owner: true }; }
+  const h = await hashKey(k), rec = await kvGet(env, 'acct:' + h, null);
+  return rec ? { pfx: typeof rec.pfx === 'string' ? rec.pfx : 'u:' + h.slice(0, 32) + ':', h, rec } : null;
+}
+// Google sign-in: the app sends Google's signed ID token; Google itself checks it for us. We keep only a hash of Google's stable user id, never the email.
+async function verifyGoogle(env, cred) {
+  if (!env.GOOGLE_CLIENT_ID || !cred || cred.length > 4096) return null;
+  try {
+    const r = await fetch('https://oauth2.googleapis.com/tokeninfo?id_token=' + encodeURIComponent(cred)); if (!r.ok) return null;
+    const t = await r.json();
+    if (t.aud !== env.GOOGLE_CLIENT_ID || !/^(https:\/\/)?accounts\.google\.com$/.test(t.iss || '') || !(Number(t.exp) * 1000 > Date.now()) || !t.sub) return null;
+    return { sub: String(t.sub), email: String(t.email || '') };
+  } catch (e) { return null; }
+}
+async function googleLogin(req, env, path) {
+  if (req.method !== 'POST') return JS({ error: 'post_only' }, 405);
+  const redirect = path === '/api/google-cb'; // iPhone home-screen apps can't use popups, so Google can post back here instead
+  let b = {}; if (redirect) { const f = await req.formData().catch(() => null); if (f) f.forEach((v, k) => (b[k] = v)); const ck = (req.headers.get('cookie') || '').match(/g_csrf_token=([^;]+)/); if (!ck || ck[1] !== b.g_csrf_token) return new Response('bad request', { status: 400 }); } else b = await readBody(req);
+  const fail = (e, st) => redirect ? new Response('<!doctype html><meta charset=utf-8><meta name=viewport content="width=device-width"><body style="font:16px system-ui;padding:40px;text-align:center"><p>Sign-in failed.</p><a href="/">Back</a>', { status: st, headers: { 'content-type': 'text/html; charset=utf-8' } }) : JS({ error: e }, st);
+  const g = await verifyGoogle(env, b.credential); if (!g) return fail('bad_google', 401);
+  const gh = await hashKey('google:' + g.sub), gk = 'gacct:' + gh;
+  let rec = await kvGet(env, gk, null);
+  const who = redirect ? null : await resolve(req, env);
+  if (who) { // link mode: an app that already has a key attaches this Google account to the same data
+    if (rec && rec.pfx !== who.pfx) return fail('already_linked', 409);
+    if (!rec) await kvPut(env, gk, { pfx: who.pfx, keys: [], at: Date.now() });
+    return JS({ ok: true, linked: true, email: g.email });
+  }
+  let isNew = false;
+  if (!rec) {
+    const day = 'joins:' + new Date().toISOString().slice(0, 10), n = parseInt(await env.WANT_KV.get(day) || '0', 10);
+    if (n >= (parseInt(env.MAX_JOINS_PER_DAY, 10) || 200)) return fail('busy', 429);
+    await env.WANT_KV.put(day, String(n + 1), { expirationTtl: 172800 });
+    rec = { pfx: 'g:' + gh.slice(0, 32) + ':', keys: [], at: Date.now() }; isNew = true;
+  }
+  const raw = crypto.getRandomValues(new Uint8Array(24)), key = btoa(String.fromCharCode(...raw)).replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, ''), kh = await hashKey(key);
+  await env.WANT_KV.put('acct:' + kh, JSON.stringify({ at: Date.now(), pfx: rec.pfx, g: gh }));
+  rec.keys = (rec.keys || []).concat(kh); while (rec.keys.length > 20) await env.WANT_KV.delete('acct:' + rec.keys.shift()); // one key per signed-in device; the oldest fall away
+  await kvPut(env, gk, rec);
+  if (!redirect) return JS({ ok: true, key, email: g.email, isNew });
+  const page = '<!doctype html><meta charset=utf-8><body style="font:16px system-ui;padding:40px;text-align:center">Signing in…<script>try{var k="want.v1",s=JSON.parse(localStorage.getItem(k)||"{}");s.sync=s.sync||{};s.sync.key=' + JSON.stringify(key) + ';s.sync.google=' + JSON.stringify(g.email) + ';s.sync.fresh=1;localStorage.setItem(k,JSON.stringify(s))}catch(e){}location.replace("/")</script>';
+  return new Response(page, { headers: { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'no-store' } });
+}
 async function syncApi(req, env, path) {
   if (!env.WANT_KV) return JS({ error: 'not_set_up', need: ['WANT_KV'] }, 503);
   if (path === '/api/join') { // anyone can make their own private account; an optional JOIN_CODE secret makes it invite-only
@@ -42,11 +88,11 @@ async function syncApi(req, env, path) {
     await env.WANT_KV.put(day, String(n + 1), { expirationTtl: 172800 });
     return JS({ ok: true, key });
   }
-  const k = bearer(req);
-  if (!k) return JS({ error: 'bad_key' }, 401);
-  let pfx = null;
-  if (env.WANT_TOKEN && k.length === env.WANT_TOKEN.length) { let d = 0; for (let i = 0; i < k.length; i++) d |= k.charCodeAt(i) ^ env.WANT_TOKEN.charCodeAt(i); if (d === 0) pfx = ''; }
-  if (pfx === null) { const h = await hashKey(k); if (!(await env.WANT_KV.get('acct:' + h))) return JS({ error: 'bad_key' }, 401); pfx = 'u:' + h.slice(0, 32) + ':'; }
+  if (path === '/api/config') return JS({ ok: true, google: env.GOOGLE_CLIENT_ID || '' });
+  if (path === '/api/google' || path === '/api/google-cb') return googleLogin(req, env, path);
+  const who = await resolve(req, env);
+  if (!who) return JS({ error: 'bad_key' }, 401);
+  const pfx = who.pfx;
   return syncCore(req, scoped(env, pfx), path, pfx, env);
 }
 async function syncCore(req, env, path, pfx, root) {
@@ -70,10 +116,12 @@ async function syncCore(req, env, path, pfx, root) {
     await kvPut(env, 'bk0', { at: now, state: st });
     return JS({ ok: true, at: now });
   }
-  if (path === '/api/forget' && req.method === 'POST') { // delete everything stored for this key (not the owner's legacy data)
+  if (path === '/api/forget' && req.method === 'POST') { // delete everything stored for this account (never the owner's legacy data)
     if (!pfx) return JS({ error: 'owner_account' }, 400);
     for (const k of ['inbox', 'seen', 'bank', 'card', 'wishbox', 'bk0', 'bk1', 'bk2']) await env.WANT_KV.delete(k);
-    await root.WANT_KV.delete('acct:' + (await hashKey(bearer(req))));
+    const me = await resolve(req, root), rec = me && me.rec;
+    if (rec && rec.g) { const g = await kvGet(root, 'gacct:' + rec.g, null); for (const kh of (g && g.keys) || []) await root.WANT_KV.delete('acct:' + kh); await root.WANT_KV.delete('gacct:' + rec.g); }
+    if (me) await root.WANT_KV.delete('acct:' + me.h);
     return JS({ ok: true });
   }
   if (req.method !== 'POST') return JS({ error: 'post_only' }, 405);
