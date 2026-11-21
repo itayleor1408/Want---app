@@ -1,0 +1,33 @@
+// Data safety: old/odd saved data loads cleanly, nothing is lost, leftovers are zeroed, storage-full is surfaced.
+const { ok, T, baseState, openPage } = require('./lib');
+module.exports = async b => {
+  const old = { cash0: 100000, allow: 0, buf: 5000, bills: 7000, tx: [
+    { id: 't1', type: 'inc', amt: 500000, ts: T('2026-11-01T09:00'), title: 'salary' },
+    { id: 't2', type: 'exp', amt: 12000, ts: T('2026-11-03T09:00'), title: 'food', note: 'lunch' },
+    { id: 't3', type: 'dep', amt: 30000, ts: T('2026-11-04T09:00'), jar: 'j1' }], jars: [{ id: 'j1', name: 'Trip', goal: 100000 }], wish: [{ id: 'w1', name: 'Lamp', price: 4000 }], ob: 1, lang: 'en' };
+  let p = await openPage(b, { state: old, date: '2026-11-20T10:00' }); await p.waitForTimeout(1500);
+  const r = await p.evaluate(() => ({ n: S.tx.length, prof: S.tx.every(x => x.prof), jp: S.jars[0].prof, wp: S.wish[0].prof, bills: S.bills, buf: S.buf, c: C() }));
+  ok('old data: no activity lost', r.n === 3);
+  ok('old data: everything stamped Personal', r.prof && r.jp === 'pers' && r.wp === 'pers');
+  ok('leftover hidden bills/buffer are zeroed', r.bills === 0 && r.buf === 0);
+  ok('money adds up: free = cash − jars', r.c.un === r.c.cash - r.c.saved);
+  ok('old data: no JS errors', !p.errs.length, p.errs.join('|'));
+  // missing arrays / nulls
+  p = await openPage(b, { state: { ob: 1, tx: [] }, date: '2026-11-20T10:00' }); await p.waitForTimeout(1000);
+  ok('nearly-empty state loads', await p.evaluate(() => Array.isArray(S.jars) && Array.isArray(S.wish) && !!S.sync && !!S.bk) && !p.errs.length, p.errs.join('|'));
+  // storage full
+  p = await openPage(b, { state: baseState() }); await p.waitForTimeout(1000);
+  await p.evaluate(() => { Storage.prototype.setItem = () => { throw new Error('QuotaExceededError') }; sv() }); await p.waitForTimeout(2200);
+  ok('storage full shows a warning', await p.evaluate(() => /Storage is full/.test(document.getElementById('tt').innerText)));
+  // onboarding
+  const c = await b.newContext({ viewport: { width: 390, height: 844 } }); p = await c.newPage(); p.errs = []; p.on('pageerror', e => p.errs.push(e.message));
+  await p.goto('http://localhost:8787/'); await p.waitForTimeout(1200);
+  await p.evaluate(() => { O.s = 1; onb() }); await p.waitForTimeout(300);
+  ok('onboarding is 2 steps (no monthly-spending question)', await p.evaluate(() => !/monthly spending/i.test(document.body.innerText) && /Open Brim/.test(document.body.innerText)));
+  await p.fill('input.f', '1500'); await p.click('.btn.g'); await p.waitForTimeout(500);
+  ok('onboarding saves cash and opens the app', await p.evaluate(() => S.ob === 1 && S.cash0 === 150000));
+  ok('onboarding: no JS errors', !p.errs.length, p.errs.join('|'));
+  // build id served matches the page
+  const v = await (await fetch('http://localhost:8787/version')).text();
+  ok('/version matches the page build', await p.evaluate(x => window.WANT_BUILD === x.trim(), v));
+};

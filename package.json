@@ -1,0 +1,12 @@
+{
+  "name": "brim",
+  "private": true,
+  "description": "Brim. personal finance PWA (Cloudflare Worker)",
+  "scripts": {
+    "build": "python3 build_worker.py",
+    "test": "node tests/run.js"
+  },
+  "devDependencies": {
+    "playwright": "^1.48.0"
+  }
+}

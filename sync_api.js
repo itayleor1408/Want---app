@@ -8,7 +8,7 @@ async function kvGet(env, key, dflt) { try { const v = await env.WANT_KV.get(key
 const kvPut = (env, key, v) => env.WANT_KV.put(key, JSON.stringify(v));
 async function readBody(req) {
   const ct = req.headers.get('content-type') || '';
-  const txt = await req.text();
+  const txt = (await req.text()).slice(0, 2e6);
   if (/json/.test(ct) || /^\s*[{[]/.test(txt)) { try { return JSON.parse(txt); } catch (e) { } }
   const o = {}; try { new URLSearchParams(txt).forEach((v, k) => (o[k] = v)); } catch (e) { }
   return o;
@@ -72,7 +72,7 @@ async function googleLogin(req, env, path) {
   rec.keys = (rec.keys || []).concat(kh); while (rec.keys.length > 20) await env.WANT_KV.delete('acct:' + rec.keys.shift()); // one key per signed-in device; the oldest fall away
   await kvPut(env, gk, rec);
   if (!redirect) return JS({ ok: true, key, email: g.email, isNew });
-  const page = '<!doctype html><meta charset=utf-8><body style="font:16px system-ui;padding:40px;text-align:center">Signing in…<script>try{var k="want.v1",s=JSON.parse(localStorage.getItem(k)||"{}");s.sync=s.sync||{};s.sync.key=' + JSON.stringify(key) + ';s.sync.google=' + JSON.stringify(g.email) + ';s.sync.fresh=1;localStorage.setItem(k,JSON.stringify(s))}catch(e){}location.replace("/")</script>';
+  const page = '<!doctype html><meta charset=utf-8><body style="font:16px system-ui;padding:40px;text-align:center">Signing in…<script>try{var k="want.v1",s=JSON.parse(localStorage.getItem(k)||"{}");s.sync=s.sync||{};s.sync.key=' + JSON.stringify(key) + ';s.sync.google=' + JSON.stringify(g.email).replace(/</g, '\\u003c') + ';s.sync.fresh=1;localStorage.setItem(k,JSON.stringify(s))}catch(e){}location.replace("/")</script>';
   return new Response(page, { headers: { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'no-store' } });
 }
 async function syncApi(req, env, path) {
