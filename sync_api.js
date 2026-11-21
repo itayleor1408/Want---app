@@ -1,14 +1,9 @@
 // ---- sync: Apple Pay payments and bank updates waiting for the app ----
-// Storage: one KV namespace bound as WANT_KV. Auth: a secret WANT_TOKEN, sent as "Authorization: Bearer <key>".
+// Storage: one KV namespace bound as WANT_KV. Auth: "Authorization: Bearer <key>".
+// Many people can use one deployment: each person's key maps (via a hash) to a private key-prefix, so nobody can read anyone else's data.
+// The owner's WANT_TOKEN (if set) keeps working and maps to the old, un-prefixed data.
 const JS = (o, st = 200) => new Response(JSON.stringify(o), { status: st, headers: { 'content-type': 'application/json; charset=utf-8', 'access-control-allow-origin': '*', 'cache-control': 'no-store' } });
 async function sha(s) { const b = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(s)); return [...new Uint8Array(b)].slice(0, 12).map(x => x.toString(16).padStart(2, '0')).join(''); }
-function authed(req, env) {
-  const h = req.headers.get('authorization') || '';
-  const k = h.replace(/^Bearer\s+/i, '').trim();
-  if (!env.WANT_TOKEN || !k || k.length !== env.WANT_TOKEN.length) return false;
-  let d = 0; for (let i = 0; i < k.length; i++) d |= k.charCodeAt(i) ^ env.WANT_TOKEN.charCodeAt(i);
-  return d === 0;
-}
 async function kvGet(env, key, dflt) { try { const v = await env.WANT_KV.get(key); return v ? JSON.parse(v) : dflt; } catch (e) { return dflt; } }
 const kvPut = (env, key, v) => env.WANT_KV.put(key, JSON.stringify(v));
 async function readBody(req) {
@@ -31,11 +26,56 @@ async function enqueue(env, items) {
   if (added) { await kvPut(env, 'inbox', inbox.sort((a, b) => b.ts - a.ts).slice(0, 500)); await kvPut(env, 'seen', seen.slice(-3000)); }
   return added;
 }
+const hashKey = async k => [...new Uint8Array(await crypto.subtle.digest('SHA-256', new TextEncoder().encode(k)))].map(x => x.toString(16).padStart(2, '0')).join('');
+const bearer = req => (req.headers.get('authorization') || '').replace(/^Bearer\s+/i, '').trim();
+function scoped(env, pfx) { const K = env.WANT_KV; return { WANT_KV: { get: k => K.get(pfx + k), put: (k, v) => K.put(pfx + k, v), delete: k => K.delete(pfx + k) } }; }
 async function syncApi(req, env, path) {
-  if (!env.WANT_KV || !env.WANT_TOKEN) return JS({ error: 'not_set_up', need: [!env.WANT_KV && 'WANT_KV', !env.WANT_TOKEN && 'WANT_TOKEN'].filter(Boolean) }, 503);
-  if (!authed(req, env)) return JS({ error: 'bad_key' }, 401);
+  if (!env.WANT_KV) return JS({ error: 'not_set_up', need: ['WANT_KV'] }, 503);
+  if (path === '/api/join') { // anyone can make their own private account; an optional JOIN_CODE secret makes it invite-only
+    if (req.method !== 'POST') return JS({ error: 'post_only' }, 405);
+    const b = await readBody(req);
+    if (env.JOIN_CODE && String(b.code || '').trim() !== String(env.JOIN_CODE)) return JS({ error: 'bad_code' }, 403);
+    const day = 'joins:' + new Date().toISOString().slice(0, 10), n = parseInt(await env.WANT_KV.get(day) || '0', 10);
+    if (n >= (parseInt(env.MAX_JOINS_PER_DAY, 10) || 200)) return JS({ error: 'busy' }, 429);
+    const raw = crypto.getRandomValues(new Uint8Array(24)), key = btoa(String.fromCharCode(...raw)).replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
+    await env.WANT_KV.put('acct:' + await hashKey(key), JSON.stringify({ at: Date.now() }));
+    await env.WANT_KV.put(day, String(n + 1), { expirationTtl: 172800 });
+    return JS({ ok: true, key });
+  }
+  const k = bearer(req);
+  if (!k) return JS({ error: 'bad_key' }, 401);
+  let pfx = null;
+  if (env.WANT_TOKEN && k.length === env.WANT_TOKEN.length) { let d = 0; for (let i = 0; i < k.length; i++) d |= k.charCodeAt(i) ^ env.WANT_TOKEN.charCodeAt(i); if (d === 0) pfx = ''; }
+  if (pfx === null) { const h = await hashKey(k); if (!(await env.WANT_KV.get('acct:' + h))) return JS({ error: 'bad_key' }, 401); pfx = 'u:' + h.slice(0, 32) + ':'; }
+  return syncCore(req, scoped(env, pfx), path, pfx, env);
+}
+async function syncCore(req, env, path, pfx, root) {
   if (path === '/api/ping') return JS({ ok: true, bank: await kvGet(env, 'bank', null), card: await kvGet(env, 'card', null) });
   if (path === '/api/state') return JS({ ok: true, bank: await kvGet(env, 'bank', null), card: await kvGet(env, 'card', null), inbox: await kvGet(env, 'inbox', []), wishbox: await kvGet(env, 'wishbox', []) });
+  if (path === '/api/backup' && req.method === 'GET') { // list snapshots, or ?n=0|1|2 to fetch one
+    const n = new URL(req.url).searchParams.get('n');
+    if (n !== null) { const o = await kvGet(env, 'bk' + (parseInt(n, 10) || 0), null); return o ? JS({ ok: true, at: o.at, state: o.state }) : JS({ error: 'none' }, 404); }
+    const out = []; for (let i = 0; i < 3; i++) { const o = await kvGet(env, 'bk' + i, null); if (o) out.push({ n: i, at: o.at, size: JSON.stringify(o.state).length, tx: (o.state.tx || []).length, jars: (o.state.jars || []).length }); }
+    return JS({ ok: true, list: out });
+  }
+  if (path === '/api/backup' && req.method === 'POST') { // rolling snapshots: latest, and older ones at least ~a day / ~a week apart
+    const txt = await req.text();
+    if (txt.length > 4e6) return JS({ error: 'too_big' }, 413);
+    let st; try { st = JSON.parse(txt); } catch (e) { return JS({ error: 'bad_json' }, 400); }
+    if (st && st.state && typeof st.state === 'object') st = st.state;
+    if (!st || typeof st !== 'object' || !((st.tx || []).length || (st.jars || []).length || (st.wish || []).length)) return JS({ error: 'empty' }, 400);
+    delete st.sync; // the key never goes into a backup
+    const now = Date.now(), s0 = await kvGet(env, 'bk0', null);
+    if (s0 && now - s0.at > 20 * 36e5) { const s1 = await kvGet(env, 'bk1', null), s2 = await kvGet(env, 'bk2', null); if (s1 && (!s2 || s1.at - s2.at > 6 * 864e5)) await kvPut(env, 'bk2', s1); await kvPut(env, 'bk1', s0); }
+    await kvPut(env, 'bk0', { at: now, state: st });
+    return JS({ ok: true, at: now });
+  }
+  if (path === '/api/forget' && req.method === 'POST') { // delete everything stored for this key (not the owner's legacy data)
+    if (!pfx) return JS({ error: 'owner_account' }, 400);
+    for (const k of ['inbox', 'seen', 'bank', 'card', 'wishbox', 'bk0', 'bk1', 'bk2']) await env.WANT_KV.delete(k);
+    await root.WANT_KV.delete('acct:' + (await hashKey(bearer(req))));
+    return JS({ ok: true });
+  }
   if (req.method !== 'POST') return JS({ error: 'post_only' }, 405);
   const b = await readBody(req);
   if (path === '/api/wish') { // "Add to Brim." in Safari's Share menu: the product as read from the live page on the phone

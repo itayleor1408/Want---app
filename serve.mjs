@@ -9,5 +9,5 @@ const realFetch=globalThis.fetch;
 globalThis.fetch=async(u,o)=>{u=String(u);if(u.includes('open.er-api.com'))return new Response(JSON.stringify({result:'success',rates:{ILS:3.7},time_last_update_utc:'today'}));const h=FIX[u];return new Response(h||'nope',{status:h?(u.includes('blocked')?403:200):404})};
 const store=new Map();globalThis.caches={default:{match:async r=>store.get(r.url)?.clone(),put:async(r,v)=>{store.set(r.url,v)}}};
 const mod=await import('./worker.js');
-const kv=new Map();const ENV={WANT_TOKEN:'test-key-123456',WANT_KV:{get:async k=>kv.has(k)?kv.get(k):null,put:async(k,v)=>{kv.set(k,v)}}};
+const kv=new Map();const ENV={WANT_TOKEN:'test-key-123456',WANT_KV:{get:async k=>kv.has(k)?kv.get(k):null,put:async(k,v)=>{kv.set(k,v)},delete:async k=>{kv.delete(k)}}};
 http.createServer(async(req,res)=>{const chunks=[];for await(const c of req)chunks.push(c);const body=Buffer.concat(chunks);const r=await mod.default.fetch(new Request('http://localhost:8787'+req.url,{method:req.method,headers:req.headers,body:['GET','HEAD'].includes(req.method)?undefined:body}),ENV);res.writeHead(r.status,Object.fromEntries(r.headers));res.end(Buffer.from(await r.arrayBuffer()))}).listen(8787,()=>console.log('up'));
