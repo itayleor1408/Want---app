@@ -14,7 +14,7 @@ module.exports = async b => {
   const tx = await p.evaluate(() => document.getElementById('sh').innerText);
   ok('monthly total is the sum (₪276.20)', /276\.20/.test(tx));
   ok('yearly total shown', /3,314\.40/.test(tx));
-  ok('row shows old → new price', /↑ ₪55 → ₪65/.test(tx));
+  ok('row shows old → new price', /↑\s₪55\s→\s₪65/.test(tx));
   await p.reload(); await p.waitForTimeout(3600);
   ok('same change is not announced twice', await p.evaluate(() => !document.getElementById('nt') || !document.getElementById('nt').classList.contains('o')));
   ok('no JS errors', !p.errs.length, p.errs.join('|'));
