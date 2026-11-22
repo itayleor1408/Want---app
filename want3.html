@@ -535,7 +535,7 @@ b.innerHTML=`${ic('card',15,2.2)}<b dir="ltr">${n}</b>`;b.setAttribute('aria-lab
 let O={s:0,cash:'',sal:'',allow:''};
 function onb(){const s=O.s,n='O.s++;onb()',rd=k=>`O.${k}=this.value`;
 const B=[`<h2>Penny.</h2><div class="sub" style="font-size:19px">${t('Everything you want. Every amount you save.')}</div><div style="height:20px"></div><button class="btn" onclick="${n}">${t('Get started')}</button><button class="lnk" onclick="S.lang=S.lang=='he'?'en':'he';onb()">English · עברית</button>`,
-`<h2>${t('How much money do you have?')}</h2><div class="sub">${t('Tracked by you. No bank needed.')}</div><input class="f" inputmode="decimal" placeholder="₪0" value="${E(O.cash)}" oninput="${rd('cash')}"><button class="btn g" onclick="Object.assign(S,{ob:1,cash0:P(O.cash)});sv();render()">${t('Open Penny.')}</button>`];
+`<h2>${t('How much money do you have?')}</h2><div class="sub">${t('Tracked by you. No bank needed.')}</div><input class="f" inputmode="decimal" placeholder="₪0" value="${E(O.cash)}" oninput="${rd('cash')}"><button class="btn g" onclick="Object.assign(S,{ob:1,cash0:P(O.cash)});sv();render()">${t('Open Penny.')}</button><button class="lnk" onclick="Object.assign(S,{ob:1,cash0:0});sv();render()">${t('Skip')}</button>`];
 look();$('#app').innerHTML=`<div class="ob">${B[s]}</div>`}
 /* ===== entry: expense & income ===== */
 let N,SG=[];

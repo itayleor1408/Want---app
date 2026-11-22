@@ -26,6 +26,14 @@ module.exports = async b => {
   await p.fill('input.f', '1500'); await p.click('.btn.g'); await p.waitForTimeout(500);
   ok('onboarding saves cash and opens the app', await p.evaluate(() => S.ob === 1 && S.cash0 === 150000));
   ok('onboarding: no JS errors', !p.errs.length, p.errs.join('|'));
+  // the balance question can be skipped
+  const k = await openPage(b, {}); await k.waitForTimeout(1500);
+  await k.evaluate(() => { S.sync.skip = 1; sv(); render() }); await k.waitForTimeout(500);
+  await k.evaluate(() => { O.s = 1; onb() }); await k.waitForTimeout(300);
+  ok('the balance step has a Skip option', await k.evaluate(() => /Skip/.test(document.body.innerText)));
+  await k.click('text=Skip'); await k.waitForTimeout(600);
+  ok('Skip opens the app with no balance set', await k.evaluate(() => S.ob === 1 && S.cash0 === 0 && !document.querySelector('.ob')));
+  ok('skip: no JS errors', !k.errs.length, k.errs.join('|'));
   // build id served matches the page
   const v = await (await fetch('http://localhost:8787/version')).text();
   ok('/version matches the page build', await p.evaluate(x => window.WANT_BUILD === x.trim(), v));
