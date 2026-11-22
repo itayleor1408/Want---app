@@ -97,9 +97,9 @@ const emailOn = env => !!(env.BREVO_API_KEY && env.MAIL_FROM);
 async function sendCode(env, to, code) {
   try {
     const r = await fetch('https://api.brevo.com/v3/smtp/email', { method: 'POST', headers: { 'api-key': env.BREVO_API_KEY, 'content-type': 'application/json', accept: 'application/json' }, body: JSON.stringify({
-      sender: { email: env.MAIL_FROM, name: 'Brim.' }, to: [{ email: to }], subject: 'Your Brim. code: ' + code,
-      textContent: 'Your Brim. sign-in code is ' + code + '. It works for 10 minutes. If you did not ask for it, ignore this email.\n\nקוד הכניסה שלך ל-Brim. הוא ' + code + '. הוא תקף ל-10 דקות.',
-      htmlContent: '<div style="font-family:system-ui,sans-serif;max-width:420px;margin:auto;padding:24px;text-align:center"><div style="font-size:26px;font-weight:800">Brim.</div><p style="color:#555">Your sign-in code</p><div style="font-size:38px;font-weight:800;letter-spacing:8px;margin:8px 0 18px">' + code + '</div><p style="color:#777;font-size:13px">It works for 10 minutes. If you did not ask for it, ignore this email.</p><p style="color:#777;font-size:13px" dir="rtl">קוד הכניסה שלך. הוא תקף ל-10 דקות.</p></div>' }) });
+      sender: { email: env.MAIL_FROM, name: 'Penny.' }, to: [{ email: to }], subject: 'Your Penny. code: ' + code,
+      textContent: 'Your Penny. sign-in code is ' + code + '. It works for 10 minutes. If you did not ask for it, ignore this email.\n\nקוד הכניסה שלך ל-Penny. הוא ' + code + '. הוא תקף ל-10 דקות.',
+      htmlContent: '<div style="font-family:system-ui,sans-serif;max-width:420px;margin:auto;padding:24px;text-align:center"><div style="font-size:26px;font-weight:800">Penny.</div><p style="color:#555">Your sign-in code</p><div style="font-size:38px;font-weight:800;letter-spacing:8px;margin:8px 0 18px">' + code + '</div><p style="color:#777;font-size:13px">It works for 10 minutes. If you did not ask for it, ignore this email.</p><p style="color:#777;font-size:13px" dir="rtl">קוד הכניסה שלך. הוא תקף ל-10 דקות.</p></div>' }) });
     return r.ok;
   } catch (e) { return false; }
 }

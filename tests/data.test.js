@@ -22,7 +22,7 @@ module.exports = async b => {
   // onboarding
   p = await openPage(b, {}); await p.waitForTimeout(1500);
   await p.evaluate(() => { O.s = 1; onb() }); await p.waitForTimeout(300);
-  ok('onboarding is 2 steps (no monthly-spending question)', await p.evaluate(() => !/monthly spending/i.test(document.body.innerText) && /Open Brim/.test(document.body.innerText)));
+  ok('onboarding is 2 steps (no monthly-spending question)', await p.evaluate(() => !/monthly spending/i.test(document.body.innerText) && /Open Penny/.test(document.body.innerText)));
   await p.fill('input.f', '1500'); await p.click('.btn.g'); await p.waitForTimeout(500);
   ok('onboarding saves cash and opens the app', await p.evaluate(() => S.ob === 1 && S.cash0 === 150000));
   ok('onboarding: no JS errors', !p.errs.length, p.errs.join('|'));

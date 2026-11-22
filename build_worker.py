@@ -4,36 +4,36 @@ def lerp(a,b,t):return tuple(int(round(a[i]+(b[i]-a[i])*t)) for i in range(3))
 def vgrad(w,h,top,bot):
     g=Image.linear_gradient('L').resize((w,h),Image.BICUBIC)           # black (top) -> white (bottom)
     return ImageOps.colorize(g,black=top,white=bot)
-def icon(sz,bg_top=(30,31,36),bg_bot=(13,13,15),mint_top=(110,240,185),mint_bot=(34,176,122)):
-    # A jar filled to the brim: white rim + lid, mint fill, soft graphite background. Supersampled 4x for clean edges.
+def icon(sz,top=(229,92,82),bot=(217,78,45)):
+    # Penny: a white piggy bank on a warm coral gradient. Drawn on a 100-unit grid, supersampled 4x for clean edges.
     S=4;W=sz*S;u=W/100.0
-    img=vgrad(W,W,bg_top,bg_bot).convert('RGBA')
-    glow=Image.new('L',(W,W),0);ImageDraw.Draw(glow).ellipse([22*u,38*u,78*u,98*u],fill=70)
-    glow=glow.filter(ImageFilter.GaussianBlur(14*u));img=Image.composite(Image.new('RGBA',(W,W),(52,208,150,255)),img,glow.point(lambda p:int(p*0.30)))
-    cx=50;top=27;bx0,bx1=29,71;by0,by1=38,84;r=13
-    clear=Image.new('RGBA',(W,W),(0,0,0,0))
-    body=Image.new('L',(W,W),0);ImageDraw.Draw(body).rounded_rectangle([bx0*u,by0*u,bx1*u,by1*u],radius=r*u,fill=255)
-    fy=by0+6.5
-    fill=vgrad(W,W,mint_top,mint_bot).convert('RGBA')
-    fm=Image.new('L',(W,W),0);ImageDraw.Draw(fm).rectangle([0,fy*u,W,W],fill=255)
-    img.alpha_composite(Image.composite(fill,clear,ImageChops.multiply(body,fm)))
-    sl=Image.new('L',(W,W),0);ImageDraw.Draw(sl).rectangle([0,fy*u,W,(fy+1.1)*u],fill=255)
-    img.alpha_composite(Image.composite(Image.new('RGBA',(W,W),(220,255,240,150)),clear,ImageChops.multiply(body,sl)))
-    gm=Image.new('L',(W,W),0);ImageDraw.Draw(gm).rectangle([0,0,W,fy*u],fill=255)
-    img.alpha_composite(Image.composite(Image.new('RGBA',(W,W),(255,255,255,22)),clear,ImageChops.multiply(body,gm)))
+    img=vgrad(W,W,top,bot).convert('RGBA')
+    hl=Image.new('L',(W,W),0);ImageDraw.Draw(hl).ellipse([-20*u,-40*u,120*u,45*u],fill=60)
+    hl=hl.filter(ImageFilter.GaussianBlur(18*u));img=Image.composite(Image.new('RGBA',(W,W),(255,150,120,255)),img,hl.point(lambda p:int(p*0.35)))
+    pig=Image.new('L',(W,W),0);g=ImageDraw.Draw(pig)
+    def E(x0,y0,x1,y1):g.ellipse([x0*u,y0*u,x1*u,y1*u],fill=255)
+    def R(x0,y0,x1,y1,r):g.rounded_rectangle([x0*u,y0*u,x1*u,y1*u],radius=r*u,fill=255)
+    E(21,35,83,78)                      # body
+    E(12,47,34,67)                      # snout
+    ear=[(35*u,44*u),(41*u,32*u),(54*u,40*u)]                  # ear: a triangle with softly rounded corners
+    g.polygon(ear,fill=255);g.line(ear+[ear[0]],fill=255,width=int(5*u),joint='curve')
+    for x,y in ear:g.ellipse([x-2.5*u,y-2.5*u,x+2.5*u,y+2.5*u],fill=255)
+    R(30,68,44,86,5);R(58,68,72,86,5)   # legs
+    g.arc([76*u,44*u,92*u,60*u],start=-70,end=110,fill=255,width=int(3.2*u))  # tail
+    img.alpha_composite(Image.composite(Image.new('RGBA',(W,W),(255,255,255,255)),Image.new('RGBA',(W,W),(0,0,0,0)),pig))
     d=ImageDraw.Draw(img)
-    d.rounded_rectangle([bx0*u,by0*u,bx1*u,by1*u],radius=r*u,outline=(242,243,247,235),width=int(3.1*u))
-    d.rounded_rectangle([(cx-15)*u,(top+6)*u,(cx+15)*u,(by0+3)*u],radius=2*u,fill=(242,243,247,255))
-    d.rounded_rectangle([(cx-18)*u,top*u,(cx+18)*u,(top+8)*u],radius=3.2*u,fill=(250,250,252,255))
-    d.rounded_rectangle([(bx0+5.5)*u,(by0+12)*u,(bx0+7.9)*u,(by0+24)*u],radius=1.2*u,fill=(255,255,255,70))
+    mid=tuple(int((a+b)/2) for a,b in zip(top,bot))+(255,)
+    d.rounded_rectangle([42*u,39.5*u,67*u,44.5*u],radius=2.5*u,fill=mid)   # coin slot
+    d.ellipse([25*u,52*u,29.6*u,56.6*u],fill=mid)                           # eye
+    d.ellipse([15.5*u,56*u,17.5*u,58*u],fill=mid);d.ellipse([19*u,57*u,21*u,59*u],fill=mid)  # nostrils
     return img.resize((sz,sz),Image.LANCZOS).convert('RGB')
 def b64(im):
     b=io.BytesIO();im.save(b,'PNG');return base64.b64encode(b.getvalue()).decode()
 i180,i512=b64(icon(180)),b64(icon(512))
 IV=hashlib.sha1(i180.encode()).hexdigest()[:6]  # icons are cached for a week: a fresh URL makes phones fetch a changed logo
 app=open('want3.html',encoding='utf-8').read()
-head_add='<link rel="manifest" href="/manifest.webmanifest"><link rel="apple-touch-icon" href="/icon-180.png?v='+IV+'"><link rel="icon" type="image/png" href="/icon-180.png?v='+IV+'"><meta name="theme-color" content="#f4f4f6"><meta name="apple-mobile-web-app-status-bar-style" content="default"><meta name="apple-mobile-web-app-title" content="Brim.">'
-app=app.replace('<title>Brim.</title>','<title>Brim.</title>'+head_add,1)
+head_add='<link rel="manifest" href="/manifest.webmanifest"><link rel="apple-touch-icon" href="/icon-180.png?v='+IV+'"><link rel="icon" type="image/png" href="/icon-180.png?v='+IV+'"><meta name="theme-color" content="#f4f4f6"><meta name="apple-mobile-web-app-status-bar-style" content="default"><meta name="apple-mobile-web-app-title" content="Penny.">'
+app=app.replace('<title>Penny.</title>','<title>Penny.</title>'+head_add,1)
 # Serve the Inter font from the app itself (not Google), so a slow or missing connection never blocks the page
 FONT_LINK='<link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700;800;900&display=swap" rel="stylesheet">'
 assert FONT_LINK in app
@@ -50,7 +50,7 @@ if shutil.which('node'):
 BUILD=hashlib.sha1(app.encode('utf-8')).hexdigest()[:8]
 app=app.replace('<script>','<script>window.WANT_API="/api";window.WANT_BUILD="'+BUILD+'";</script><script>',1)
 extract=open('sync_api.js',encoding='utf-8').read()
-manifest=json.dumps({"name":"Brim.","short_name":"Brim.","start_url":"/","display":"standalone","background_color":"#f4f4f6","theme_color":"#f4f4f6","icons":[{"src":"/icon-180.png?v="+IV,"sizes":"180x180","type":"image/png"},{"src":"/icon-512.png?v="+IV,"sizes":"512x512","type":"image/png","purpose":"any maskable"}]})
+manifest=json.dumps({"name":"Penny.","short_name":"Penny.","start_url":"/","display":"standalone","background_color":"#f4f4f6","theme_color":"#f4f4f6","icons":[{"src":"/icon-180.png?v="+IV,"sizes":"180x180","type":"image/png"},{"src":"/icon-512.png?v="+IV,"sizes":"512x512","type":"image/png","purpose":"any maskable"}]})
 sw="""const C='want-v5';
 self.addEventListener('install',e=>{e.waitUntil(caches.open(C).then(c=>c.addAll(['/','/manifest.webmanifest','/icon-180.png?v=IVX','/icon-512.png?v=IVX','/inter.woff2'])));self.skipWaiting()});
 self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(k=>Promise.all(k.filter(x=>x!==C).map(x=>caches.delete(x)))).then(()=>self.clients.claim()))});
@@ -61,7 +61,7 @@ const net=fetch(q).then(r=>{if(r.ok){const cp=r.clone();caches.open(C).then(c=>c
 e.waitUntil(net.then(()=>{},()=>{}));
 e.respondWith(caches.match(key,{ignoreSearch:nav}).then(h=>h||net.catch(()=>caches.match('/'))))});"""
 sw=sw.replace('IVX',IV)
-worker=f"""// Brim. — your own free link.
+worker=f"""// Penny. — your own free link.
 // HOW TO DEPLOY (free, about 2 minutes):
 // 1. Go to dash.cloudflare.com and sign up / sign in (free plan is enough).
 // 2. Workers & Pages -> Create -> Create Worker -> name it "want" -> Deploy.
@@ -71,7 +71,7 @@ worker=f"""// Brim. — your own free link.
 // 5. (Optional, for Apple Pay + bank sync) In the worker: Settings -> Bindings -> Add -> KV namespace ->
 //    create one called "want", variable name WANT_KV. Then Settings -> Variables and Secrets -> Add ->
 //    type Secret, name WANT_TOKEN, value: a long random key you make up (keep it private). Deploy.
-//    Put the same key in Brim. -> Settings -> Connections -> Sync key.
+//    Put the same key in Penny. -> Settings -> Connections -> Sync key.
 // Your data lives on your phone, in this app. To move data from the old link: Settings -> Copy backup there,
 // then Settings -> Restore from backup here.
 

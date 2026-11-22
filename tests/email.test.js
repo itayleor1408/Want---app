@@ -12,7 +12,7 @@ module.exports = async b => {
   ok('wrong code is refused, stays on the screen', await p.evaluate(() => /Wrong code/.test(document.body.innerText) && !!document.getElementById('ec')));
   const code = await lastCode(); ok('the code arrived by email to her address', /^\d{6}$/.test(code));
   await p.fill('#ec', code); await p.waitForTimeout(2200);
-  ok('signed in with her email, onboarding follows', await p.evaluate(() => S.sync.email === 'sister@example.com' && S.sync.key.length >= 30 && /Get started|Open Brim|How much money/.test(document.body.innerText)));
+  ok('signed in with her email, onboarding follows', await p.evaluate(() => S.sync.email === 'sister@example.com' && S.sync.key.length >= 30 && /Get started|Open Penny|How much money/.test(document.body.innerText)));
   await p.evaluate(() => { S.ob = 1; sv(); render(); settings() }); await p.waitForTimeout(900);
   ok('sister is not the owner: no bank rows', await p.evaluate(() => S.sync.owner === false && !/Sync bank & card/i.test(document.body.innerText)));
   ok('settings shows signed in with email', await p.evaluate(() => /Signed in with email/.test(document.body.innerText)));

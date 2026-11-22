@@ -1,4 +1,4 @@
-# Brim.
+# Penny.
 
 Personal finance PWA (Hebrew/English RTL — savings jars, expense/income tracking,
 Work/Personal/All profiles, Discount Bank + Max card + Apple Pay sync) — deployed as a
