@@ -65,6 +65,14 @@ module.exports = async b => {
   ok('owner\'s cloud was not touched by the other user', !(await dump(o, OWN)).includes('NEWUSER-1'));
   await o.evaluate(() => settings()); await o.waitForTimeout(800);
   ok('and the other user is now in the list to switch to', await o.evaluate(() => /1 activities|1 activity/.test(document.getElementById('sh').innerText) || /Private cloud/.test(document.getElementById('sh').innerText)));
+  // --- a key alone brings the data back only if a cloud backup exists: a fresh app that is given the key offers it
+  await o.evaluate(() => { S.tx.push({ id: 'k1', type: 'exp', amt: 900, ts: Date.now(), title: 'KEYTEST-1', cat: 'food', pay: 'card', prof: 'pers' }); sv(); return bkNow(true) }); await o.waitForTimeout(1500);
+  const kf = await openPage(b, {}); await kf.waitForTimeout(1500);
+  await kf.click('text=I have a key'); await kf.waitForTimeout(500);
+  await kf.fill('#ky', OWN); await kf.evaluate(() => saveKey()); await kf.waitForTimeout(3000);
+  ok('a fresh app given the key offers the cloud backup', await kf.evaluate(() => /Latest backup/.test(document.body.innerText) && S.tx.length === 0));
+  await Promise.all([kf.waitForNavigation(), kf.evaluate(() => cloudRestore(0))]); await kf.waitForTimeout(1500);
+  ok('restoring from the cloud brings the data back, and the key stays', await kf.evaluate(k => S.tx.some(x => x.title === 'KEYTEST-1') && S.sync.key === k, OWN));
   // --- an account on this phone can be removed (before handing the phone to someone), with its cloud copy untouched
   const idNew = await o.evaluate(() => stashes().find(x => x.id !== 'owner').id);
   await o.evaluate(i => stashSheet(i), idNew); await o.waitForTimeout(600);
@@ -74,7 +82,7 @@ module.exports = async b => {
   await o.evaluate(i => removeStash(i), idNew); await o.waitForTimeout(600);
   ok('the removed account is gone from this phone', await o.evaluate(() => stashes().length === 0 && !/Accounts on this phone/i.test(document.getElementById('sh').innerText)));
   ok('but its cloud backup is still there', (await dump(o, newKey)).includes('NEWUSER-1'));
-  ok('and the owner is still signed in with all data', await o.evaluate(k => S.tx.length === 2 && S.sync.key === k, OWN));
+  ok('and the owner is still signed in with all data', await o.evaluate(k => S.tx.length === 3 && S.sync.key === k, OWN));
   // --- with no Google/email set up, a new user still gets a first screen where a private account (key) can be created
   await fetch('http://localhost:8787/__env?GOOGLE_CLIENT_ID=&BREVO_API_KEY=');
   const f = await openPage(b, {}); await f.waitForTimeout(1800);
@@ -83,5 +91,5 @@ module.exports = async b => {
   ok('creating it gives a real key and continues to setup', await f.evaluate(() => S.sync.key.length >= 30 && S.sync.verified === true && /Get started|How much money/.test(document.body.innerText)));
   ok('a user with a key but no owner rights has no bank rows', await f.evaluate(() => { settings(); return true }) && (await f.waitForTimeout(700), await f.evaluate(() => !/Sync bank & card/i.test(document.body.innerText) && !/Owner/i.test(document.getElementById('sh').innerText))));
   await fetch('http://localhost:8787/__env?GOOGLE_CLIENT_ID=test-client&BREVO_API_KEY=k');
-  ok('no JS errors', !p.errs.length && !q.errs.length && !r.errs.length && !o.errs.length && !f.errs.length, [...p.errs, ...q.errs, ...r.errs, ...o.errs, ...f.errs].join('|'));
+  ok('no JS errors', !p.errs.length && !q.errs.length && !r.errs.length && !o.errs.length && !f.errs.length && !kf.errs.length, [...p.errs, ...q.errs, ...r.errs, ...o.errs, ...f.errs].join('|'));
 };
