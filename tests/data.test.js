@@ -33,6 +33,13 @@ module.exports = async b => {
   ok('the balance step has a Skip option', await k.evaluate(() => /Skip/.test(document.body.innerText)));
   await k.click('text=Skip'); await k.waitForTimeout(600);
   ok('Skip opens the app with no balance set', await k.evaluate(() => S.ob === 1 && S.cash0 === 0 && !document.querySelector('.ob')));
+  // after skipping, the starting balance can still be set from Settings
+  await k.evaluate(() => settings()); await k.waitForTimeout(700);
+  ok('Settings has a Starting balance row', await k.evaluate(() => /Starting balance/.test(document.getElementById('sh').innerText)));
+  await k.evaluate(() => balSheet()); await k.waitForTimeout(600);
+  await k.fill('#bal', '1500'); await k.evaluate(() => saveBal()); await k.waitForTimeout(600);
+  ok('setting it changes the balance (₪1,500)', await k.evaluate(() => S.cash0 === 150000 && C().cash === 150000));
+  ok('and Settings shows it', await k.evaluate(() => /1,500/.test(document.getElementById('sh').innerText)));
   ok('skip: no JS errors', !k.errs.length, k.errs.join('|'));
   // build id served matches the page
   const v = await (await fetch('http://localhost:8787/version')).text();
