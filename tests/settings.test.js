@@ -34,9 +34,14 @@ module.exports = async b => {
   await p.evaluate(() => setOpt('theme', 'dark')); await p.waitForTimeout(800);
   for (const r of await fit()) ok(`after theme change: ${r.id} still fits`, r.dw < 1.5 && r.dx < 1.5, JSON.stringify(r));
   ok('theme changed', await p.evaluate(() => S.theme === 'dark'));
+  // an owner with no bank or card connected yet sees no bank row at all
+  await fetch('http://localhost:8787/__kvclear?prefix=bank'); await fetch('http://localhost:8787/__kvclear?prefix=card'); // other tests push bank and card data for the owner; start clean
+  const nb = await openPage(b, { state: baseState({ sync: { key: 'test-key-123456', bank: null, card: null, useBank: false, last: 0, err: '' } }) }); await nb.waitForTimeout(3000);
+  await nb.evaluate(() => settings()); await nb.waitForTimeout(800);
+  ok('no bank connected: no "Sync bank & card" row and no Connections group', await nb.evaluate(() => { const t = document.getElementById('sh').innerText; return !/sync bank & card/i.test(t) && !/connections/i.test(t) }));
   // sign-in + data rows for a phone without a key
   const q = await openPage(b, { state: baseState() }); await q.waitForTimeout(1500); await q.evaluate(() => settings()); await q.waitForTimeout(800);
   const t2 = await q.evaluate(() => document.getElementById('sh').innerText);
   ok('phone without an account offers sign-in and no bank rows', /sign in/i.test(t2) && !/sync bank & card/i.test(t2) && !/connections/i.test(t2));
-  ok('no JS errors', !p.errs.length && !q.errs.length, [...p.errs, ...q.errs].join('|'));
+  ok('no JS errors', !p.errs.length && !q.errs.length && !nb.errs.length, [...p.errs, ...q.errs, ...nb.errs].join('|'));
 };
