@@ -27,7 +27,7 @@ module.exports = async b => {
       out.cashSplit = res.pers.cash + res.work.cash - cash0 === res.all.cash;
       out.savedSplit = res.pers.saved + res.work.saved === res.all.saved;
       out.free = ['all', 'pers', 'work'].every(pr => res[pr].un === res[pr].cash - res[pr].saved);
-      for (const pr of ['all', 'pers', 'work']) for (const rt of ['home', 'jars', 'act', 'wish']) { S.prof = pr; try { go(rt); render() } catch (e) { out.errs.push(pr + '/' + rt + ': ' + e.message) } const t = document.body.innerText; if (/NaN|undefined|\[object/.test(t)) out.txt.push(pr + '/' + rt + ': ' + (t.match(/.{0,25}(NaN|undefined|\[object).{0,25}/) || [''])[0].replace(/\n/g, ' ')) }
+      for (const pr of ['all', 'pers', 'work']) for (const rt of ['home', 'jars', 'act']) { S.prof = pr; try { go(rt); render() } catch (e) { out.errs.push(pr + '/' + rt + ': ' + e.message) } const t = document.body.innerText; if (/NaN|undefined|\[object/.test(t)) out.txt.push(pr + '/' + rt + ': ' + (t.match(/.{0,25}(NaN|undefined|\[object).{0,25}/) || [''])[0].replace(/\n/g, ' ')) }
       return out;
     });
     if (!r.finite) bad.push('seed ' + seed + ': non-finite number in C()');
@@ -37,5 +37,5 @@ module.exports = async b => {
     r.errs.forEach(e => bad.push('seed ' + seed + ': ' + e)); r.txt.forEach(e => bad.push('seed ' + seed + ': ' + e)); p.errs.forEach(e => bad.push('seed ' + seed + ' page error: ' + e));
     await p.context().close();
   }
-  ok(`${seeds} random wallets × 3 profiles × 4 screens: totals finite, split cleanly, nothing renders NaN/undefined`, !bad.length, bad.slice(0, 5).join(' ; '));
+  ok(`${seeds} random wallets × 3 profiles × 3 screens: totals finite, split cleanly, nothing renders NaN/undefined`, !bad.length, bad.slice(0, 5).join(' ; '));
 };

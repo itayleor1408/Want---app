@@ -1,6 +1,6 @@
 # Brim.
 
-Personal finance PWA (Hebrew/English RTL — savings jars, wishlist, expense/income tracking,
+Personal finance PWA (Hebrew/English RTL — savings jars, expense/income tracking,
 Work/Personal/All profiles, Discount Bank + Max card + Apple Pay sync) — deployed as a
 Cloudflare Worker at `want.itayleor1408.workers.dev`.
 
@@ -10,12 +10,10 @@ Push to `main` to auto-deploy (connected to Cloudflare Workers Builds).
 
 - `want3.html` — the whole app: one self-contained HTML/CSS/JS file (inline `<script>`,
   `localStorage` persistence). This is the file to edit.
-- `extract.js` — shared product-link reader (JSON-LD, Open Graph, microdata, plus
-  site-specific readers for AliExpress/Amazon) used by the Worker's `/api/product` endpoint.
 - `sync_api.js` — the `/api/*` endpoints (KV-backed): `join`, `google`, `google-cb`, `email-start`, `email-verify`, `config`,
-  `ping`, `state`, `ingest`, `bank`, `card`, `ack`, `wish`, `backup`, `forget`, `reset-seen`.
+  `ping`, `state`, `ingest`, `bank`, `card`, `ack`, `backup`, `forget`, `reset-seen`.
   Apple Pay quick-add, bank/card sync, cloud backup, private accounts.
-- `build_worker.py` — bundles the three files above (plus a generated manifest, service
+- `build_worker.py` — bundles the files above (plus a generated manifest, service
   worker and app icon) into the single deployable `worker.js`. Requires `pip install pillow`.
 - `worker.js` — **generated** by `build_worker.py`. This is what `wrangler.toml` points at
   and what Cloudflare actually runs. Don't hand-edit it — edit the source files and rebuild.
@@ -26,7 +24,7 @@ Push to `main` to auto-deploy (connected to Cloudflare Workers Builds).
 ## Workflow
 
 ```bash
-# 1. edit want3.html (and/or extract.js, sync_api.js)
+# 1. edit want3.html (and/or sync_api.js)
 
 # 2. rebuild worker.js
 pip install --break-system-packages pillow   # once
@@ -41,14 +39,14 @@ node serve.mjs &            # serves http://localhost:8787
 kill %1
 
 # 5. ship it
-git add want3.html extract.js sync_api.js build_worker.py worker.js
+git add want3.html sync_api.js build_worker.py worker.js
 git commit -m "..."
 git push origin main         # Cloudflare Workers Builds auto-deploys this
 ```
 
 ## Accounts, keys and privacy
 
-Many people can use one deployment. All app data (jars, activity, wishlist) lives in the
+Many people can use one deployment. All app data (jars, activity) lives in the
 phone's own storage. Only sync and backups live in the Worker's KV, and each person's part is
 stored under a hash of their own key, so nobody can read anyone else's.
 

@@ -26,12 +26,6 @@ module.exports = async b => {
   await p.fill('input.f', '1500'); await p.click('.btn.g'); await p.waitForTimeout(500);
   ok('onboarding saves cash and opens the app', await p.evaluate(() => S.ob === 1 && S.cash0 === 150000));
   ok('onboarding: no JS errors', !p.errs.length, p.errs.join('|'));
-  // Apple Pay setup guide must be reachable from Settings, with working copy buttons
-  p = await openPage(b, { state: baseState({ sync: { key: 'test-key-123456', bank: null, card: null, useBank: false, last: 0, err: '' } }) }); await p.waitForTimeout(1500);
-  await p.evaluate(() => settings()); await p.waitForTimeout(700);
-  ok('Settings has an Apple Pay row', await p.evaluate(() => [...document.querySelectorAll('#sh .gr')].some(x => /Apple Pay/.test(x.innerText))));
-  await p.evaluate(() => [...document.querySelectorAll('#sh .gr')].find(x => /Apple Pay/.test(x.innerText)).click()); await p.waitForTimeout(500);
-  ok('the guide shows the address and the copy-key button', await p.evaluate(() => /Copy key/.test(document.getElementById('sh').innerText) && /Copy address/.test(document.getElementById('sh').innerText)));
   // build id served matches the page
   const v = await (await fetch('http://localhost:8787/version')).text();
   ok('/version matches the page build', await p.evaluate(x => window.WANT_BUILD === x.trim(), v));

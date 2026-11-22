@@ -14,7 +14,7 @@ module.exports = async b => {
   await p.fill('#ec', code); await p.waitForTimeout(2200);
   ok('signed in with her email, onboarding follows', await p.evaluate(() => S.sync.email === 'sister@example.com' && S.sync.key.length >= 30 && /Get started|Open Brim|How much money/.test(document.body.innerText)));
   await p.evaluate(() => { S.ob = 1; sv(); render(); settings() }); await p.waitForTimeout(900);
-  ok('sister is not the owner: no bank rows', await p.evaluate(() => S.sync.owner === false && !/Sync bank now/.test(document.body.innerText)));
+  ok('sister is not the owner: no bank rows', await p.evaluate(() => S.sync.owner === false && !/Sync bank & card/i.test(document.body.innerText)));
   ok('settings shows signed in with email', await p.evaluate(() => /Signed in with email/.test(document.body.innerText)));
   ok('bank sync is refused for her on the server', await p.evaluate(async () => (await fetch('/api/bank', { method: 'POST', headers: Object.assign({ 'content-type': 'application/json' }, AUTH()), body: '{"balance":1}' })).status === 403));
   // 2. the owner: has the original key, gets asked once to connect an email
@@ -25,7 +25,7 @@ module.exports = async b => {
   await o.fill('#em', 'Me@Example.com'); await o.click('text=Send me a code'); await o.waitForTimeout(900);
   await o.fill('#ec', await lastCode()); await o.waitForTimeout(2500);
   ok('owner email is remembered (linked to the original data)', await o.evaluate(() => S.sync.email === 'me@example.com' && S.sync.key === 'test-key-123456'));
-  ok('owner still sees bank features', await o.evaluate(() => { settings(); return true }) && (await o.waitForTimeout(600), await o.evaluate(() => /Sync bank now/.test(document.body.innerText))));
+  ok('owner still sees bank features', await o.evaluate(() => { settings(); return true }) && (await o.waitForTimeout(600), await o.evaluate(() => /Sync bank & card/i.test(document.body.innerText))));
   // 3. owner signs in on a NEW phone with the same email -> gets the owner account (bank features)
   await fetch('http://localhost:8787/__kvclear?prefix=ecd:'); // lift the one-code-a-minute wait (test only)
   const n = await openPage(b, {}); await n.waitForTimeout(1500);

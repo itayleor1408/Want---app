@@ -13,6 +13,19 @@ async function readBody(req) {
   const o = {}; try { new URLSearchParams(txt).forEach((v, k) => (o[k] = v)); } catch (e) { }
   return o;
 }
+// "₪45.00", "45,00 ₪", 45 -> "45"
+function numPrice(v) {
+  if (v == null) return '';
+  if (typeof v === 'number') return isFinite(v) && v > 0 ? String(Math.round(v * 100) / 100) : '';
+  let s = String(v).replace(/[^\d.,]/g, '');
+  if (!s) return '';
+  const lc = s.lastIndexOf(','), ld = s.lastIndexOf('.');
+  if (lc > -1 && ld > -1) s = lc > ld ? s.replace(/\./g, '').replace(',', '.') : s.replace(/,/g, '');
+  else if (lc > -1) s = /,\d{1,2}$/.test(s) ? s.replace(/\./g, '').replace(',', '.') : s.replace(/,/g, '');
+  else if ((s.match(/\./g) || []).length > 1) s = s.replace(/\.(?=.*\.)/g, '');
+  const n = parseFloat(s);
+  return isFinite(n) && n > 0 ? String(Math.round(n * 100) / 100) : '';
+}
 // amount in agorot from "₪45.00", "45,00 ₪", 45, "-120.5"
 function agorot(v) {
   if (typeof v === 'number') return Math.round(Math.abs(v) * 100);
@@ -138,7 +151,7 @@ async function syncApi(req, env, path) {
 async function syncCore(req, env, path, pfx, root) {
   if ((path === '/api/bank' || path === '/api/card') && pfx !== '') return JS({ error: 'owner_only' }, 403); // bank/card sync is only for the owner's account
   if (path === '/api/ping') return JS({ ok: true, acct: pfx || 'owner', owner: pfx === '', bank: await kvGet(env, 'bank', null), card: await kvGet(env, 'card', null) });
-  if (path === '/api/state') return JS({ ok: true, acct: pfx || 'owner', owner: pfx === '', bank: await kvGet(env, 'bank', null), card: await kvGet(env, 'card', null), inbox: await kvGet(env, 'inbox', []), wishbox: await kvGet(env, 'wishbox', []) });
+  if (path === '/api/state') return JS({ ok: true, acct: pfx || 'owner', owner: pfx === '', bank: await kvGet(env, 'bank', null), card: await kvGet(env, 'card', null), inbox: await kvGet(env, 'inbox', []) });
   if (path === '/api/backup' && req.method === 'GET') { // list snapshots, or ?n=0|1|2 to fetch one
     const n = new URL(req.url).searchParams.get('n');
     if (n !== null) { const o = await kvGet(env, 'bk' + (parseInt(n, 10) || 0), null); return o ? JS({ ok: true, at: o.at, state: o.state }) : JS({ error: 'none' }, 404); }
@@ -159,7 +172,7 @@ async function syncCore(req, env, path, pfx, root) {
   }
   if (path === '/api/forget' && req.method === 'POST') { // delete everything stored for this account (never the owner's legacy data)
     if (!pfx) return JS({ error: 'owner_account' }, 400);
-    for (const k of ['inbox', 'seen', 'bank', 'card', 'wishbox', 'bk0', 'bk1', 'bk2']) await env.WANT_KV.delete(k);
+    for (const k of ['inbox', 'seen', 'bank', 'card', 'bk0', 'bk1', 'bk2']) await env.WANT_KV.delete(k);
     const me = await resolve(req, root), rec = me && me.rec;
     if (rec && rec.g) { const g = await kvGet(root, 'gacct:' + rec.g, null); for (const kh of (g && g.keys) || []) await root.WANT_KV.delete('acct:' + kh); await root.WANT_KV.delete('gacct:' + rec.g); }
     if (me) await root.WANT_KV.delete('acct:' + me.h);
@@ -167,28 +180,6 @@ async function syncCore(req, env, path, pfx, root) {
   }
   if (req.method !== 'POST') return JS({ error: 'post_only' }, 405);
   const b = await readBody(req);
-  if (path === '/api/wish') { // "Add to Brim." in Safari's Share menu: the product as read from the live page on the phone
-    let p = b.page;
-    if (typeof p === 'string') { try { p = JSON.parse(p); } catch (e) { p = null; } }
-    p = p && typeof p === 'object' ? p : {};
-    const url = String(p.url || b.url || '').slice(0, 2000);
-    const firstNum = v => { const m = String(v || '').match(/\d[\d.,]*/); return m ? numPrice(m[0]) : ''; };
-    const d = { title: String(p.title || '').replace(/\s+/g, ' ').trim().slice(0, 120), price: firstNum(p.price), currency: curOf(p.currency) || curOf(p.price), image: /^https?:/.test(p.image || '') && !/HTB18eCBQXXXXXXfXXXX760XFXXXa|\/(logo|sprite|placeholder)[^/]*$/i.test(p.image) ? String(p.image).slice(0, 2000) : '', store: String(p.store || '').slice(0, 40) };
-    // anything the page didn't give us, try to read from the link on the server
-    if ((!d.title || !d.price || !d.image) && /^https?:/.test(url) && typeof productData === 'function') {
-      try { const s = await productData(url); if (s && !s.error) for (const k of ['title', 'price', 'currency', 'image', 'store']) if (!d[k] && s[k]) d[k] = s[k]; } catch (e) { }
-    }
-    if (!d.title || /^(aliexpress|amazon)(\.[a-z.]+)?$/i.test(d.title) || /not found|can ?not be found|\b404\b|error page|access denied|captcha|just a moment/i.test(d.title)) return JS({ ok: false, msg: "Couldn't find a product on this page. Nothing was added." });
-    if (/^[a-z0-9-]+(\.[a-z0-9-]+)+$/i.test(d.store)) { // "aliexpress.com" -> "AliExpress"
-      const n = d.store.replace(/^(www|m|he|il|shop)\./i, '').split('.')[0], NICE = { aliexpress: 'AliExpress', amazon: 'Amazon', ebay: 'eBay', ikea: 'IKEA', shein: 'SHEIN', temu: 'Temu', ksp: 'KSP', zara: 'Zara' };
-      d.store = NICE[n.toLowerCase()] || (n.length <= 4 ? n.toUpperCase() : n[0].toUpperCase() + n.slice(1));
-    }
-    if (d.price && d.currency && d.currency !== 'ILS' && typeof rates === 'function') { try { const r = await rates(d.currency); if (r && r.ils) d.priceILS = String(Math.round(parseFloat(d.price) * r.ils * 100) / 100); } catch (e) { } }
-    const box = await kvGet(env, 'wishbox', []);
-    box.push(Object.assign({ id: 'wi_' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6), url, ts: Date.now() }, d));
-    await kvPut(env, 'wishbox', box.slice(-50));
-    return JS({ ok: true, msg: 'Sent to Brim.: ' + d.title.slice(0, 50) + (d.price ? '' : ' (add the price in the app)') + '. Open Brim. to save it.' });
-  }
   if (path === '/api/ingest') { // Apple Pay automation or quick add from a Shortcut
     const amt = agorot(b.amount), title = String(b.merchant || b.title || '').trim().slice(0, 60);
     if (!amt) return JS({ error: 'no_amount' }, 400);
@@ -216,8 +207,6 @@ async function syncCore(req, env, path, pfx, root) {
     const inbox = await kvGet(env, 'inbox', []);
     const left = inbox.filter(x => !ids.has(x.id));
     if (left.length !== inbox.length) await kvPut(env, 'inbox', left);
-    const wb = await kvGet(env, 'wishbox', []), wl = wb.filter(x => !ids.has(x.id));
-    if (wl.length !== wb.length) await kvPut(env, 'wishbox', wl);
     return JS({ ok: true, left: left.length });
   }
   if (path === '/api/card') { // a credit-card company's scraper on your computer (per-purchase items, never a balance)
