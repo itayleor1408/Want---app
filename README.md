@@ -1,6 +1,6 @@
 # Penny.
 
-Personal finance PWA (Hebrew/English RTL — savings jars, expense/income tracking,
+Personal finance PWA (Hebrew/English RTL — savings jars, wishlist, expense/income tracking,
 Work/Personal/All profiles, Discount Bank + Max card + Apple Pay sync) — deployed as a
 Cloudflare Worker at `want.itayleor1408.workers.dev`.
 
@@ -10,8 +10,10 @@ Push to `main` to auto-deploy (connected to Cloudflare Workers Builds).
 
 - `want3.html` — the whole app: one self-contained HTML/CSS/JS file (inline `<script>`,
   `localStorage` persistence). This is the file to edit.
+- `extract.js` — the product-link reader (JSON-LD, Open Graph, microdata, plus AliExpress/Amazon readers) behind
+  the Wishlist's automatic name, photo and price (`/api/product`).
 - `sync_api.js` — the `/api/*` endpoints (KV-backed): `join`, `google`, `google-cb`, `email-start`, `email-verify`, `config`,
-  `ping`, `state`, `ingest`, `bank`, `card`, `ack`, `backup`, `forget`, `reset-seen`.
+  `ping`, `state`, `ingest`, `bank`, `card`, `ack`, `wish`, `product`, `backup`, `forget`, `reset-seen`.
   Apple Pay quick-add, bank/card sync, cloud backup, private accounts.
 - `build_worker.py` — bundles the files above (plus a generated manifest, service
   worker and app icon) into the single deployable `worker.js`. Requires `pip install pillow`.

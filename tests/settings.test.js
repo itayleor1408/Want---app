@@ -8,7 +8,6 @@ module.exports = async b => {
   for (const gone of ['Wishlist', 'Import service URL', 'Apple Pay', 'Add from Safari', 'Quick add', 'Back Tap', 'Recurring', 'Review payments', 'Restore from cloud', 'Undo last restore']) ok(`removed from Settings: ${gone}`, !txt.toLowerCase().includes(gone.toLowerCase()));
   for (const there of ['Account', 'General', 'Jars', 'Upcoming payments', 'Connections', 'Data', 'Reserve upcoming payments', 'Sync bank & card', 'Back up now', 'Copy backup', 'Restore from backup', 'Reset all data']) ok(`kept: ${there}`, txt.toLowerCase().includes(there.toLowerCase()));
   ok('bank and card are one line, with the last update', await p.evaluate(() => { const r = [...document.querySelectorAll('#sh .gr')].filter(x => /Sync bank & card/.test(x.innerText)); return r.length === 1 && /ago|just now/.test(r[0].innerText) }));
-  ok('no wishlist tab in the bottom bar', await p.evaluate(() => !/Wishlist/.test(document.querySelector('nav,.nav,#nav,.tabs')?.innerText || document.body.innerText.split('Settings')[0]) && document.querySelectorAll('.nb,.tab,nav button').length <= 3 || true));
   // titles only; explanation opens from the ⓘ with an animation
   ok('rows show titles only (explanation hidden)', await p.evaluate(() => { const x = [...document.querySelectorAll('#sh .gx')][0]; return x && getComputedStyle(x).opacity === '0' }));
   await p.evaluate(() => document.querySelector('#sh .gw .ii').click()); await p.waitForTimeout(600);
