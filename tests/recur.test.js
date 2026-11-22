@@ -28,5 +28,11 @@ module.exports = async b => {
   await p.evaluate(() => fetch('/api/ingest', { method: 'POST', headers: Object.assign({ 'content-type': 'application/json' }, AUTH()), body: JSON.stringify({ amount: 64, merchant: 'SUPERMARKET', date: '2026-12-05T08:00', id: 'cd_x3' }) }));
   await p.evaluate(() => syncNow(true)); await p.waitForTimeout(1200);
   ok('C: a different merchant stays separate', await p.evaluate(() => S.tx.filter(x => x.src == 'recur:r1' && !x.ext).length === 1 && S.pending.length === 1));
+  // D: the sync report in Settings tells what arrived (owner only)
+  p = await openPage(b, { state: baseState({ sync: { key: 'test-key-123456', bank: null, card: null, useBank: false, last: 0, err: '' } }), date: D }); await p.waitForTimeout(1500);
+  await p.evaluate(async () => { const h = Object.assign({ 'content-type': 'application/json' }, AUTH()); await fetch('/api/card', { method: 'POST', headers: h, body: JSON.stringify({ cardName: 'Max', txns: [{ date: '2026-12-09', amount: -50, description: 'SHUFERSAL', id: 'rep1' }, { date: '2026-12-09', amount: -20, description: 'AROMA', id: 'rep2' }] }) }) });
+  await p.evaluate(() => syncNow(true)); await p.waitForTimeout(1500);
+  await p.evaluate(() => settings()); await p.waitForTimeout(700);
+  ok('D: Settings shows what arrived from the card', await p.evaluate(() => /Last arrivals/.test(document.body.innerText) && /Card 2/.test(document.body.innerText) && /2 waiting for review/.test(document.body.innerText)));
   ok('no JS errors', !p.errs.length, p.errs.join('|'));
 };
