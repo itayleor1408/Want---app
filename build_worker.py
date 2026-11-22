@@ -4,29 +4,16 @@ def lerp(a,b,t):return tuple(int(round(a[i]+(b[i]-a[i])*t)) for i in range(3))
 def vgrad(w,h,top,bot):
     g=Image.linear_gradient('L').resize((w,h),Image.BICUBIC)           # black (top) -> white (bottom)
     return ImageOps.colorize(g,black=top,white=bot)
-def icon(sz,top=(229,92,82),bot=(217,78,45)):
-    # Penny: a white piggy bank on a warm coral gradient. Drawn on a 100-unit grid, supersampled 4x for clean edges.
-    S=4;W=sz*S;u=W/100.0
-    img=vgrad(W,W,top,bot).convert('RGBA')
-    hl=Image.new('L',(W,W),0);ImageDraw.Draw(hl).ellipse([-20*u,-40*u,120*u,45*u],fill=60)
-    hl=hl.filter(ImageFilter.GaussianBlur(18*u));img=Image.composite(Image.new('RGBA',(W,W),(255,150,120,255)),img,hl.point(lambda p:int(p*0.35)))
-    pig=Image.new('L',(W,W),0);g=ImageDraw.Draw(pig)
-    def E(x0,y0,x1,y1):g.ellipse([x0*u,y0*u,x1*u,y1*u],fill=255)
-    def R(x0,y0,x1,y1,r):g.rounded_rectangle([x0*u,y0*u,x1*u,y1*u],radius=r*u,fill=255)
-    E(21,35,83,78)                      # body
-    E(12,47,34,67)                      # snout
-    ear=[(35*u,44*u),(41*u,32*u),(54*u,40*u)]                  # ear: a triangle with softly rounded corners
-    g.polygon(ear,fill=255);g.line(ear+[ear[0]],fill=255,width=int(5*u),joint='curve')
-    for x,y in ear:g.ellipse([x-2.5*u,y-2.5*u,x+2.5*u,y+2.5*u],fill=255)
-    R(30,68,44,86,5);R(58,68,72,86,5)   # legs
-    g.arc([76*u,44*u,92*u,60*u],start=-70,end=110,fill=255,width=int(3.2*u))  # tail
-    img.alpha_composite(Image.composite(Image.new('RGBA',(W,W),(255,255,255,255)),Image.new('RGBA',(W,W),(0,0,0,0)),pig))
-    d=ImageDraw.Draw(img)
-    mid=tuple(int((a+b)/2) for a,b in zip(top,bot))+(255,)
-    d.rounded_rectangle([42*u,39.5*u,67*u,44.5*u],radius=2.5*u,fill=mid)   # coin slot
-    d.ellipse([25*u,52*u,29.6*u,56.6*u],fill=mid)                           # eye
-    d.ellipse([15.5*u,56*u,17.5*u,58*u],fill=mid);d.ellipse([19*u,57*u,21*u,59*u],fill=mid)  # nostrils
-    return img.resize((sz,sz),Image.LANCZOS).convert('RGB')
+def icon(sz):
+    # Penny's logo: the white piggy bank (assets/penny-pig.png, cut from the supplied artwork) centred on solid black.
+    # Supersampled so the edges stay clean at every size; the phone applies its own rounded corners.
+    S=4;W=sz*S
+    img=Image.new('RGB',(W,W),(0,0,0))
+    pig=Image.open('assets/penny-pig.png').convert('L')
+    w=int(W*0.568);h=int(w*pig.height/pig.width)
+    pig=pig.resize((w,h),Image.LANCZOS)
+    img.paste((255,255,255),((W-w)//2,(W-h)//2),pig)
+    return img.resize((sz,sz),Image.LANCZOS)
 def b64(im):
     b=io.BytesIO();im.save(b,'PNG');return base64.b64encode(b.getvalue()).decode()
 i180,i512=b64(icon(180)),b64(icon(512))
