@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en" dir="ltr"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Starter</title><link rel="stylesheet" href="tokens.css">
+<style>
+.pg{display:none}.pg.on{display:block;animation:in .34s var(--ease-out)}
+.hero{text-align:center;padding:64px 0 36px}.duo{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.jc{background:var(--c);border-radius:24px;padding:16px 12px;text-align:center;box-shadow:var(--sh);transition:transform .25s var(--spring);cursor:pointer}.jc:active{transform:scale(.96)}
+.jc b{display:block;margin-top:8px}.ic{width:40px;height:40px;border-radius:50%;background:var(--fl);display:grid;place-items:center;flex:none}
+.li{display:flex;align-items:center;gap:12px;padding:12px 0;border-top:1px solid var(--hr)}.li:first-child{border-top:0}.li .gt{flex:1}
+</style></head><body><div id="app">
+<section class="pg on" id="p0">
+  <div class="hero"><div class="sub">Available to spend</div><div class="hv">₪4,280</div></div>
+  <div class="duo"><div class="st sv"><span class="sub">Saved</span><b class="pos" style="display:block;font-size:26px;font-weight:800;margin-top:4px">₪1,200</b></div>
+  <div class="st"><span class="sub">Spent</span><b class="neg" style="display:block;font-size:26px;font-weight:800;margin-top:4px">₪438</b></div></div>
+  <div class="sec"><span>Jars</span></div>
+  <div class="car"><div class="jc"><div class="sub">Trip</div><b>₪350</b></div><div class="jc"><div class="sub">Phone</div><b>₪900</b></div><div class="jc"><div class="sub">Car</div><b>₪2,500</b></div></div>
+  <div class="card" style="margin-top:26px"><div class="sec" style="margin:16px 0 4px"><span>Recent</span></div>
+    <div class="li"><span class="ic">☕</span><span class="gt">Aroma<div class="sub">Yesterday</div></span><b class="neg">-₪18</b></div>
+    <div class="li"><span class="ic">💼</span><span class="gt">Salary<div class="sub">Nov 2</div></span><b class="pos">+₪9,000</b></div></div>
+</section>
+<section class="pg" id="p1"><h1>Jars</h1><div class="card"><div class="li"><span class="gt">Nothing here yet</span></div></div></section>
+<section class="pg" id="p2"><h1>Activity</h1><div class="card"><div class="li"><span class="gt">Nothing here yet</span></div></div></section>
+</div>
+<div class="fabs"><button class="ib" aria-label="add" onclick="openSheet()">＋</button></div>
+<nav id="nav"><button class="on" onclick="tab(0)">⌂<span>Home</span></button><button onclick="tab(1)">▢<span>Jars</span></button><button onclick="tab(2)">≡<span>Activity</span></button></nav>
+<script>
+const $=s=>document.querySelector(s);
+function tab(i){document.querySelectorAll('.pg').forEach((p,k)=>p.classList.toggle('on',k==i));document.querySelectorAll('#nav button').forEach((b,k)=>b.classList.toggle('on',k==i))}
+/* segmented control: highlight measured from the real selected button */
+function segPlace(el,i,animate){const b=el.querySelectorAll('button')[i],h=el.querySelector('i');if(!b||!b.offsetWidth)return;if(!animate)h.style.transition='none';h.style.left=b.offsetLeft+'px';h.style.width=b.offsetWidth+'px';if(!animate){void h.offsetWidth;h.style.transition=''}}
+function seg(el,i){el.querySelectorAll('button').forEach((b,k)=>b.classList.toggle('on',k==i));segPlace(el,i,true)}
+const group=(title,rows)=>`<div class="grp"><button class="gl gh" onclick="this.closest('.grp').classList.toggle('c')"><span>${title}</span><span class="gch">▾</span></button><div class="gcw"><div class="gc">${rows}</div></div></div>`;
+const info=t=>`<div class="gx"><div><div class="gi">${t}</div></div></div>`;
+const toggle=(t,i,on)=>`<div class="gw"><div class="gr" role="button" onclick="this.querySelector('.tg').classList.toggle('on')"><span class="gt">${t}</span><button class="ii" aria-label="info" onclick="event.stopPropagation();this.classList.toggle('o');this.closest('.gw').querySelector('.gx').classList.toggle('o')">ⓘ</button><span class="tg ${on?'on':''}"></span></div>${info(i)}</div>`;
+function openSheet(){close();const o=document.createElement('div');o.className='ov';o.id='ov';o.onclick=close;const s=document.createElement('div');s.className='sh';s.id='sh';
+s.innerHTML=`<div class="shd">Settings</div>`+group('General',`<div class="gw"><div class="gr"><span class="gt">Theme</span><div class="seg sm" id="sg"><i></i><button class="on">Light</button><button>System</button><button>Dark</button></div></div></div>`)+group('Jars',toggle('Whole-number percent','Show 12% instead of 12.4%',false)+toggle('Reserve upcoming payments','Lowers Available to Spend by monthly charges that have not arrived yet.',true));
+document.body.append(o,s);segPlace($('#sg'),0,false);[...$('#sg').querySelectorAll('button')].forEach((b,k)=>b.onclick=()=>{seg($('#sg'),k);document.documentElement.dataset.theme=['light','','dark'][k]||''});
+requestAnimationFrame(()=>requestAnimationFrame(()=>{o.classList.add('o');s.classList.add('o')}))}
+function close(){const o=$('#ov'),s=$('#sh');if(!o)return;o.id=s.id='';o.classList.remove('o');s.classList.remove('o');setTimeout(()=>{o.remove();s.remove()},380)}
+</script></body></html>

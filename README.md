@@ -92,6 +92,12 @@ stored under a hash of their own key, so nobody can read anyone else's.
   users. Each active phone costs a few thousand reads a day, so about 15–20 active people fit;
   beyond that the $5/month Workers plan removes the limit.
 
+## Design language (reusable skill)
+
+The look and motion of the app are written down as a Claude skill in `.claude/skills/penny-design/`
+(`SKILL.md` principles and rules, `tokens.css` real tokens and component CSS, `starter.html` a page that
+already has the style). Copy that folder into a new project to start another app in the same vibe.
+
 ## Testing
 
 ```bash
