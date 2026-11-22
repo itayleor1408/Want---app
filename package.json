@@ -1,7 +1,7 @@
 {
-  "name": "brim",
+  "name": "penny",
   "private": true,
-  "description": "Brim. personal finance PWA (Cloudflare Worker)",
+  "description": "Penny. personal finance PWA (Cloudflare Worker)",
   "scripts": {
     "build": "python3 build_worker.py",
     "test": "node tests/run.js"
