@@ -75,6 +75,12 @@ stored under a hash of their own key, so nobody can read anyone else's.
   (`/api/bank`, `/api/card` return 403 for everyone else, and the bank rows are hidden in the
   app). The owner phone is asked once to "Connect your account" (Google or email); that email is
   then remembered, and signing in with it on any new phone gives the owner account back.
+- **Several accounts on one phone never mix:** the phone remembers which account its data belongs
+  to (`S.dataFor`, taken from the server's `acct` id). Signing out, or signing in as a different
+  account (or pasting a different key), puts the current data away under its own account and loads
+  that other account's data, or a blank start. Backups are only uploaded once the server has
+  confirmed the data belongs to the signed-in account (`S.sync.verified`). Covered by
+  `tests/accounts.test.js`.
 - **Owner key:** the `WANT_TOKEN` secret keeps working and maps to the original un-prefixed
   data. **Rotate it** if it was ever exposed (an old version of the app had it inside the page):
   Cloudflare → Variables and Secrets → set a new `WANT_TOKEN`, then paste the new value into

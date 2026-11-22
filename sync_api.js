@@ -75,7 +75,7 @@ async function finishLogin(req, env, ident, email, redirect, fail) {
   await env.WANT_KV.put('acct:' + kh, JSON.stringify({ at: Date.now(), pfx: rec.pfx, g: gh }));
   rec.keys = (rec.keys || []).concat(kh); while (rec.keys.length > 20) await env.WANT_KV.delete('acct:' + rec.keys.shift()); // one key per signed-in device; the oldest fall away
   await kvPut(env, gk, rec);
-  if (!redirect) return JS({ ok: true, key, email: email, isNew });
+  if (!redirect) return JS({ ok: true, key, acct: rec.pfx || 'owner', email: email, isNew });
   const page = '<!doctype html><meta charset=utf-8><body style="font:16px system-ui;padding:40px;text-align:center">Signing in…<script>try{var k="want.v1",s=JSON.parse(localStorage.getItem(k)||"{}");s.sync=s.sync||{};s.sync.key=' + JSON.stringify(key) + ';s.sync.google=' + JSON.stringify(email).replace(/</g, '\\u003c') + ';s.sync.fresh=1;localStorage.setItem(k,JSON.stringify(s))}catch(e){}location.replace("/")</script>';
   return new Response(page, { headers: { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'no-store' } });
 }
@@ -125,7 +125,7 @@ async function syncApi(req, env, path) {
     const raw = crypto.getRandomValues(new Uint8Array(24)), key = btoa(String.fromCharCode(...raw)).replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
     await env.WANT_KV.put('acct:' + await hashKey(key), JSON.stringify({ at: Date.now() }));
     await env.WANT_KV.put(day, String(n + 1), { expirationTtl: 172800 });
-    return JS({ ok: true, key });
+    return JS({ ok: true, key, acct: 'u:' + (await hashKey(key)).slice(0, 32) + ':' });
   }
   if (path === '/api/config') return JS({ ok: true, google: env.GOOGLE_CLIENT_ID || '', email: emailOn(env) });
   if (path === '/api/email-start' || path === '/api/email-verify') return emailLogin(req, env, path);
@@ -137,8 +137,8 @@ async function syncApi(req, env, path) {
 }
 async function syncCore(req, env, path, pfx, root) {
   if ((path === '/api/bank' || path === '/api/card') && pfx !== '') return JS({ error: 'owner_only' }, 403); // bank/card sync is only for the owner's account
-  if (path === '/api/ping') return JS({ ok: true, owner: pfx === '', bank: await kvGet(env, 'bank', null), card: await kvGet(env, 'card', null) });
-  if (path === '/api/state') return JS({ ok: true, owner: pfx === '', bank: await kvGet(env, 'bank', null), card: await kvGet(env, 'card', null), inbox: await kvGet(env, 'inbox', []), wishbox: await kvGet(env, 'wishbox', []) });
+  if (path === '/api/ping') return JS({ ok: true, acct: pfx || 'owner', owner: pfx === '', bank: await kvGet(env, 'bank', null), card: await kvGet(env, 'card', null) });
+  if (path === '/api/state') return JS({ ok: true, acct: pfx || 'owner', owner: pfx === '', bank: await kvGet(env, 'bank', null), card: await kvGet(env, 'card', null), inbox: await kvGet(env, 'inbox', []), wishbox: await kvGet(env, 'wishbox', []) });
   if (path === '/api/backup' && req.method === 'GET') { // list snapshots, or ?n=0|1|2 to fetch one
     const n = new URL(req.url).searchParams.get('n');
     if (n !== null) { const o = await kvGet(env, 'bk' + (parseInt(n, 10) || 0), null); return o ? JS({ ok: true, at: o.at, state: o.state }) : JS({ error: 'none' }, 404); }

@@ -19,7 +19,7 @@ module.exports = async b => {
   ok('second phone gets its own key', await q.evaluate(k => S.sync.key && S.sync.key !== k, k1));
   await Promise.all([q.waitForNavigation(), q.evaluate(() => cloudRestore(0))]); await q.waitForTimeout(1000);
   ok('restored data and still signed in', await q.evaluate(() => S.tx.length === 1 && S.jars.length === 1 && S.sync.google === 'eve@example.com'));
-  await q.evaluate(() => signOut());
-  ok('sign out clears the key but keeps the data', await q.evaluate(() => S.sync.key === '' && S.tx.length === 1));
+  await Promise.all([q.waitForNavigation(), q.evaluate(() => signOut())]); await q.waitForTimeout(1200);
+  ok('sign out puts the data away and shows the sign-in screen', await q.evaluate(() => S.sync.key === '' && S.tx.length === 0 && /Sign in to start/.test(document.body.innerText)));
   ok('no JS errors', !p.errs.length && !q.errs.length, p.errs.concat(q.errs).join('|'));
 };
