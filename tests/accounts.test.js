@@ -44,5 +44,26 @@ module.exports = async b => {
   const kOld = (await (await fetch('http://localhost:8787/api/join', { method: 'POST', body: '{}' })).json()).key;
   const r = await openPage(b, { state: baseState({ sync: { key: kOld, bank: null, card: null, useBank: false, last: 0, err: '' }, tx: [tx('r1', 'OLD-R')] }) }); await r.waitForTimeout(2500);
   ok('existing phone keeps its data and gets bound to its account', await r.evaluate(() => S.tx.length === 1 && S.tx[0].title === 'OLD-R' && !!S.dataFor && S.sync.verified === true));
-  ok('no JS errors', !p.errs.length && !q.errs.length && !r.errs.length, [...p.errs, ...q.errs, ...r.errs].join('|'));
+  // --- the owner can step out of their account, try the app as a brand-new user, create another user, and come back with one tap
+  const OWN = 'test-key-123456';
+  const o = await openPage(b, { state: baseState({ sync: { key: OWN, bank: null, card: null, useBank: false, last: 0, err: '' }, tx: [tx('o1', 'OWNER-1'), tx('o2', 'OWNER-2')], jars: [{ id: 'jo', name: 'Owner jar', goal: 1000, prof: 'pers' }] }), routes });
+  await o.waitForTimeout(3200);
+  ok('owner phone is bound to the owner account', await o.evaluate(() => S.dataFor === 'owner' && S.sync.verified === true));
+  await o.evaluate(() => settings()); await o.waitForTimeout(800);
+  ok('owner can sign out (key only, no email needed)', await o.evaluate(() => /Sign out on this phone/.test(document.getElementById('sh').innerText)));
+  await Promise.all([o.waitForNavigation(), o.evaluate(() => signOut())]); await o.waitForTimeout(1500);
+  ok('after sign-out: the new-user first screen, no data, no key', await o.evaluate(() => /Sign in to start/.test(document.body.innerText) && S.tx.length === 0 && S.sync.key === ''));
+  await o.evaluate(() => { S.sync.skip = 1; S.ob = 1; sv(); render(); settings() }); await o.waitForTimeout(900);
+  ok('Settings lists the owner account to switch back to', await o.evaluate(() => /Accounts on this phone/i.test(document.getElementById('sh').innerText) && /Owner \(original key\)/.test(document.getElementById('sh').innerText) && /2 activities/.test(document.getElementById('sh').innerText)));
+  await o.evaluate(() => joinCloud()); await o.waitForTimeout(2800);
+  const newKey = await o.evaluate(() => S.sync.key);
+  ok('created another user (its own key, empty)', newKey && newKey !== OWN && await o.evaluate(() => S.tx.length === 0 && S.dataFor && S.dataFor !== 'owner'));
+  await o.evaluate(() => { S.tx.push({ id: 'n1', type: 'exp', amt: 700, ts: Date.now(), title: 'NEWUSER-1', cat: 'food', pay: 'card', prof: 'pers' }); sv(); return bkNow(true) }); await o.waitForTimeout(1200);
+  ok('the new user\'s backup holds only their data', (await dump(o, newKey)).includes('NEWUSER-1') && !(await dump(o, newKey)).includes('OWNER-1'));
+  await Promise.all([o.waitForNavigation(), o.evaluate(() => switchStash('owner'))]); await o.waitForTimeout(3000);
+  ok('one tap back to the owner: all data and key restored', await o.evaluate(k => S.tx.length === 2 && S.jars.length === 1 && S.sync.key === k && S.dataFor === 'owner', OWN));
+  ok('owner\'s cloud was not touched by the other user', !(await dump(o, OWN)).includes('NEWUSER-1'));
+  await o.evaluate(() => settings()); await o.waitForTimeout(800);
+  ok('and the other user is now in the list to switch to', await o.evaluate(() => /1 activities|1 activity/.test(document.getElementById('sh').innerText) || /Private cloud/.test(document.getElementById('sh').innerText)));
+  ok('no JS errors', !p.errs.length && !q.errs.length && !r.errs.length && !o.errs.length, [...p.errs, ...q.errs, ...r.errs, ...o.errs].join('|'));
 };
