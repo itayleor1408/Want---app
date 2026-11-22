@@ -37,9 +37,18 @@ module.exports = async b => {
   await k.evaluate(() => settings()); await k.waitForTimeout(700);
   ok('Settings has a Starting balance row', await k.evaluate(() => /Starting balance/.test(document.getElementById('sh').innerText)));
   await k.evaluate(() => balSheet()); await k.waitForTimeout(600);
-  await k.fill('#bal', '1500'); await k.evaluate(() => saveBal()); await k.waitForTimeout(600);
-  ok('setting it changes the balance (₪1,500)', await k.evaluate(() => S.cash0 === 150000 && C().cash === 150000));
-  ok('and Settings shows it', await k.evaluate(() => /1,500/.test(document.getElementById('sh').innerText)));
+  await k.fill('#bal', '1500'); await k.evaluate(() => saveBal()); await k.waitForTimeout(500);
+  ok('it asks "Are you sure?" before setting the starting balance', await k.evaluate(() => /Are you sure/.test(document.getElementById('sh').innerText) && /1,500/.test(document.getElementById('sh').innerText)));
+  await k.evaluate(() => applyBal(150000)); await k.waitForTimeout(500);
+  ok('confirmed: the balance is ₪1,500', await k.evaluate(() => S.cash0 === 150000 && C().cash === 150000 && S.balSet === 1));
+  await k.evaluate(() => settings()); await k.waitForTimeout(600);
+  ok('after that the setting is called Current balance (not Starting)', await k.evaluate(() => { const t = document.getElementById('sh').innerText; return /Current balance/.test(t) && !/Starting balance/.test(t) }));
+  await k.evaluate(() => { add('exp', 5000, { title: 'Later', cat: 'food', pay: 'card', prof: 'pers' }) }); await k.waitForTimeout(300);
+  ok('a later expense lowers the balance (₪1,450)', await k.evaluate(() => C().cash === 145000));
+  await k.evaluate(() => balSheet()); await k.waitForTimeout(500);
+  ok('the field shows the current balance', await k.evaluate(() => document.getElementById('bal').value === '1450'));
+  await k.fill('#bal', '2000'); await k.evaluate(() => saveBal()); await k.waitForTimeout(400); await k.evaluate(() => applyBal(200000)); await k.waitForTimeout(500);
+  ok('typing a new current balance makes the balance exactly that (₪2,000)', await k.evaluate(() => C().cash === 200000));
   ok('skip: no JS errors', !k.errs.length, k.errs.join('|'));
   // build id served matches the page
   const v = await (await fetch('http://localhost:8787/version')).text();

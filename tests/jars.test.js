@@ -61,6 +61,10 @@ module.exports = async b => {
   const c = await q.evaluate(() => { const x = C(); return { cash: x.cash, spent: x.spent } });
   ok('an expense from before the opening-balance day does not lower the balance', c.cash === 95000, JSON.stringify(c));
   ok('but it still counts in what you spent this month', c.spent === 15000);
+  // income from before the starting day adds to nothing either
+  const pi = await openPage(b, { state: baseState({ cash0: 100000, cash0Date: T('2026-11-20T00:00'), tx: [{ id: 'p1', type: 'inc', amt: 50000, ts: T('2026-11-05T09:00'), title: 'Bonus', cat: 'gift', pay: 'bank', prof: 'pers' }, { id: 'p2', type: 'inc', amt: 20000, ts: T('2026-11-20T11:00'), title: 'Today bonus', cat: 'gift', pay: 'bank', prof: 'pers' }] }), date: D }); await pi.waitForTimeout(1500);
+  const pc = await pi.evaluate(() => { const x = C(); return { cash: x.cash, extra: x.bud - x.bud + 0, bud: x.bud } });
+  ok('income from before the starting day does not raise the balance (only today\'s does)', pc.cash === 120000, JSON.stringify(pc));
   // an older phone (no opening-balance day) can mark an entry as already in the balance
   const o = await openPage(b, { state: baseState({ cash0: 100000, tx: [{ id: 'e1', type: 'exp', amt: 10000, ts: T('2026-11-10T12:00'), title: 'Old', cat: 'food', pay: 'card', prof: 'pers' }] }), date: D }); await o.waitForTimeout(1500);
   ok('without the day set, past expenses still lower the balance (as before)', await o.evaluate(() => C().cash === 90000));
