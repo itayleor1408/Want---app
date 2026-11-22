@@ -40,6 +40,14 @@ module.exports = async b => {
   ok('wish jar: "No plan" is selected by default', await p.evaluate(() => /No monthly amount/.test(document.getElementById('sh').innerText) && !document.getElementById('pnone').hidden));
   await p.evaluate(() => mkJar()); await p.waitForTimeout(500);
   ok('wish jar created without any monthly plan', await p.evaluate(() => { const j = S.jars.find(x => x.name === 'Lamp'); return j && j.plan === 0 && !j.pct && !j.next && S.wish[0].jar === j.id }));
+  // the % sign shows after typing and goes away when typing again
+  await p.evaluate(() => { newJar({ name: 'Pct', target: 100000 }); gmode('pct') }); await p.waitForTimeout(500);
+  await p.focus('#pc'); await p.keyboard.type('12.5'); await p.evaluate(() => document.activeElement.blur()); await p.waitForTimeout(200);
+  ok('after typing, the number shows with a % sign', await p.evaluate(() => document.getElementById('pc').value === '12.5%'));
+  ok('the percent still counts (12.5)', await p.evaluate(() => G.pct === 12.5));
+  await p.focus('#pc'); await p.waitForTimeout(200);
+  ok('typing again removes the % sign', await p.evaluate(() => document.getElementById('pc').value === '12.5'));
+  await p.evaluate(() => { document.activeElement.blur(); close() }); await p.waitForTimeout(400);
   // creating with a percent
   await p.evaluate(() => { newJar({ name: 'Trip', target: 2000000 }); G.mode = 'pct'; G.pct = 15; mkJar() }); await p.waitForTimeout(400);
   ok('new jar with 15% of income', await p.evaluate(() => { const j = S.jars.find(x => x.name === 'Trip'); return j.pct === 15 && j.freq === 'm' && j.plan === 0 && j.next > 0 }));
