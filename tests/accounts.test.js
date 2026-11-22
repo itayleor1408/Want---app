@@ -65,5 +65,23 @@ module.exports = async b => {
   ok('owner\'s cloud was not touched by the other user', !(await dump(o, OWN)).includes('NEWUSER-1'));
   await o.evaluate(() => settings()); await o.waitForTimeout(800);
   ok('and the other user is now in the list to switch to', await o.evaluate(() => /1 activities|1 activity/.test(document.getElementById('sh').innerText) || /Private cloud/.test(document.getElementById('sh').innerText)));
-  ok('no JS errors', !p.errs.length && !q.errs.length && !r.errs.length && !o.errs.length, [...p.errs, ...q.errs, ...r.errs, ...o.errs].join('|'));
+  // --- an account on this phone can be removed (before handing the phone to someone), with its cloud copy untouched
+  const idNew = await o.evaluate(() => stashes().find(x => x.id !== 'owner').id);
+  await o.evaluate(i => stashSheet(i), idNew); await o.waitForTimeout(600);
+  ok('tapping another account offers Switch and Remove', await o.evaluate(() => /Switch to this account/.test(document.getElementById('sh').innerText) && /Remove from this phone/.test(document.getElementById('sh').innerText)));
+  await o.evaluate(i => removeAsk(i), idNew); await o.waitForTimeout(500);
+  ok('removing asks first and says what happens to the data', await o.evaluate(() => /Remove from this phone/.test(document.getElementById('sh').innerText) && /(cloud|phone)/i.test(document.getElementById('sh').innerText)));
+  await o.evaluate(i => removeStash(i), idNew); await o.waitForTimeout(600);
+  ok('the removed account is gone from this phone', await o.evaluate(() => stashes().length === 0 && !/Accounts on this phone/i.test(document.getElementById('sh').innerText)));
+  ok('but its cloud backup is still there', (await dump(o, newKey)).includes('NEWUSER-1'));
+  ok('and the owner is still signed in with all data', await o.evaluate(k => S.tx.length === 2 && S.sync.key === k, OWN));
+  // --- with no Google/email set up, a new user still gets a first screen where a private account (key) can be created
+  await fetch('http://localhost:8787/__env?GOOGLE_CLIENT_ID=&BREVO_API_KEY=');
+  const f = await openPage(b, {}); await f.waitForTimeout(1800);
+  ok('first screen offers "Create my private account" even without Google/email', await f.evaluate(() => /(Sign in|Create your account) to start/.test(document.body.innerText) && /Create my private account/.test(document.body.innerText) && !document.getElementById('em')));
+  await f.click('text=Create my private account'); await f.waitForTimeout(2800);
+  ok('creating it gives a real key and continues to setup', await f.evaluate(() => S.sync.key.length >= 30 && S.sync.verified === true && /Get started|How much money/.test(document.body.innerText)));
+  ok('a user with a key but no owner rights has no bank rows', await f.evaluate(() => { settings(); return true }) && (await f.waitForTimeout(700), await f.evaluate(() => !/Sync bank & card/i.test(document.body.innerText) && !/Owner/i.test(document.getElementById('sh').innerText))));
+  await fetch('http://localhost:8787/__env?GOOGLE_CLIENT_ID=test-client&BREVO_API_KEY=k');
+  ok('no JS errors', !p.errs.length && !q.errs.length && !r.errs.length && !o.errs.length && !f.errs.length, [...p.errs, ...q.errs, ...r.errs, ...o.errs, ...f.errs].join('|'));
 };
