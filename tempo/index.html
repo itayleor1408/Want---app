@@ -41,6 +41,7 @@ input[type=date].f,input[type=time].f{min-height:54px;-webkit-appearance:none;ap
 .ld{width:22px;height:4px;border-radius:3px;--f:var(--a);--k:var(--fl2);background:linear-gradient(to right,var(--f) var(--w,0%),var(--k) var(--w,0%))}.ld.hi{--f:var(--r)}:root[dir=rtl] .ld{transform:scaleX(-1)}
 .dy.on .ld{--k:rgba(127,127,127,.45);--f:var(--bg)}.dy.on .ld.hi{--f:var(--r)}
 .wr{display:flex;align-items:center;gap:12px;background:color-mix(in srgb,var(--r) 10%,var(--c));border-radius:22px;padding:14px 16px;margin-bottom:14px;box-shadow:var(--sh)}.wr b{display:block;font-weight:800}.wr .sub{font-size:13.5px;display:block}
+.gos{display:flex;gap:6px;flex:none}a.btn{text-decoration:none;margin-bottom:10px}a.btn.s{background:var(--fl);color:var(--t)}
 .fit{padding:6px 11px;font-size:13px;color:var(--a);background:color-mix(in srgb,var(--a) 14%,transparent);flex:none}
 </style></head><body><div id="app"></div>
 <div class="fabs"><button class="ib" id="gb" aria-label="Settings"></button><button class="ib p" id="fab" aria-label="Add" style="background:var(--t);color:var(--bg)"></button></div>
@@ -53,14 +54,15 @@ const ic=(n,s=24)=>`<svg class="${n=='left'||n=='right'?'fl':''}" width="${s}" h
 /* ---------- i18n ---------- */
 const HE={'Today':'היום','Week':'שבוע','Later':'אחר כך','New':'חדש','Edit':'עריכה','Settings':'הגדרות','Next up':'הבא','Now':'עכשיו','Free':'פנוי','All clear':'הכול בוצע','left':'נשארו','Done':'בוצעו','Left':'נותרו','Missed':'הוחמצו','Nothing planned. Tap + to add.':'אין תוכניות. לחצו + להוספה.','Nothing here. Tap + to add.':'אין כלום. לחצו + להוספה.','Title':'כותרת','What\'s the plan? e.g. Gym tomorrow 18:30 1h':'מה התוכנית? למשל: חדר כושר מחר 18:30 שעה','Date':'תאריך','Time':'שעה','Duration':'משך','Remind me':'תזכורת','Repeat':'חזרה','Off':'כבוי','At time':'בזמן','before':'לפני','Never':'לא','Daily':'יומי','Weekly':'שבועי','Save':'שמירה','Delete':'מחיקה','Deleted':'נמחק','Undo':'ביטול','General':'כללי','Language':'שפה','Theme':'עיצוב','Light':'בהיר','System':'מערכת','Dark':'כהה','Week starts':'השבוע מתחיל','Sun':'א׳','Mon':'ב׳','Reminders':'תזכורות','Notifications':'התראות','Default reminder':'תזכורת ברירת מחדל','Send a test':'שלח בדיקה','Data':'נתונים','Export backup':'ייצוא גיבוי','Import backup':'ייבוא גיבוי','Erase everything':'מחיקת הכול','Erase all your plans?':'למחוק את כל התוכניות?','Imported':'יובא','Test from Tempo':'בדיקה מ-Tempo','It works.':'זה עובד.','Starting now':'מתחיל עכשיו','Starts in':'מתחיל בעוד','min':'דק׳','in':'בעוד','Allowed':'מותר','Blocked in browser settings':'חסום בהגדרות הדפדפן','Needs Add to Home Screen first':'צריך קודם להוסיף למסך הבית','Quick add':'הוספה מהירה','Whole day':'כל היום','Tap to add a time':'ללא שעה','Notifications are not supported here.':'ההתראות לא נתמכות כאן.',
 'Free today':'פנוי היום','Day is done':'היום הסתיים','Biggest gap':'החלון הגדול','Fully booked':'היום תפוס','Fit in':'תכניס','Placed':'הוכנס','No room in the next 2 weeks':'אין מקום בשבועיים הקרובים','Travel':'זמן נסיעה','None':'בלי','Leave by':'לצאת עד','Leave now':'צא עכשיו','Leave in':'צא בעוד','Heavy day':'יום עמוס','Packed':'עמוס','booked':'תפוסות','without a break':'בלי הפסקה','Lighten it':'הקל על היום','Moved':'הועבר','Move':'להעביר','to':'אל','Your day':'היום שלך','Day starts':'היום מתחיל','Day ends':'היום נגמר','info.day':'זמן פנוי נספר רק בין השעות האלה.',
+'My places':'המקומות שלי','Places':'מקומות','Add place':'הוספת מקום','Name':'שם','Address':'כתובת','Search':'חיפוש','Use my location':'המיקום שלי עכשיו','Where':'איפה','No places yet':'עדיין אין מקומות','Add places in Settings':'אפשר להוסיף מקומות בהגדרות','Go':'יוצאים','Searching…':'מחפש…','No results':'לא נמצאו תוצאות','Home':'בית','Work':'עבודה','Gym':'חדר כושר','Bus station':'תחנת אוטובוס','Other':'אחר','Current location':'המיקום הנוכחי','Bus':'אוטובוס','Walk':'הליכה','Drive':'נסיעה','from':'מ','Estimate from straight-line distance. Open a map app for live buses.':'הערכה לפי מרחק באוויר. לאוטובוסים בזמן אמת פותחים אפליקציית מפות.','Location unavailable':'המיקום לא זמין','Choose a result first':'בחרו קודם תוצאה','info.places':'שמרו בית, עבודה, חדר כושר ותחנות. אפשר לשייך מקום לכל אירוע ולקבל הערכת זמן נסיעה.',
 'info.notif':'התראות מופיעות כשהאפליקציה פתוחה או ברקע. באייפון צריך קודם "הוסף למסך הבית". כשהאפליקציה סגורה לגמרי אין התראה בלי שרת דחיפה.','info.rem':'כמה זמן לפני כל אירוע חדש להתריע.','info.quick':'אפשר לכתוב בשפה חופשית: "פגישה מחר 14:00 שעה" והאפליקציה תמלא לבד.','info.data':'הכול נשמר רק בטלפון הזה. מומלץ לייצא גיבוי מדי פעם.'};
-const EN={'info.day':'Free time is only counted between these hours.','info.notif':'Alerts show while the app is open or in the background. On iPhone, Add to Home Screen first. With the app fully closed there is no alert without a push server.','info.rem':'How long before a new event to alert you.','info.quick':'Type naturally: "Dentist tomorrow 14:00 1h" and Tempo fills in the rest.','info.data':'Everything is stored only on this phone. Export a backup now and then.'};
+const EN={'info.places':'Save home, work, the gym and bus stops. Attach a place to any event to get a travel estimate.','info.day':'Free time is only counted between these hours.','info.notif':'Alerts show while the app is open or in the background. On iPhone, Add to Home Screen first. With the app fully closed there is no alert without a push server.','info.rem':'How long before a new event to alert you.','info.quick':'Type naturally: "Dentist tomorrow 14:00 1h" and Tempo fills in the rest.','info.data':'Everything is stored only on this phone. Export a backup now and then.'};
 let S;const lang=()=>S.set.lang,t=k=>lang()=='he'?(HE[k]||k):(EN[k]||k);
 const loc=()=>lang()=='he'?'he-IL':'en-GB';
 /* ---------- state ---------- */
 const KEY='tempo.v1';
 function load(){try{S=JSON.parse(localStorage.getItem(KEY))}catch(e){}
- if(!S||!S.items)S={items:[],set:{}};S.set=Object.assign({lang:/^he/.test(navigator.language)?'he':'en',theme:'',ws:0,notif:true,rem:10,ds:8,de:22},S.set);S.fired=S.fired||{}}
+ if(!S||!S.items)S={items:[],set:{}};S.set=Object.assign({lang:/^he/.test(navigator.language)?'he':'en',theme:'',ws:0,notif:true,rem:10,ds:8,de:22},S.set);S.fired=S.fired||{};S.places=S.places||[]}
 const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}};
 const uid=()=>Math.random().toString(36).slice(2,9)+Date.now().toString(36).slice(-3);
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -82,6 +84,39 @@ const occ=ds=>S.items.filter(i=>hit(i,ds)).sort(byTime);
 const later=()=>S.items.filter(i=>!i.date).sort((a,b)=>isDone(a)-isDone(b)||a.created-b.created);
 const missed=()=>{const t=today(),out=[];S.items.forEach(i=>{if(i.date&&(!i.rep||i.rep=='none')&&i.date<t&&i.date>=addD(t,-14)&&!isDone(i,i.date))out.push(i)});return out.sort((a,b)=>a.date.localeCompare(b.date))};
 function toggle(id,ds){const it=S.items.find(i=>i.id==id);it.done=it.done||{};const k=ds||'x';if(it.done[k])delete it.done[k];else it.done[k]=1;save();render(0,true)}
+/* ---------- places ---------- */
+const placeOf=id=>S.places.find(p=>p.id==id);
+const hav=(a,b)=>{const R=6371,r=x=>x*Math.PI/180,dl=r(b.lat-a.lat),dn=r(b.lon-a.lon),h=Math.sin(dl/2)**2+Math.cos(r(a.lat))*Math.cos(r(b.lat))*Math.sin(dn/2)**2;return 2*R*Math.asin(Math.sqrt(h))};
+function est(a,b){const d=hav(a,b);return{km:d,w:Math.max(1,Math.round(d*1.3/5*60)),d:Math.max(3,Math.round(d*1.4/(d<8?30:55)*60+3))}}
+function originFor(pid,ds,time){const dest=placeOf(pid);if(!dest)return null;let prev=null;
+ if(ds&&time){const st=tm(time);occ(ds).forEach(i=>{if(i.pl&&i.time&&tm(i.time)<st&&placeOf(i.pl))prev=i.pl})}
+ const oid=prev||(S.places.find(p=>p.home)||{}).id;return !oid||oid==pid?null:placeOf(oid)}
+function goSheet(id,ds){const it=S.items.find(i=>i.id==id),p=it&&placeOf(it.pl);if(!p)return;const o=originFor(p.id,ds,it.time),e=o&&est(o,p),q=encodeURIComponent(p.name),ll=p.lat+','+p.lon;
+ openSh(`<div class="shd">${p.emoji} ${esc(p.name)}</div>${e?`<div class="sub" style="text-align:center;margin:-8px 0 14px">${t('from')} ${esc(o.name)} · 🚶 ≈${hm(e.w)} · 🚗 ≈${hm(e.d)}</div>`:''}
+ <a class="btn" href="moovit://directions?dest_lat=${p.lat}&dest_lon=${p.lon}&dest_name=${q}">🚌 ${t('Bus')} · Moovit</a>
+ <a class="btn s" target="_blank" rel="noopener" href="https://www.google.com/maps/dir/?api=1&destination=${ll}&travelmode=transit">🚌 ${t('Bus')} · Google Maps</a>
+ <a class="btn s" target="_blank" rel="noopener" href="https://www.google.com/maps/dir/?api=1&destination=${ll}&travelmode=walking">🚶 ${t('Walk')}</a>
+ <a class="btn s" target="_blank" rel="noopener" href="https://waze.com/ul?ll=${ll}&navigate=yes">🚗 ${t('Drive')} · Waze</a>
+ <div class="sub" style="text-align:center;margin-top:6px">${t('Estimate from straight-line distance. Open a map app for live buses.')}</div>`)}
+let PF=null;
+function placesSheet(){openSh(`<div class="shd">${t('My places')}</div><div id="pl"></div>`,pdraw)}
+function pSync(){if(PF&&$('#pn')){PF.name=$('#pn').value;PF.q=$('#pq').value}}
+function pdraw(){const el=$('#pl');if(!el)return;
+ const list=S.places.length?S.places.map(p=>`<div class="li" style="cursor:default"><span class="ic">${p.emoji}</span><span class="gt"><b>${esc(p.name)}</b><span class="sub">${esc((p.addr||'').slice(0,60))}</span></span><button class="ib" aria-label="delete" style="width:38px;height:38px;box-shadow:none;color:var(--r)" onclick="delPlace('${p.id}')">${ic('trash',18)}</button></div>`).join(''):`<div class="empty">${t('No places yet')}</div>`;
+ const form=PF?`<div class="rw">${[['Home','🏠'],['Work','💼'],['Gym','💪'],['Bus station','🚌'],['Other','📍']].map(([n,e])=>`<button class="pill ${PF.emoji==e?'on':''}" onclick="pSync();PF.name='${t(n)}';PF.emoji='${e}';PF.home=${n=='Home'};pdraw()">${e} ${t(n)}</button>`).join('')}</div>
+ <input class="f" id="pn" value="${esc(PF.name)}" placeholder="${t('Name')}"><input class="f" id="pq" value="${esc(PF.q)}" placeholder="${t('Address')}" onkeydown="if(event.key=='Enter')pSearch()">
+ <div class="rw"><button class="pill" onclick="pSearch()">🔎 ${t('Search')}</button><button class="pill" onclick="pLoc()">📍 ${t('Use my location')}</button></div>
+ ${PF.msg?`<div class="pv">${PF.msg}</div>`:''}${PF.res.map((r,i)=>`<div class="li" onclick="pPick(${i})"><span class="ic">${PF.sel&&PF.sel.addr==r.addr?'✓':'📍'}</span><span class="gt"><b style="white-space:normal">${esc(r.addr)}</b></span></div>`).join('')}
+ <div class="trio"><button class="ib" aria-label="cancel" onclick="PF=null;pdraw()">✕</button><button class="ib p" aria-label="save" onclick="pSave()">${ic('check')}</button></div>`
+ :`<button class="btn" onclick="PF={name:'',emoji:'📍',q:'',res:[],sel:null};pdraw()">${t('Add place')}</button>`;
+ el.innerHTML=`<div class="card" style="margin:0 0 14px;box-shadow:none;background:var(--fl)">${list}</div>${form}`}
+async function pSearch(){pSync();if(!PF.q.trim())return;PF.msg=t('Searching…');pdraw();
+ try{const r=await fetch(`https://nominatim.openstreetmap.org/search?format=jsonv2&limit=5&accept-language=${lang()}&q=${encodeURIComponent(PF.q)}`),j=await r.json();PF.res=j.map(x=>({addr:x.display_name,lat:+x.lat,lon:+x.lon}));PF.msg=PF.res.length?'':t('No results')}catch(e){PF.msg=t('No results')}pdraw()}
+function pLoc(){pSync();navigator.geolocation?navigator.geolocation.getCurrentPosition(p=>{PF.sel={addr:t('Current location'),lat:p.coords.latitude,lon:p.coords.longitude};PF.res=[];PF.msg='✓ '+t('Current location');pdraw()},()=>{PF.msg=t('Location unavailable');pdraw()},{enableHighAccuracy:true,timeout:10000}):(PF.msg=t('Location unavailable'),pdraw())}
+function pPick(i){pSync();PF.sel=PF.res[i];pdraw()}
+function pSave(){pSync();if(!PF.sel){PF.msg=t('Choose a result first');return pdraw()}const name=PF.name.trim()||PF.q.trim();if(!name)return;
+ S.places.push({id:uid(),name,emoji:PF.emoji,addr:PF.sel.addr,lat:PF.sel.lat,lon:PF.sel.lon,home:!!PF.home});save();PF=null;pdraw()}
+function delPlace(id){S.places=S.places.filter(p=>p.id!=id);save();pdraw()}
 /* ---------- free time, load, fit ---------- */
 const hm=m=>m>=60?`${Math.floor(m/60)}h${m%60?' '+m%60+'m':''}`:`${m}m`;
 const WIN=()=>[S.set.ds*60,S.set.de*60],up5=m=>Math.ceil(m/5)*5;
@@ -140,10 +175,11 @@ function row(it,ds,o={}){const dn=isDone(it,ds),st=it.time?tm(it.time):null,en=s
  const late=!dn&&((ds&&ds<today())||(td&&en!=null&&nowMin()>=Math.max(en,st+1)));
  let sub=it.time?(it.dur?`${it.time}–${ft(en)}`:it.time):(it.date?t('Whole day')+(it.dur?' · '+hm(it.dur):''):(it.dur?hm(it.dur):''));
  if(it.time&&it.trav)sub+=` · ${t('Leave by')} ${ft(st-it.trav)}`;
+ const pl=it.pl&&placeOf(it.pl);if(pl)sub+=` · 📍 ${esc(pl.name)}`;
  const fitOk=!dn&&!it.time&&(!it.rep||it.rep=='none')&&(!it.date||it.date>=today());
  if(o.showDate&&ds)sub=fmtD(ds,{weekday:'short',day:'numeric',month:'short'})+(it.time?' · '+it.time:'');
  if(it.rep&&it.rep!='none')sub+=' · ↻';
- return `<div class="li ${dn?'dn':''} ${cur?'nw':''}" onclick="edit('${it.id}','${ds||''}')"><button class="ck" aria-label="done" onclick="event.stopPropagation();toggle('${it.id}','${ds||''}')">${ic('check',16)}</button><span class="ic">${esc(it.emoji||'📌')}</span><span class="gt"><b>${esc(it.title)}</b><span class="sub ${late?'neg':''}">${sub}</span></span>${fitOk?`<button class="pill fit" onclick="event.stopPropagation();fit('${it.id}')">${t('Fit in')}</button>`:''}</div>`}
+ return `<div class="li ${dn?'dn':''} ${cur?'nw':''}" onclick="edit('${it.id}','${ds||''}')"><button class="ck" aria-label="done" onclick="event.stopPropagation();toggle('${it.id}','${ds||''}')">${ic('check',16)}</button><span class="ic">${esc(it.emoji||'📌')}</span><span class="gt"><b>${esc(it.title)}</b><span class="sub ${late?'neg':''}">${sub}</span></span>${pl&&!dn&&ds==today()?`<button class="pill fit" onclick="event.stopPropagation();goSheet('${it.id}','${ds}')">${t('Go')}</button>`:''}${fitOk?`<button class="pill fit" onclick="event.stopPropagation();fit('${it.id}')">${t('Fit in')}</button>`:''}</div>`}
 const list=(arr,ds,o)=>arr.length?arr.map(i=>row(i,ds,o)).join(''):`<div class="empty">${t(o&&o.later?'Nothing here. Tap + to add.':'Nothing planned. Tap + to add.')}</div>`;
 function view(){
  if(tab==0){const td=today(),all=occ(td),dn=all.filter(i=>isDone(i,td)).length,[h,l]=hero(),ms=missed();
@@ -174,32 +210,36 @@ function segPlace(el,i,anim){const b=el.querySelectorAll('button')[i],h=el.query
 const REMS=[[-1,'Off'],[0,'At time'],[5,'5'],[10,'10'],[30,'30'],[60,'60']],DURS=[15,30,45,60,90,120],REPS=[['none','Never'],['daily','Daily'],['weekly','Weekly']];
 let F;
 function edit(id,ds){const it=id?S.items.find(i=>i.id==id):null;
- F=it?{id:it.id,title:it.title,date:it.date,time:it.time||'',dur:it.dur||0,rem:it.rem??-1,trav:it.trav||0,rep:it.rep||'none',emoji:it.emoji||'📌',pick:true}
-  :{title:'',date:tab==2?null:(tab==1?sel:today()),time:'',dur:S.set.dur||30,rem:S.set.rem,trav:0,rep:'none',emoji:'📌',pick:false};
+ F=it?{id:it.id,title:it.title,date:it.date,time:it.time||'',dur:it.dur||0,rem:it.rem??-1,trav:it.trav||0,pl:it.pl||null,rep:it.rep||'none',emoji:it.emoji||'📌',pick:true}
+  :{title:'',date:tab==2?null:(tab==1?sel:today()),time:'',dur:S.set.dur||30,rem:S.set.rem,trav:0,pl:null,rep:'none',emoji:'📌',pick:false};
  const pills=(a,cur,fn,lab)=>a.map(x=>`<button class="pill ${x[0]==cur?'on':''}" onclick="${fn}('${x[0]}')">${lab(x)}</button>`).join('');
  openSh(`<div class="shd">${t(it?'Edit':'New')}</div>
  <input class="f" id="fi" maxlength="120" autocomplete="off" placeholder="${t("What's the plan? e.g. Gym tomorrow 18:30 1h")}" value="${esc(F.title)}" enterkeyhint="done">
  <div class="pv" id="pv"></div>
  <div class="f2"><input class="f" type="date" id="fd" value="${F.date||''}"><input class="f" type="time" id="ft" value="${F.time}"></div>
+ <div class="lb">${t('Where')}</div><div class="rw" id="rw"></div>
  <div class="lb">${t('Duration')}</div><div class="rw" id="rd"></div>
  <div class="lb">${t('Remind me')}</div><div class="rw" id="rr"></div>
- <div class="lb">${t('Travel')}</div><div class="rw" id="rt"></div>
+ <div class="lb">${t('Travel')}</div><div class="rw" id="rt"></div><div class="rw" id="rg"></div>
  <div class="lb">${t('Repeat')}</div><div class="rw" id="rp"></div>
  <div class="ems" id="re"></div>
  <div class="trio">${it?`<button class="ib" aria-label="delete" id="bd" style="color:var(--r)">${ic('trash')}</button>`:''}<button class="ib p" aria-label="save" id="bs">${ic('check')}</button></div>`,s=>{
   const fi=$('#fi');const draw=()=>{
    $('#rd').innerHTML=DURS.map(d=>`<button class="pill ${F.dur==d?'on':''}" data-d="${d}">${dur(d)}</button>`).join('');
    $('#rr').innerHTML=REMS.map(r=>`<button class="pill ${F.rem==r[0]?'on':''}" data-r="${r[0]}">${r[0]>1?r[1]+' '+t('min'):t(r[1])}</button>`).join('');
-   $('#rt').innerHTML=[0,10,15,30,45,60].map(n=>`<button class="pill ${F.trav==n?'on':''}" data-t="${n}">${n?n+' '+t('min'):t('None')}</button>`).join('');
+   $('#rw').innerHTML=S.places.length?`<button class="pill ${!F.pl?'on':''}" data-l="">${t('None')}</button>`+S.places.map(p=>`<button class="pill ${F.pl==p.id?'on':''}" data-l="${p.id}">${p.emoji} ${esc(p.name)}</button>`).join(''):`<span class="sub">${t('Add places in Settings')}</span>`;
+   const dest=F.pl&&placeOf(F.pl),og=dest&&originFor(F.pl,$('#fd').value||F.date,$('#ft').value||F.time),ee=og&&est(og,dest);
+   $('#rg').innerHTML=ee?`<span class="sub" style="align-self:center">${t('from')} ${esc(og.name)}</span>`+[['🚶',ee.w],['🚗',ee.d]].filter(x=>x[1]<=120).map(x=>`<button class="pill" data-v="${x[1]}">${x[0]} ≈${x[1]} ${t('min')}</button>`).join(''):'';
+   $('#rt').innerHTML=[...new Set([0,10,15,30,45,60,F.trav])].sort((a,b)=>a-b).map(n=>`<button class="pill ${F.trav==n?'on':''}" data-t="${n}">${n?n+' '+t('min'):t('None')}</button>`).join('');
    $('#rp').innerHTML=REPS.map(r=>`<button class="pill ${F.rep==r[0]?'on':''}" data-p="${r[0]}">${t(r[1])}</button>`).join('');
    $('#re').innerHTML=EMS.map(e=>`<button class="${F.emoji==e?'on':''}" data-e="${e}">${e}</button>`).join('')};
   const prev=()=>{const p=parse(fi.value,F.date||today()),b=[];if(p.date)b.push(fmtD(p.date,{weekday:'short',day:'numeric',month:'short'}));if(p.time)b.push(p.time);if(p.dur)b.push(dur(p.dur));if(p.trav)b.push('🚗 '+p.trav+'m');$('#pv').textContent=b.length?'✦ '+b.join(' · '):'';if(!F.pick){F.emoji=guess(fi.value);const ee=$('#re');if(ee&&ee.children.length){[...ee.children].forEach(c=>c.classList.toggle('on',c.dataset.e==F.emoji))}}return p};
-  draw();prev();
-  fi.oninput=prev;s.onclick=e=>{const b=e.target.closest('button');if(!b)return;const d=b.dataset;if(d.d)F.dur=+d.d;else if(d.r)F.rem=+d.r;else if(d.p)F.rep=d.p;else if(d.t)F.trav=+d.t;else if(d.e){F.emoji=d.e;F.pick=true}else return;draw();prev()};
+  draw();prev();$('#fd').onchange=$('#ft').onchange=draw;
+  fi.oninput=prev;s.onclick=e=>{const b=e.target.closest('button');if(!b)return;const d=b.dataset;if(d.d)F.dur=+d.d;else if(d.r)F.rem=+d.r;else if(d.p)F.rep=d.p;else if(d.t)F.trav=+d.t;else if(d.v)F.trav=+d.v;else if(d.l!==undefined)F.pl=d.l||null;else if(d.e){F.emoji=d.e;F.pick=true}else return;draw();prev()};
   fi.onkeydown=e=>{if(e.key=='Enter')$('#bs').click()};
   $('#bs').onclick=()=>{const p=parse(fi.value,$('#fd').value||F.date||today());const title=p.title||fi.value.trim();if(!title){fi.focus();return}
    let date=p.date||$('#fd').value||null,time=p.time||$('#ft').value||'';if(F.rep!='none'&&!date)date=today();
-   const o={title,date,time,dur:p.dur||F.dur,trav:p.trav!=null?p.trav:F.trav,rem:time?F.rem:-1,rep:date?F.rep:'none',emoji:F.pick?F.emoji:guess(title)};
+   const o={title,date,time,dur:p.dur||F.dur,trav:p.trav!=null?p.trav:F.trav,pl:F.pl,rem:time?F.rem:-1,rep:date?F.rep:'none',emoji:F.pick?F.emoji:guess(title)};
    if(F.id)Object.assign(S.items.find(i=>i.id==F.id),o);else S.items.push(Object.assign({id:uid(),created:Date.now(),done:{}},o));
    if(date&&tab==1)sel=date;save();closeSh();render(0,true);due()};
   const bd=$('#bd');if(bd)bd.onclick=()=>{const i=S.items.findIndex(x=>x.id==F.id),old=S.items[i];S.items.splice(i,1);save();closeSh();render(0,true);toast(t('Deleted'),()=>{S.items.splice(i,0,old);save();render(0,true)})};
@@ -217,6 +257,7 @@ function notifState(){if(!('Notification'in window))return t('Notifications are 
 function settings(){openSh(`<div class="shd">${t('Settings')}</div>`+
  group('General',`<div class="gw"><div class="gr"><span class="gt">${t('Language')}</span>${segH('s1',['English','עברית'])}</div></div><div class="gw"><div class="gr"><span class="gt">${t('Theme')}</span>${segH('s2',[t('Light'),t('System'),t('Dark')])}</div></div><div class="gw"><div class="gr"><span class="gt">${t('Week starts')}</span>${segH('s3',[t('Sun'),t('Mon')])}</div></div>`)+
  group('Your day',`<div class="gw"><div class="gr"><span class="gt">${t('Day starts')}</span>${infoBtn}<select id="d1">${[5,6,7,8,9,10,11,12].map(h=>`<option value="${h}" ${S.set.ds==h?'selected':''}>${z(h)}:00</option>`).join('')}</select></div>${info('info.day')}</div><div class="gw"><div class="gr"><span class="gt">${t('Day ends')}</span><select id="d2">${[16,17,18,19,20,21,22,23,24].map(h=>`<option value="${h}" ${S.set.de==h?'selected':''}>${z(h%24)}:00</option>`).join('')}</select></div></div>`)+
+ group('Places',`<div class="gw"><div class="gr" role="button" id="pls"><span class="gt">${t('My places')}<div class="sub">${S.places.length||''}</div></span>${infoBtn}${ic('right',18)}</div>${info('info.places')}</div>`)+
  group('Reminders',`<div class="gw"><div class="gr" role="button" id="tn"><span class="gt">${t('Notifications')}<div class="sub" id="ns">${notifState()}</div></span>${infoBtn}<span class="tg ${S.set.notif&&Notification.permission=='granted'?'on':''}" id="tgn"></span></div>${info('info.notif')}</div>
  <div class="gw"><div class="gr"><span class="gt">${t('Default reminder')}</span>${infoBtn}<select id="dr">${REMS.map(r=>`<option value="${r[0]}" ${S.set.rem==r[0]?'selected':''}>${r[0]>1?r[1]+' '+t('min'):t(r[1])}</option>`).join('')}</select></div>${info('info.rem')}</div>
  <div class="gw"><div class="gr" role="button" id="tt2"><span class="gt">${t('Send a test')}</span></div></div>`)+
@@ -229,11 +270,12 @@ function settings(){openSh(`<div class="shd">${t('Settings')}</div>`+
    if(S.set.notif&&Notification.permission=='granted'){S.set.notif=false;$('#tgn').classList.remove('on')}
    else{if(Notification.permission=='default'){try{await Notification.requestPermission()}catch(e){}}if(Notification.permission=='granted'){S.set.notif=true;$('#tgn').classList.add('on')}}
    $('#ns').textContent=notifState();save()};
+  $('#pls').onclick=placesSheet;
   $('#d1').onchange=e=>{S.set.ds=+e.target.value;save();render(0,true)};$('#d2').onchange=e=>{S.set.de=+e.target.value;save();render(0,true)};
   $('#dr').onchange=e=>{S.set.rem=+e.target.value;save()};
   $('#tt2').onclick=()=>notify(t('Test from Tempo'),t('It works.'),'test'+Date.now());
-  $('#ex').onclick=()=>{const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify({items:S.items,set:S.set})],{type:'application/json'}));a.download='tempo-backup-'+today()+'.json';a.click()};
-  $('#im').onchange=async e=>{try{const j=JSON.parse(await e.target.files[0].text());if(Array.isArray(j.items)){S.items=j.items;Object.assign(S.set,j.set||{});save();applyLang();closeSh();render(0,true);toast(t('Imported'))}}catch(x){}};
+  $('#ex').onclick=()=>{const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify({items:S.items,set:S.set,places:S.places})],{type:'application/json'}));a.download='tempo-backup-'+today()+'.json';a.click()};
+  $('#im').onchange=async e=>{try{const j=JSON.parse(await e.target.files[0].text());if(Array.isArray(j.items)){S.items=j.items;S.places=j.places||S.places;Object.assign(S.set,j.set||{});save();applyLang();closeSh();render(0,true);toast(t('Imported'))}}catch(x){}};
   $('#er').onclick=()=>{if(confirm(t('Erase all your plans?'))){S.items=[];S.fired={};save();closeSh();render(0,true)}}})}
 /* ---------- notifications ---------- */
 async function notify(title,body,tag){pillMsg(title+' · '+body);
