@@ -97,6 +97,9 @@ input:disabled{opacity:.4}
 .egrid2{display:grid;grid-template-columns:repeat(auto-fill,minmax(46px,1fr));gap:6px;max-height:max(150px,min(46vh,340px,calc(100vh - 400px)));-webkit-mask-image:linear-gradient(to bottom,transparent 0,#000 var(--ft,0px),#000 calc(100% - var(--fb,0px)),transparent 100%);mask-image:linear-gradient(to bottom,transparent 0,#000 var(--ft,0px),#000 calc(100% - var(--fb,0px)),transparent 100%);overflow-y:auto;scrollbar-width:none;margin:2px 0 6px;padding:2px}.egrid2::-webkit-scrollbar{display:none}
 .egrid2 button{height:46px;border-radius:14px;font-size:24px;transition:transform .2s var(--spring),background .2s}.egrid2 button:active{transform:scale(.88);background:var(--fl)}.egrid2 button.on{background:var(--t)}
 #lbc{margin:0 0 8px}
+.wdays{display:flex;justify-content:space-between;gap:6px;padding:0 0 12px}.wdays:empty{display:none}
+.wd{flex:1;max-width:48px;aspect-ratio:1;border-radius:50%;background:var(--fl);font-weight:800;font-size:14px;color:var(--s2);transition:transform .25s var(--spring),background .2s,color .2s}.wd:active{transform:scale(.9)}.wd.on{background:var(--t);color:var(--bg)}
+.dotc{width:9px;height:9px;border-radius:50%;background:var(--s);opacity:.55;display:block}
 .tile{font-size:24px;width:54px;height:54px;border-radius:18px;background:var(--fl);color:var(--t);display:grid;place-items:center;flex:none;transition:transform .25s var(--spring),background .2s,color .2s}.tile:active{transform:scale(.92)}.tile.on{background:var(--t);color:var(--bg)}
 .emj{font-size:1.05em;line-height:1}.ic .emj{font-size:19px}
 .cpv{position:relative;width:92px;margin:0 auto 14px}.cpi{flex:none;width:92px;height:92px;border-radius:30px;font-size:44px;display:grid;place-items:center;transition:transform .3s var(--spring),background .3s}.cpi:active{transform:scale(.92)}.cpi.op{box-shadow:0 0 0 3px var(--t)}.eplus{display:grid;place-items:center;color:var(--s);background:transparent!important;box-shadow:inset 0 0 0 1.5px var(--fl2)}#cpr{margin-bottom:10px}
@@ -219,7 +222,7 @@ const HE={'Today':'היום','Week':'שבוע','Later':'אחר כך','New':'חד
 'What?':'מה?','When?':'מתי?','More options':'עוד אפשרויות','Add now':'הוסיפו עכשיו','Tomorrow':'מחר','Pick a date':'בחרו תאריך','Anytime':'בכל שעה','At a time':'בשעה','Time':'שעה',
 'Leave':'צא','tasks':'משימות','Too soon to walk there':'מוקדם מדי להגיע בהליכה','Add a note':'הוסיפו הערה',
 'Edit category':'עריכת קטגוריה','New category':'קטגוריה חדשה','Change icon':'שינוי סמל','Or type any emoji':'או הקלידו כל אימוג׳י','Color':'צבע','Preview':'תצוגה מקדימה','Icon':'סמל','Category name':'שם הקטגוריה','e.g. Reading':'למשל: קריאה','Give it a name first':'קודם תנו שם','Write what the task is first':'קודם כתבו מה המשימה','Pick a date first':'קודם בחרו תאריך','Search and choose the address first':'קודם חפשו ובחרו כתובת','Give the place a name first':'קודם תנו שם למקום','Write a city name first':'קודם כתבו שם עיר','Not done':'לא בוצע',
-'Where?':'איפה?','More icons':'עוד סמלים','Type any emoji':'הקלידו כל אימוג׳י','Use your emoji keyboard':'ממקלדת האימוג׳י','task':'משימה','Version':'גרסה','local':'מקומית','Your plan':'התוכנית שלך','New place':'מקום חדש','Type':'סוג','e.g. Gym':'למשל: חדר כושר','Street, city':'רחוב, עיר','Getting there':'איך מגיעים','Direct buses':'אוטובוסים ישירים','Finding buses…':'מחפש אוטובוסים…','No direct bus found':'לא נמצא אוטובוס ישיר','No bus stop near one of the places':'אין תחנה ליד אחד המקומות','Late':'מאחר','Open Moovit':'פתיחה ב-Moovit','Next trip':'הנסיעה הבאה','Nearest stop':'התחנה הקרובה','Show only the buses you need':'רק האוטובוסים שאתם צריכים','Add a place':'הוסיפו מקום','Add a place to a task to see the bus you need for it.':'הוסיפו מקום למשימה כדי לראות את האוטובוס שצריך אליה.','info.busEmpty':'הוסיפו את המקומות שאתם הולכים אליהם (בית, עבודה, חדר כושר), ו-Tempo יראה רק את האוטובוס הבא לכל אחד.',
+'Where?':'איפה?','Repeat':'חזרה','Repeats':'חוזר','On these days':'בימים האלה','Pick the days':'בחרו ימים','Pick at least one day':'בחרו לפחות יום אחד','Every day':'כל יום','Sun–Thu':'א׳–ה׳','Mon–Fri':'ב׳–ו׳','Weekends':'סופ״ש','More icons':'עוד סמלים','Type any emoji':'הקלידו כל אימוג׳י','Use your emoji keyboard':'ממקלדת האימוג׳י','task':'משימה','Version':'גרסה','local':'מקומית','Your plan':'התוכנית שלך','New place':'מקום חדש','Type':'סוג','e.g. Gym':'למשל: חדר כושר','Street, city':'רחוב, עיר','Getting there':'איך מגיעים','Direct buses':'אוטובוסים ישירים','Finding buses…':'מחפש אוטובוסים…','No direct bus found':'לא נמצא אוטובוס ישיר','No bus stop near one of the places':'אין תחנה ליד אחד המקומות','Late':'מאחר','Open Moovit':'פתיחה ב-Moovit','Next trip':'הנסיעה הבאה','Nearest stop':'התחנה הקרובה','Show only the buses you need':'רק האוטובוסים שאתם צריכים','Add a place':'הוסיפו מקום','Add a place to a task to see the bus you need for it.':'הוסיפו מקום למשימה כדי לראות את האוטובוס שצריך אליה.','info.busEmpty':'הוסיפו את המקומות שאתם הולכים אליהם (בית, עבודה, חדר כושר), ו-Tempo יראה רק את האוטובוס הבא לכל אחד.',
 'info.notif':'התראות מופיעות כשהאפליקציה פתוחה או ברקע. באייפון צריך קודם "הוסף למסך הבית". כשהאפליקציה סגורה לגמרי אין התראה בלי שרת דחיפה.','info.rem':'כמה זמן לפני כל אירוע חדש להתריע.','info.quick':'אפשר לכתוב בשפה חופשית: "פגישה מחר 14:00 שעה" והאפליקציה תמלא לבד.','info.data':'הכול נשמר רק בטלפון הזה. מומלץ לייצא גיבוי מדי פעם.'};
 const EN={'info.busEmpty':'Add the places you go to (home, work, the gym) and Tempo will show only the next bus to each one.','info.places':'Save home, work, the gym and bus stops. Attach a place to any event to get a travel estimate.','info.day':'Free time is only counted between these hours.','info.notif':'Alerts show while the app is open or in the background. On iPhone, Add to Home Screen first. With the app fully closed there is no alert without a push server.','info.rem':'How long before a new event to alert you.','info.quick':'Type naturally: "Dentist tomorrow 14:00 1h" and Tempo fills in the rest.','info.data':'Everything is stored only on this phone. Export a backup now and then.'};
 let S;const lang=()=>S.set.lang,t=k=>lang()=='he'?(HE[k]||k):(EN[k]||k);
@@ -242,7 +245,11 @@ const fmtD=(s,o)=>new Intl.DateTimeFormat(loc(),o).format(pd(s));
 const dur=m=>m>=60?(m%60?`${Math.floor(m/60)}h ${m%60}m`:`${m/60}h`):`${m}m`;
 function weekStart(s){const d=pd(s);const diff=(d.getDay()-S.set.ws+7)%7;d.setDate(d.getDate()-diff);return dk(d)}
 /* ---------- model ---------- */
-function hit(it,ds){if(!it.date)return false;if(ds<it.date)return false;if(!it.rep||it.rep=='none')return ds==it.date;const n=dayDiff(it.date,ds);return it.rep=='daily'||n%7==0}
+function hit(it,ds){if(!it.date)return false;if(ds<it.date)return false;if(!it.rep||it.rep=='none')return ds==it.date;if(it.rep=='days')return (it.days||[]).includes(pd(ds).getDay());const n=dayDiff(it.date,ds);return it.rep=='daily'||n%7==0}
+const DSHORT=()=>lang()=='he'?['א׳','ב׳','ג׳','ד׳','ה׳','ו׳','ש׳']:['Su','Mo','Tu','We','Th','Fr','Sa'];
+const weekOrder=()=>[...Array(7)].map((_,i)=>(i+S.set.ws)%7);
+function repDays(it){return it.rep=='days'?(it.days||[]):it.rep=='daily'?[0,1,2,3,4,5,6]:it.rep=='weekly'&&it.date?[pd(it.date).getDay()]:[]}
+function repLabel(days){const d=[...days].sort((a,b)=>a-b),k=d.join('');if(d.length==7)return t('Every day');if(k=='01234')return t('Sun–Thu');if(k=='12345')return t('Mon–Fri');if(k=='06')return t('Weekends');const N=lang()=='he'?['א׳','ב׳','ג׳','ד׳','ה׳','ו׳','שבת']:['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];return weekOrder().filter(x=>d.includes(x)).map(x=>N[x]).join(', ')}
 const isDone=(it,ds)=>!!(it.done&&it.done[ds||'x']);
 const byTime=(a,b)=>(a.time?tm(a.time):-1)-(b.time?tm(b.time):-1)||a.title.localeCompare(b.title);
 const occ=ds=>S.items.filter(i=>hit(i,ds)).sort(byTime);
@@ -388,7 +395,7 @@ function row(it,ds,o={}){const dn=isDone(it,ds),st=it.time?tm(it.time):null,en=s
  const fitOk=!dn&&!it.time&&(!it.rep||it.rep=='none')&&(!it.date||it.date>=today());
  if(o.showDate&&ds)sub=fmtD(ds,{weekday:'short',day:'numeric',month:'short'})+(it.time?' · '+it.time:'');
  if(late&&!o.showDate)sub+=` · ${t('Not done')}`;
- if(it.rep&&it.rep!='none')sub+=' · ↻';
+ if(it.rep&&it.rep!='none')sub+=` · ↻ ${repLabel(repDays(it))}`;
  return `<div class="li ${dn?'dn':''} ${cur?'nw':''}" onclick="detail('${it.id}','${ds||''}')"><button class="ck" aria-label="done" onclick="event.stopPropagation();toggle('${it.id}','${ds||''}')">${ic('check',16)}</button><span class="ic" style="${areaTint(it.area)}">${iconOf(it)}</span><span class="gt"><b>${esc(it.title)}</b><span class="sub ${late?'neg':''}">${sub}</span></span>${fitOk?`<button class="pill fit" onclick="event.stopPropagation();fit('${it.id}')">${t('Fit in')}</button>`:''}</div>`}
 const list=(arr,ds,o)=>arr.length?((o&&o.n&&arr.length>o.n)?vlist(arr.map(i=>row(i,ds,o)).join(''),o.n,66):arr.map(i=>row(i,ds,o)).join('')):`<div class="empty">${t(o&&o.later?'Nothing here. Tap + to add.':'Nothing planned. Tap + to add.')}</div>`;
 function view(){
@@ -433,7 +440,7 @@ const catHtml=(c,z=20)=>c.emoji?`<span class="emj" style="font-size:${Math.round
 const CE=['💼','🏠','💪','📚','👥','🍽️','🩺','📞','🛒','🎉','✈️','🧘','🎯','💡','🎨','🎮','🚗','🐶','🛠️','❤️'];
 const catList=()=>S.cats.map(c=>[c.id,catHtml(c),c.def?t(c.name):c.name,c.color]);
 const areaOf=k=>k?catList().find(a=>a[0]==k):null;
-const iconOf=it=>{const a=areaOf(it.area);return a?a[1]:(it.emoji&&it.emoji!='📌'?`<span class="emj">${esc(it.emoji)}</span>`:ic('pin',20))};
+const iconOf=it=>{const a=areaOf(it.area);return a?a[1]:(it.emoji&&it.emoji!='📌'?`<span class="emj">${esc(it.emoji)}</span>`:'<span class="dotc"></span>')};
 const iconTxt=it=>{const c=it.area&&S.cats.find(x=>x.id==it.area);return c&&c.emoji?c.emoji+' ':''};
 const areaTint=k=>{const a=areaOf(k);return a?`background:color-mix(in srgb,${a[3]} 18%,var(--fl));color:color-mix(in srgb,${a[3]} 78%,var(--t))`:''};
 const guessArea=s=>{for(const[r,e]of EM)if(r.test(s)){const id=({'💼':'work','💪':'health','🩺':'health','📚':'study','👥':'social','🎉':'social','🏠':'home'})[e];if(id&&S.cats.some(c=>c.id==id))return id}return null};
@@ -471,7 +478,7 @@ function catPopup(cat,done){const c=cat?{...cat,name:cat.def?t(cat.name):cat.nam
    s.querySelectorAll('[data-ce]').forEach(x=>x.classList.toggle('on',x.dataset.ce==c.emoji));s.querySelectorAll('[data-cc]').forEach(x=>x.classList.toggle('on',x.dataset.cc==c.color));
    gate($('#cps'),n?'':t('Give it a name first'),$('#cpw'),'cpn')};
   const setOpen=v=>{open=v;const g=$('#cpg'),r=$('#cpr');
-   if(v){r.innerHTML=v=='i'?[...new Set([...(CE.includes(c.emoji)?[]:[c.emoji]),...CE])].filter(Boolean).map(n=>`<button type="button" class="tile" data-ce="${n}">${n}</button>`).join('')+`<button type="button" class="tile tplus" data-lib="1" aria-label="${t('More icons')}">${ic('plus',22)}</button>`:COLORS.map(x=>`<button type="button" class="ctile" data-cc="${x}" aria-label="color"><span style="background:${x}"></span></button>`).join('');r.scrollLeft=0;g.classList.add('o');setTimeout(()=>{const on=$('#cpr .on');if(on)on.scrollIntoView({block:'nearest',inline:'center'});fitRows()},60)}
+   if(v){r.innerHTML=v=='i'?`<button type="button" class="tile tplus" data-lib="1" aria-label="${t('More icons')}">${ic('plus',22)}</button>`+[...new Set([c.emoji,...CE])].filter(Boolean).map(n=>`<button type="button" class="tile" data-ce="${n}">${n}</button>`).join(''):COLORS.map(x=>`<button type="button" class="ctile" data-cc="${x}" aria-label="color"><span style="background:${x}"></span></button>`).join('');r.scrollLeft=0;g.classList.add('o');setTimeout(()=>{if(v=='c'){const on=$('#cpr .on');if(on)on.scrollIntoView({block:'nearest',inline:'center'})}else r.scrollLeft=0;fitRows()},60)}
    else g.classList.remove('o');draw()};
   draw();$('#cpn').oninput=draw;$('#cpn').onkeydown=e=>{if(e.key=='Enter')$('#cps').click()};
   s.onclick=e=>{const b=e.target.closest('button');if(!b)return;const d=b.dataset;
@@ -501,12 +508,12 @@ document.addEventListener('click',e=>{const b=e.target.closest('[data-ca],[data-
  x.style.setProperty('--full',x.scrollHeight+'px');x.classList.toggle('x');b.classList.toggle('x');if(x.classList.contains('x'))w.classList.add('has')});
 let F;
 function edit(id,ds){const it=id?S.items.find(i=>i.id==id):null,wz=!it;
- F=it?{id:it.id,title:it.title,date:it.date,time:it.time||'',dur:it.dur||30,rem:it.rem??-1,trav:it.trav||0,mode:it.mode||null,travPick:!!it.trav,pl:it.pl||null,rep:it.rep||'none',area:it.area||null,areaPick:true,open:null,g:'what',step:0,dm:null}
-  :{title:'',date:tab==2?null:(tab==1?sel:today()),time:'',dur:S.set.dur||30,rem:S.set.rem,trav:0,mode:null,travPick:false,pl:null,rep:'none',area:null,areaPick:false,open:null,g:'what',step:0,dm:null};
+ F=it?{id:it.id,title:it.title,date:it.date,time:it.time||'',dur:it.dur||30,rem:it.rem??-1,trav:it.trav||0,mode:it.mode||null,travPick:!!it.trav,pl:it.pl||null,rep:it.rep&&it.rep!='none'?'days':'none',days:repDays(it),area:it.area||null,areaPick:true,open:null,g:'what',step:0,dm:null}
+  :{title:'',date:tab==2?null:(tab==1?sel:today()),time:'',dur:S.set.dur||30,rem:S.set.rem,trav:0,mode:null,travPick:false,pl:null,rep:'none',days:[],area:null,areaPick:false,open:null,g:'what',step:0,dm:null};
  const grp=(k,title,body,flat)=>`<div class="sg ${flat?'flat':''}" data-g="${k}"><button class="sgh" data-gh="${k}" type="button"><span>${title}</span><span class="sub" id="sm-${k}"></span>${ic('chev',16)}</button><div class="gx" id="gx-${k}"><div><div class="sgb">${body}</div></div></div></div>`;
  openSh(`<div class="shd" id="sht">${t(it?'Edit':STEPS[0])}</div>${wz?'<div class="sd" id="sd"></div>':''}<div id="fw" class="${wz?'wz':''}">
  ${grp('what',t('What?'),`<input class="f" id="fi" maxlength="120" autocomplete="off" placeholder="${t("What's the plan?")}" value="${esc(F.title)}" enterkeyhint="${wz?'next':'done'}"><div class="pv h" id="pv"></div><div class="lb">${t('Category')}</div><div class="hrow hs" id="cat"></div>`)}
- ${grp('when',t('When?'),`<button class="dbtn" id="dbtn" type="button"></button><div class="gx" id="dgx"><div><div class="hrow hs" id="rdt"></div><input class="f" type="date" id="fd" style="display:none"></div></div><div id="tmw"></div><div id="dwrap"><div class="lb">${t('Duration')} · <span id="dsum"></span></div><div class="hrow hs" id="rd"></div></div><button class="dbtn" id="wbtn" type="button"></button><div class="gx" id="wgx"><div><div class="hrow hs" id="rwh"></div></div></div>`)}
+ ${grp('when',t('When?'),`<button class="dbtn" id="dbtn" type="button"></button><div class="gx" id="dgx"><div><div class="hrow hs" id="rdt"></div><input class="f" type="date" id="fd" style="display:none"></div></div><div id="tmw"></div><div id="dwrap"><div class="lb">${t('Duration')} · <span id="dsum"></span></div><div class="hrow hs" id="rd"></div></div><button class="dbtn" id="wbtn" type="button"></button><div class="gx" id="wgx"><div><div class="hrow hs" id="rwh"></div></div></div><button class="dbtn" id="rbtn" type="button"></button><div class="gx" id="rgx"><div><div class="rw" id="rmode" style="margin-bottom:10px"></div><div class="wdays" id="rdays"></div></div></div>`)}
  ${grp('more',t('More options'),`<div class="ac" id="ac"></div>`,true)}</div><div id="tr"></div>`,s=>{
   const fi=$('#fi'),P=(k,v,on,l)=>`<button class="pill ${on?'on':''}" data-${k}="${v}" type="button">${l}</button>`;
   const dmode=()=>F.dm||(!F.date?'none':F.date==today()?'today':F.date==addD(today(),1)?'tom':[2,3,4,5,6].some(i=>F.date==addD(today(),i))?'d:'+F.date:'pick');
@@ -529,14 +536,19 @@ function edit(id,ds){const it=id?S.items.find(i=>i.id==id):null,wz=!it;
    if(pl){dim=false;lab=`${plIc(pl)} ${esc(pl.name)}`;const a=og&&autoTrav(og,pl),tv=F.trav||(a&&a.min)||0,md=F.mode||(a&&a.mode)||'walk';if(tv&&F.time)lab+=` <span class="sub" style="font-weight:700">· ${MODE[md][0]} ${hm(tv)}</span>`}
    const w=$('#wbtn');w.innerHTML=`${ic('pin',20)}<span>${lab}</span>${ic('chev',16)}`;w.classList.toggle('op',!!F.wopen);w.classList.toggle('dim',dim);$('#wgx').classList.toggle('o',!!F.wopen);
    $('#rwh').innerHTML=`<button class="pill nw2" data-np="1" type="button">+ ${t('New place')}</button>`+recent(S.places,S.plUse,p=>p.id,F.pl).map(p=>P('wl',F.pl==p.id?'':p.id,F.pl==p.id,plIc(p)+' '+esc(p.name))).join('');fitRows()};
+  const drawRep=()=>{const b=$('#rbtn');if(!b)return;const show=!!F.date;b.style.display=show?'':'none';if(!show){$('#rgx').classList.remove('o');return}
+   const on=F.rep=='days';b.innerHTML=`${ic('repeat',20)}<span>${on?(F.days.length?t('Repeats')+' · '+repLabel(F.days):t('Pick the days')):t('Repeat')}</span>${ic('chev',16)}`;b.classList.toggle('dim',!on);b.classList.toggle('op',!!F.ropen);$('#rgx').classList.toggle('o',!!F.ropen);
+   $('#rmode').innerHTML=P('rm2','none',!on,t('Never'))+P('rm2','days',on,t('On these days'));
+   $('#rdays').innerHTML=on?weekOrder().map(x=>`<button type="button" class="wd ${F.days.includes(x)?'on':''}" data-wd="${x}">${DSHORT()[x]}</button>`).join(''):'';
+   if(typeof gateW=='function'&&$('#tr').innerHTML)gateW()};
   const drawMore=()=>{const pl=F.pl&&placeOf(F.pl),og=pl&&originFor(F.pl,F.date,F.time),ee=og&&est(og,pl);
    const rows=[];
    if(pl&&F.time)rows.push(['tv',t('Travel'),F.trav?F.trav+' '+t('min'):t('None'),(ee?`<span class="sub" style="flex:0 0 100%">${fromTxt(og.name)}</span>`:'')+chipRow((ee?[['walk','🚶',ee.w],['bus','🚌',Math.round(ee.d*1.5+8)],['drive','🚗',ee.d]].filter(x=>x[2]<=150).map(x=>P('v',x[0]+':'+x[2],F.trav==x[2]&&F.mode==x[0],`${x[1]} ≈${x[2]} ${t('min')}`)).join(''):'')+[...new Set([0,10,15,30,45,60,F.trav])].sort((x,y)=>x-y).map(n=>P('t',n,F.trav==n,n?n+' '+t('min'):t('None'))).join(''),'flex:0 0 100%;min-width:0',1)]);
    if(F.time)rows.push(['rm',t('Remind me'),remL(REMS.find(r=>r[0]==F.rem)||REMS[0]),chipRow(REMS.map(r=>P('r',r[0],F.rem==r[0],remL(r))).join(''),'flex:0 0 100%;min-width:0',1)]);
-   if(F.date)rows.push(['rp',t('Repeat'),t((REPS.find(r=>r[0]==F.rep)||REPS[0])[1]),REPS.map(r=>P('p',r[0],F.rep==r[0],t(r[1]))).join('')]);
    $('#ac').innerHTML=rows.map(([k,l,sm,body])=>`<div class="ar"><button class="arh ${F.open==k?'op':''}" data-o="${k}" type="button"><span>${l}</span><span class="sub">${sm}</span>${ic('chev',16)}</button><div class="gx ${F.open==k?'o':''}"><div><div class="rw" style="padding:2px 0 12px">${body}</div></div></div></div>`).join('');fitRows()};
-  const sums=()=>{const a=areaOf(F.area),w=(k,v)=>{const e=$('#sm-'+k);if(e)e.innerHTML=v};w('what',(a?a[1]+' ':'')+esc(F.title||'—'));w('when',esc(dlabel())+' · '+(F.time?`<bdi dir="ltr">${F.time}–${endOf()}</bdi>`:hm(F.dur)))};
-  const drawAll=()=>{drawDate();drawTime();drawDur();drawCat();drawWhere();drawMore();sums()};
+  const sums=()=>{const a=areaOf(F.area),w=(k,v)=>{const e=$('#sm-'+k);if(e)e.innerHTML=v};w('what',(a?a[1]+' ':'')+esc(F.title||'—'));w('when',(F.rep=='days'&&F.days.length&&F.date?'↻ '+esc(repLabel(F.days)):esc(dlabel()))+' · '+(F.time?`<bdi dir="ltr">${F.time}–${endOf()}</bdi>`:hm(F.dur)))};
+  const moreVis=()=>{const m=$('#bm');if(m)m.parentElement.style.display=F.time?'':'none'};
+  const drawAll=()=>{drawDate();drawTime();drawDur();drawCat();drawWhere();drawRep();drawMore();moreVis();sums()};
   const prev=()=>{if(typeof gateW=='function'&&$('#tr').innerHTML)gateW();const p=parse(fi.value,F.date||today()),b=[];if(p.date)b.push(fmtD(p.date,{weekday:'short',day:'numeric',month:'short'}));if(p.time)b.push(p.time);if(p.dur)b.push(hm(p.dur));if(p.trav)b.push('🚗 '+p.trav+'m');
    $('#pv').classList.toggle('h',!b.length);$('#pv').textContent=b.length?'✦ '+b.join(' · '):(fi.value?'':t('Try: Gym tomorrow 18:30-19:30'));
    if(!F.areaPick){const g=guessArea(fi.value);if(g!==F.area){F.area=g;drawCat();sums()}}};
@@ -545,12 +557,13 @@ function edit(id,ds){const it=id?S.items.find(i=>i.id==id):null,wz=!it;
   const drawTr=()=>{const tr=$('#tr');
    if(!wz){tr.innerHTML=`<div class="trio"><button class="ib" aria-label="delete" id="bd" style="color:var(--r)">${ic('trash')}</button><button class="ib p" aria-label="save" id="bs">${ic('check')}</button></div><div class="why" id="why"></div>`;gateW();return}
    tr.innerHTML=(F.step==0?`<div class="trio"><button class="ib p" aria-label="next" id="bn">${ic('right')}</button></div><div class="alt"><button class="pill" id="ba" type="button">${t('Add now')}</button></div>`
-    :`<div class="trio"><button class="ib" aria-label="back" id="bb">${ic('left')}</button><button class="ib p" aria-label="save" id="bs">${ic('check')}</button></div>${F.step==1?`<div class="alt"><button class="pill" id="bm" type="button">${t('More options')} ${ic('right',14)}</button></div>`:''}`)+`<div class="why" id="why"></div>`;gateW()};
-  const gateW=()=>{const noT=!fi.value.trim(),noD=dmode()=='pick'&&!F.date,r=noT?t('Write what the task is first'):noD?t('Pick a date first'):'';['bn','ba','bs'].forEach(id=>gate($('#'+id),r,null,noT?'fi':'fd'));const w=$('#why');if(w)w.textContent=r};
+    :`<div class="trio"><button class="ib" aria-label="back" id="bb">${ic('left')}</button><button class="ib p" aria-label="save" id="bs">${ic('check')}</button></div>${F.step==1?`<div class="alt"><button class="pill" id="bm" type="button">${t('More options')} ${ic('right',14)}</button></div>`:''}`)+`<div class="why" id="why"></div>`;moreVis();gateW()};
+  const gateW=()=>{const noT=!fi.value.trim(),noD=dmode()=='pick'&&!F.date,noW=F.rep=='days'&&F.date&&!F.days.length,r=noT?t('Write what the task is first'):noD?t('Pick a date first'):noW?t('Pick at least one day'):'';['bn','ba','bs'].forEach(id=>gate($('#'+id),r,null,noT?'fi':'fd'));const w=$('#why');if(w)w.textContent=r};
   const doSave=()=>{applyParse();const title=F.title;if(!title){setStep(0);fi.focus();return}
-   let date=F.date||null,time=F.time||'';if(time&&!date)date=today();if(F.rep!='none'&&!date)date=today();const a=areaOf(F.area);
+   let date=F.date||null,time=F.time||'';if(time&&!date)date=today();if(F.rep=='days'&&!date)date=today();const a=areaOf(F.area);
    if(F.pl&&time&&!F.trav){const og=originFor(F.pl,date,time),pz=placeOf(F.pl);if(og&&pz){const a=autoTrav(og,pz);F.trav=a.min;F.mode=a.mode}}
-   const o={title,date,time,dur:F.dur,trav:F.trav,mode:F.mode||null,pl:F.pl,rem:time?F.rem:-1,rep:date?F.rep:'none',area:F.area||null,emoji:'📌'};
+   const rp=date&&F.rep=='days'&&F.days.length?'days':'none';
+   const o={title,date,time,dur:F.dur,trav:F.trav,mode:F.mode||null,pl:F.pl,rem:time?F.rem:-1,rep:rp,days:rp=='days'?[...F.days].sort((a,b)=>a-b):null,area:F.area||null,emoji:'📌'};
    if(F.id)Object.assign(S.items.find(i=>i.id==F.id),o);else S.items.push(Object.assign({id:uid(),created:Date.now(),done:{}},o));
    S.durUse[F.dur]=Date.now();if(F.area)S.catUse[F.area]=Date.now();if(F.pl)S.plUse[F.pl]=Date.now();
    if(date&&tab==1)sel=date;save();closeSh();render(0,true);due()};
@@ -560,12 +573,15 @@ function edit(id,ds){const it=id?S.items.find(i=>i.id==id):null,wz=!it;
    else if(id=='ft'){F.time=e.target.value;syncEnd();sums()}
    else if(id=='cd'){const v=+e.target.value;if(v>0&&v<=1440){F.dur=v;syncEnd();$('#dsum').textContent=hm(v);$$('#rd .pill[data-d]').forEach(b=>b.classList.toggle('on',+b.dataset.d==v));sums()}}};
   s.onchange=e=>{const id=e.target.id;
-   if(id=='ft'){F.time=e.target.value;if(!F.time){drawTime()}else syncEnd();drawMore();sums()}
+   if(id=='ft'){F.time=e.target.value;if(!F.time){drawTime()}else syncEnd();drawMore();moreVis();sums()}
    else if(id=='fe'){if(!F.time)return;const v=e.target.value;if(!v)return syncEnd();const d=(tm(v)-tm(F.time)+1440)%1440;if(d>0){F.dur=d;drawDur();upd2();sums()}else syncEnd()}
-   else if(id=='fd'){F.date=e.target.value||null;F.dm='pick';F.dopen=false;drawDate();drawTime();drawMore();sums()}};
+   else if(id=='fd'){F.date=e.target.value||null;F.dm='pick';F.dopen=false;drawDate();drawTime();drawRep();drawMore();moreVis();sums()}};
   fi.onkeydown=e=>{if(e.key=='Enter'){e.preventDefault();if(wz&&F.step==0)$('#bn').click();else $('#bs').click()}};
   s.onclick=e=>{const b=e.target.closest('button');if(!b)return;const d=b.dataset,id=b.id;
    if(id=='dbtn'){F.dopen=!F.dopen;drawDate();return}
+   if(id=='rbtn'){F.ropen=!F.ropen;drawRep();return}
+   if(d.rm2){F.rep=d.rm2;if(F.rep=='days'&&!F.days.length&&F.date)F.days=[pd(F.date).getDay()];if(F.rep=='none')F.ropen=false;drawRep();sums();return}
+   if(d.wd!==undefined){const x=+d.wd;F.days=F.days.includes(x)?F.days.filter(y=>y!=x):[...F.days,x];drawRep();sums();return}
    if(id=='wbtn'){if(!S.places.length){placePopup(pl=>{F.pl=pl.id;drawWhere();drawMore();sums()});return}F.wopen=!F.wopen;drawWhere();return}
    if(d.np){placePopup(pl=>{F.pl=pl.id;F.wopen=false;if(!F.travPick){F.trav=0;F.mode=null}drawWhere();drawMore();sums()});return}
    if(d.wl!==undefined){F.pl=d.wl||null;F.wopen=false;if(!F.travPick){F.trav=0;F.mode=null}drawWhere();drawMore();sums();return}
@@ -578,8 +594,8 @@ function edit(id,ds){const it=id?S.items.find(i=>i.id==id):null,wz=!it;
    if(d.gh){F.g=F.g==d.gh?null:d.gh;$$('.sg').forEach(g=>{const on=g.dataset.g==F.g,h=g.querySelector('.sgh');if(!g.classList.contains('flat')){g.querySelector('.gx').classList.toggle('o',on);h.classList.toggle('op',on)}});fitRows();return}
    if(d.o){F.open=F.open==d.o?null:d.o;$$('#ac .ar').forEach(r=>{const h=r.querySelector('.arh'),on=F.open==h.dataset.o;h.classList.toggle('op',on);r.querySelector('.gx').classList.toggle('o',on)});fitRows();return}
    if(d.nc){catPopup(null,c=>{S.cats.push(c);save();F.area=c.id;F.areaPick=true;drawCat();sums();render(0,true)});return}
-   if(d.dd){const k=d.dd;F.dopen=(k=='pick');if(k=='today'){F.date=today();F.dm=null}else if(k=='tom'){F.date=addD(today(),1);F.dm=null}else if(k=='none'){F.date=null;F.time='';F.dm=null}else if(k.startsWith('d:')){F.date=k.slice(2);F.dm=null}else{F.dm='pick';if(!F.date)F.date=today()}drawDate();drawTime();drawMore();sums();return}
-   if(d.tm){if(d.tm=='any')F.time='';else if(!F.time)F.time=dmode()=='today'?ft(Math.min(Math.ceil((nowMin()+1)/30)*30,23*60+30)):'09:00';drawTime();drawMore();sums();return}
+   if(d.dd){const k=d.dd;F.dopen=(k=='pick');if(k=='today'){F.date=today();F.dm=null}else if(k=='tom'){F.date=addD(today(),1);F.dm=null}else if(k=='none'){F.date=null;F.time='';F.dm=null}else if(k.startsWith('d:')){F.date=k.slice(2);F.dm=null}else{F.dm='pick';if(!F.date)F.date=today()}drawDate();drawTime();drawRep();drawMore();moreVis();sums();return}
+   if(d.tm){if(d.tm=='any')F.time='';else if(!F.time)F.time=dmode()=='today'?ft(Math.min(Math.ceil((nowMin()+1)/30)*30,23*60+30)):'09:00';drawTime();drawMore();moreVis();sums();return}
    if(d.d){F.dur=+d.d;drawDur();syncEnd();sums();return}
    if(d.r)F.rem=+d.r;else if(d.p)F.rep=d.p;else if(d.t){F.trav=+d.t;F.travPick=true}else if(d.v){const[m,n]=d.v.split(':');F.trav=+n;F.mode=m;F.travPick=true}else if(d.c!==undefined){F.area=d.c||null;F.areaPick=true;drawCat();sums();return}else return;drawMore();sums()};
   if(!it)setTimeout(()=>fi.focus(),420)})}
