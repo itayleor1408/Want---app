@@ -358,7 +358,7 @@ function goSheet(id,ds){const it=S.items.find(i=>i.id==id),p=it&&placeOf(it.pl);
    if(d.ride&&R){const x=R.opts.find(y=>y.ride==d.ride);if(!x)return;setT('bus',Math.max(1,Math.round((pd(ds).getTime()+st*6e4-x.leave.getTime())/6e4)),x.line,x.ride);const keep=$('#obus')&&$('#obus').classList.contains('o');draw(s);if(keep){$('#obus').classList.add('o');$('[data-moreb]').classList.add('op')}toast(`🚌 ${x.line} · ${t('Leave')} ${hhmm(x.leave)}`)}}})}
 function travFor(it,ds){if(it.trav)return{min:it.trav,mode:it.mode||'walk'};if(!it.pl||!it.time)return null;const p=placeOf(it.pl),o=originFor(it.pl,ds,it.time);return p&&o?autoTrav(o,p):null}
 const fromTxt=n=>lang()=='he'?'מ'+esc(n):t('from')+' '+esc(n);
-const APP_VER='2.0',APP_BUILD='__BUILD__';
+const APP_VER='2.1',APP_BUILD='__BUILD__';
 let PF=null;
 const MODE={walk:['🚶','Walk'],bus:['🚌','Bus'],drive:['🚗','Car']};
 function autoTrav(o,p){const e=est(o,p),g=S.set.travel;if(g=='car')return{mode:'drive',min:e.d};if(g=='walk'&&e.w<=60)return{mode:'walk',min:e.w};return e.w<=20?{mode:'walk',min:e.w}:{mode:'bus',min:Math.round(e.d*1.5+8)}}
