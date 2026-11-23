@@ -36,11 +36,12 @@
 .f2{display:grid;grid-template-columns:1fr 1fr;gap:10px}.f2 .f{margin:0 0 10px;min-width:0}
 input[type=date].f,input[type=time].f{min-height:54px;-webkit-appearance:none;appearance:none;text-align:start}
 .ems{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;margin:0 -4px 12px;padding:2px 4px}.ems::-webkit-scrollbar{display:none}.ems button{width:44px;height:44px;border-radius:50%;background:var(--fl);font-size:20px;flex:none;transition:transform .25s var(--spring)}.ems button.on{background:var(--t);transform:scale(1.08)}
-.pv{min-height:20px;margin:-2px 4px 12px;color:var(--a);font-weight:700;font-size:13.5px}#dsum{text-transform:none}.pv.h{color:var(--s);font-weight:600}
+.pv.h{display:none}.pv{min-height:20px;margin:-2px 4px 12px;color:var(--a);font-weight:700;font-size:13.5px}#dsum{text-transform:none}.pv.h{color:var(--s);font-weight:600}
 .lb{font-size:12.5px;font-weight:800;color:var(--s);margin:4px 6px 6px;text-transform:uppercase;letter-spacing:.05em}
 #tp{position:fixed;top:calc(10px + env(safe-area-inset-top,0px));left:50%;transform:translate(-50%,-140%);background:var(--t);color:var(--bg);padding:12px 18px;border-radius:24px;font-weight:700;font-size:14.5px;z-index:30;max-width:90%;transition:transform .45s var(--spring);box-shadow:0 10px 30px rgba(0,0,0,.2)}#tp.o{transform:translate(-50%,0)}
 #ts{position:fixed;left:50%;bottom:calc(96px + env(safe-area-inset-bottom,0px));transform:translate(-50%,30px);opacity:0;background:var(--t);color:var(--bg);padding:12px 8px 12px 18px;border-radius:24px;font-weight:700;font-size:14.5px;z-index:30;display:flex;gap:10px;align-items:center;transition:transform .35s var(--spring),opacity .25s;pointer-events:none}#ts.o{transform:translate(-50%,0);opacity:1;pointer-events:auto}
-#ts button{padding:4px 12px;border-radius:14px;background:rgba(127,127,127,.3);font-weight:800}
+#ts button{padding:4px 12px;border-radius:14px;background:rgba(127,127,127,.3);font-weight:800;white-space:nowrap}
+#ts.fin{width:calc(100% - 32px);max-width:440px;padding:14px 12px 14px 18px}#ts.fin #tt{flex:1;line-height:1.3}#ts.fin #tt b{display:block;font-size:16px}#ts.fin #tt span{opacity:.75;font-weight:600;font-size:13.5px}#ts.fin button{padding:9px 14px}#ts.fin #tu{background:var(--bg);color:var(--t)}
 .gr select{background:var(--fl);border:0;border-radius:12px;color:var(--t);font:700 14px inherit;padding:8px 10px}
 .xb{width:100%;display:flex}
 .hero{padding:18px 0 14px}.hero .sub{font-size:15px}
@@ -164,6 +165,7 @@ a.lnk{display:block;text-align:center;color:var(--s2);text-decoration:none;font-
 .pill.lp,.ah.lp{transform:scale(.93);transition:transform .5s ease}
 .hint2{font-size:12px;margin:-4px 6px 10px;opacity:.75}
 .wn .pill{min-width:84px;justify-content:center}
+.trw{display:grid;grid-template-rows:0fr;opacity:0;transition:grid-template-rows .55s cubic-bezier(.3,1.25,.5,1),opacity .35s .05s}.trw>div{min-height:0;overflow:hidden}.trw.o{grid-template-rows:1fr;opacity:1}
 .wnav{display:flex;align-items:center;gap:10px;margin-top:14px;min-height:56px}.wsp{flex:1}.wnav .ib{flex:none}
 .wnav #bn,.wnav #bs,.wnav #ba{transition:opacity .3s,transform .45s var(--spring)}.wnav .hid{opacity:0;transform:scale(.6) translateY(8px);pointer-events:none}
 .wadd{padding:12px 16px}
@@ -205,7 +207,7 @@ a.lnk{display:block;text-align:center;color:var(--s2);text-decoration:none;font-
 .fit{padding:6px 11px;font-size:13px;color:var(--a);background:color-mix(in srgb,var(--a) 14%,transparent);flex:none}
 </style></head><body><div id="app"></div>
 <div class="fabs"><button class="ib p" id="fab" aria-label="Add" style="background:var(--t);color:var(--bg)"></button></div>
-<nav id="nav"></nav><div id="tp"></div><div id="ts"><span id="tt"></span><button id="tu"></button></div>
+<nav id="nav"></nav><div id="tp"></div><div id="ts"><span id="tt"></span><button id="tn" style="display:none"></button><button id="tu"></button></div>
 <script>
 const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
 /* ---------- icons ---------- */
@@ -291,7 +293,7 @@ repair:pp('M14.5 6.5a4 4 0 00-5.5 5L3 17.500 6.500 21 12.500 15a4 4 0 005-5.500l
 });
 const ic=(n,s=24)=>`<svg class="${n=='left'||n=='right'?'fl':''}" width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">${P[n]||PICO[n]||PICO.pin}</svg>`;
 /* ---------- i18n ---------- */
-const HE={'Calendar view':'תצוגת יומן','List view':'תצוגת רשימה','Today':'היום','Week':'שבוע','Later':'אחר כך','New':'חדש','Edit':'עריכה','Settings':'הגדרות','Next up':'הבא','Now':'עכשיו','Free':'פנוי','All clear':'הכול בוצע','left':'נשארו','Done':'בוצעו','Left':'נותרו','Missed':'הוחמצו','Nothing planned. Tap + to add.':'אין תוכניות. לחצו + להוספה.','Nothing here. Tap + to add.':'אין כלום. לחצו + להוספה.','Title':'כותרת','What\'s the plan? e.g. Gym tomorrow 18:30 1h':'מה התוכנית? למשל: חדר כושר מחר 18:30 שעה','Date':'תאריך','Time':'שעה','Duration':'משך','Remind me':'תזכורת','Repeat':'חזרה','Off':'כבוי','At time':'בזמן','before':'לפני','Never':'לא','Daily':'יומי','Weekly':'שבועי','Save':'שמירה','Delete':'מחיקה','Deleted':'נמחק','Undo':'ביטול','General':'כללי','Language':'שפה','Theme':'עיצוב','Light':'בהיר','System':'מערכת','Dark':'כהה','Week starts':'השבוע מתחיל','Sun':'א׳','Mon':'ב׳','Reminders':'תזכורות','Notifications':'התראות','Default reminder':'תזכורת ברירת מחדל','Send a test':'שלח בדיקה','Data':'נתונים','Export backup':'ייצוא גיבוי','Import backup':'ייבוא גיבוי','Erase everything':'מחיקת הכול','Erase all your plans?':'למחוק את כל התוכניות?','Imported':'יובא','Test from Tempo':'בדיקה מ-Tempo','It works.':'זה עובד.','Starting now':'מתחיל עכשיו','Starts in':'מתחיל בעוד','min':'דק׳','in':'בעוד','Allowed':'מותר','Blocked in browser settings':'חסום בהגדרות הדפדפן','Needs Add to Home Screen first':'צריך קודם להוסיף למסך הבית','Quick add':'הוספה מהירה','Whole day':'כל היום','Tap to add a time':'ללא שעה','Notifications are not supported here.':'ההתראות לא נתמכות כאן.',
+const HE={'Did you finish?':'סיימת?','Yes':'כן','Not yet':'עוד לא','Calendar view':'תצוגת יומן','List view':'תצוגת רשימה','Today':'היום','Week':'שבוע','Later':'אחר כך','New':'חדש','Edit':'עריכה','Settings':'הגדרות','Next up':'הבא','Now':'עכשיו','Free':'פנוי','All clear':'הכול בוצע','left':'נשארו','Done':'בוצעו','Left':'נותרו','Missed':'הוחמצו','Nothing planned. Tap + to add.':'אין תוכניות. לחצו + להוספה.','Nothing here. Tap + to add.':'אין כלום. לחצו + להוספה.','Title':'כותרת','What\'s the plan? e.g. Gym tomorrow 18:30 1h':'מה התוכנית? למשל: חדר כושר מחר 18:30 שעה','Date':'תאריך','Time':'שעה','Duration':'משך','Remind me':'תזכורת','Repeat':'חזרה','Off':'כבוי','At time':'בזמן','before':'לפני','Never':'לא','Daily':'יומי','Weekly':'שבועי','Save':'שמירה','Delete':'מחיקה','Deleted':'נמחק','Undo':'ביטול','General':'כללי','Language':'שפה','Theme':'עיצוב','Light':'בהיר','System':'מערכת','Dark':'כהה','Week starts':'השבוע מתחיל','Sun':'א׳','Mon':'ב׳','Reminders':'תזכורות','Notifications':'התראות','Default reminder':'תזכורת ברירת מחדל','Send a test':'שלח בדיקה','Data':'נתונים','Export backup':'ייצוא גיבוי','Import backup':'ייבוא גיבוי','Erase everything':'מחיקת הכול','Erase all your plans?':'למחוק את כל התוכניות?','Imported':'יובא','Test from Tempo':'בדיקה מ-Tempo','It works.':'זה עובד.','Starting now':'מתחיל עכשיו','Starts in':'מתחיל בעוד','min':'דק׳','in':'בעוד','Allowed':'מותר','Blocked in browser settings':'חסום בהגדרות הדפדפן','Needs Add to Home Screen first':'צריך קודם להוסיף למסך הבית','Quick add':'הוספה מהירה','Whole day':'כל היום','Tap to add a time':'ללא שעה','Notifications are not supported here.':'ההתראות לא נתמכות כאן.',
 'Free today':'פנוי היום','Day is done':'היום הסתיים','Biggest gap':'החלון הגדול','Fully booked':'היום תפוס','Fit in':'תכניס','Placed':'הוכנס','No room in the next 2 weeks':'אין מקום בשבועיים הקרובים','Travel':'זמן נסיעה','None':'בלי','Leave by':'לצאת עד','Leave now':'צא עכשיו','Leave in':'צא בעוד','Heavy day':'יום עמוס','Packed':'עמוס','booked':'תפוסות','without a break':'בלי הפסקה','Lighten it':'הקל על היום','Moved':'הועבר','Move':'להעביר','to':'אל','Your day':'היום שלך','Day starts':'היום מתחיל','Day ends':'היום נגמר','info.day':'זמן פנוי נספר רק בין השעות האלה.',
 'My places':'המקומות שלי','Places':'מקומות','Add place':'הוספת מקום','Name':'שם','Address':'כתובת','Search':'חיפוש','Use my location':'המיקום שלי עכשיו','Where':'איפה','No places yet':'עדיין אין מקומות','Add places in Settings':'אפשר להוסיף מקומות בהגדרות','Go':'יוצאים','Searching…':'מחפש…','No results':'לא נמצאו תוצאות','Home':'בית','Work':'עבודה','Gym':'חדר כושר','Bus station':'תחנת אוטובוס','Other':'אחר','Current location':'המיקום הנוכחי','Bus':'אוטובוס','Walk':'הליכה','Drive':'נסיעה','from':'מ','Estimate from straight-line distance. Open a map app for live buses.':'הערכה לפי מרחק באוויר. לאוטובוסים בזמן אמת פותחים אפליקציית מפות.','Location unavailable':'המיקום לא זמין','Choose a result first':'בחרו קודם תוצאה','info.places':'שמרו בית, עבודה, חדר כושר ותחנות. אפשר לשייך מקום לכל אירוע ולקבל הערכת זמן נסיעה.',
 'Plan':'תוכנית','Set a weekly focus':'קבעו מיקוד לשבוע','Weekly focus':'מיקוד שבועי','What matters most this week?':'מה הכי חשוב השבוע?','Hours this week':'שעות השבוע','planned':'מתוכננות','to find':'עוד לתכנן','Add all':'הוסיפו הכול','Focus':'פוקוס','More':'עוד','Area':'תחום','Health':'בריאות','Study':'לימודים','Social':'חברים','Live in Moovit':'בזמן אמת ב-Moovit','Check bus data':'בדיקת נתוני אוטובוסים','Checking…':'בודק…','Connected':'מחובר','Added':'נוסף',
@@ -762,10 +764,10 @@ function edit(id,ds,opts){const it=id?S.items.find(i=>i.id==id):null,wz=!it;opts
   const drawTr=()=>{const tr=$('#tr');
    if(!wz){tr.innerHTML=`<div class="trio"><button class="ib" aria-label="delete" id="bd" style="color:var(--r)">${ic('trash')}</button><button class="ib p" aria-label="save" id="bs">${ic('check')}</button></div><div class="why" id="why"></div>`;gateW();return}
    const k=F.cur,nx=nextOf(k),first=k=='what';
-   tr.innerHTML=`<div class="wnav">${first?'':`<button class="ib" aria-label="back" id="bb">${ic('left')}</button>`}${nx?`<button class="pill wadd" id="ba" type="button">${t(first?'Add now':'Save now')}</button>`:''}<span class="wsp"></span>${nx?`<button class="ib p" aria-label="next" id="bn">${ic('right')}</button>`:`<button class="ib p" aria-label="save" id="bs">${ic('check')}</button>`}</div>`;gateW()};
+   tr.innerHTML=`<div class="trw ${first&&!F.rdy?'':'o'}" id="trw"><div><div class="wnav">${first?'':`<button class="ib" aria-label="back" id="bb">${ic('left')}</button>`}${nx?`<button class="pill wadd" id="ba" type="button">${t(first?'Add now':'Save now')}</button>`:''}<span class="wsp"></span>${nx?`<button class="ib p" aria-label="next" id="bn">${ic('right')}</button>`:`<button class="ib p" aria-label="save" id="bs">${ic('check')}</button>`}</div></div></div>`;gateW()};
   const gateW=()=>{if(!$('#tr')||!$('#tr').innerHTML)return;const noT=!fi.value.trim(),noD=dmode()=='pick'&&!F.date,noW=F.rep=='days'&&F.date&&!F.days.length;
    const k=F.cur,r=noT?t('Write what the task is first'):(noD&&(!wz||k!='what'))?t('Pick a date first'):(noW&&(!wz||k=='rep'))?t('Pick at least one day'):'';
-   if(wz){['bn','ba','bs'].forEach(id=>{const b=$('#'+id);if(b){b.classList.remove('dis');b.classList.toggle('hid',!!r)}})}else{['bs'].forEach(id=>gate($('#'+id),r,null,noT?'fi':'fd'));const w=$('#why');if(w)w.textContent=r}};
+   if(wz){['bn','ba','bs'].forEach(id=>{const b=$('#'+id);if(b){b.classList.remove('dis');b.classList.toggle('hid',!!r)}});const w=$('#trw');if(w)w.classList.toggle('o',!r&&(k!='what'||!!F.rdy))}else{['bs'].forEach(id=>gate($('#'+id),r,null,noT?'fi':'fd'));const w=$('#why');if(w)w.textContent=r}};
   const doSave=()=>{applyParse();const title=F.title;if(!title){go('what');return}
    let date=F.date||null,time=F.time||'';if(time&&!date)date=today();
    if(F.pl&&time&&!F.travPick){F.trav=0;F.mode=null;const og=originFor(F.pl,date,time),pz=placeOf(F.pl);if(og&&pz){const a=autoTrav(og,pz);F.trav=a.min;F.mode=a.mode}}
@@ -777,14 +779,14 @@ function edit(id,ds,opts){const it=id?S.items.find(i=>i.id==id):null,wz=!it;opts
   drawAll();
   if(wz)go('what');else{drawTr();sums()}
   prev();
-  s.oninput=e=>{const id=e.target.id;if(id=='fi'){F.title=fi.value;prev();sums()}
+  s.oninput=e=>{const id=e.target.id;if(id=='fi'){F.title=fi.value;F.rdy=false;clearTimeout(F.rt);if(F.title.trim())F.rt=setTimeout(()=>{F.rdy=true;gateW()},900);gateW();prev();sums()}
    else if(id=='ft'){F.time=e.target.value;syncEnd();sums()}
    else if(id=='cd'){const v=+e.target.value;if(v>0&&v<=1440){F.dur=v;syncEnd();$('#dsum').textContent=hm(v);$$('#rd .pill[data-d]').forEach(b=>b.classList.toggle('on',+b.dataset.d==v));sums()}}};
   s.onchange=e=>{const id=e.target.id;
    if(id=='ft'){F.time=e.target.value;if(!F.time)drawTime();else syncEnd();drawWhere();drawMore();sums()}
    else if(id=='fe'){if(!F.time)return;const v=e.target.value;if(!v)return syncEnd();const d=(tm(v)-tm(F.time)+1440)%1440;if(d>0){F.dur=d;drawDur();upd2();sums()}else syncEnd()}
    else if(id=='fd'){F.date=e.target.value||null;F.dm='pick';drawDate();drawTime();drawRep();drawMore();sums();gateW()}};
-  fi.onkeydown=e=>{if(e.key=='Enter'){e.preventDefault();const b=$('#bn')||$('#bs');if(b)b.click()}};
+  fi.onkeydown=e=>{if(e.key=='Enter'){e.preventDefault();F.rdy=true;gateW();const b=$('#bn')||$('#bs');if(b)b.click()}};
   s.onclick=e=>{const b=e.target.closest('button');if(!b||b.classList.contains('dis')||b.classList.contains('hid'))return;const d=b.dataset,id=b.id;
    if(id=='bn'){if(F.cur=='what')applyParse();if(!F.title){fi.focus();return}const nx=nextOf(F.cur);if(nx)go(nx);return}
    if(id=='bb'){const q=seq(),i=q.indexOf(F.cur);go(q[Math.max(0,i-1)]);return}
@@ -801,7 +803,7 @@ function edit(id,ds,opts){const it=id?S.items.find(i=>i.id==id):null,wz=!it;opts
    if(d.wl!==undefined){F.pl=d.wl||null;if(!F.travPick){F.trav=0;F.mode=null}drawWhere();drawMore();sums();return}
    if(d.rm2){F.rep=d.rm2;if(F.rep=='days'&&!F.days.length&&F.date)F.days=[pd(F.date).getDay()];drawRep();sums();return}
    if(d.wd!==undefined){const x=+d.wd;F.days=F.days.includes(x)?F.days.filter(y=>y!=x):[...F.days,x];drawRep();sums();return}
-   if(d.c!==undefined){F.area=d.c||null;F.areaPick=true;drawCat();sums();return}
+   if(d.c!==undefined){F.area=d.c||null;F.areaPick=true;if(F.title&&F.title.trim()){F.rdy=true;gateW()}drawCat();sums();return}
    if(d.r)F.rem=+d.r;else if(d.t){F.trav=+d.t;F.travPick=!!+d.t}else if(d.v){const[m,n]=d.v.split(':');F.trav=+n;F.mode=m;F.travPick=true}else return;drawWhere();drawMore();sums()};
   if(!it)setTimeout(()=>fi.focus(),420)})}
 /* ---------- weekly focus / areas ---------- */
@@ -846,7 +848,7 @@ function detail(id,ds){const it=S.items.find(i=>i.id==id);if(!it)return;let keep
   const ov=$('#ov');const oc=ov.onclick;ov.onclick=()=>{svNote();oc()}})}
 $('#fab').onclick=()=>edit();
 /* toast + top pill */
-let tto;function toast(m,undo,label){$('#tt').textContent=m;$('#tu').textContent=label||t('Undo');$('#tu').style.display=undo?'':'none';$('#tu').onclick=()=>{undo&&undo();$('#ts').classList.remove('o')};$('#ts').classList.add('o');clearTimeout(tto);tto=setTimeout(()=>$('#ts').classList.remove('o'),4500)}
+let tto;function toast(m,undo,label){$('#ts').classList.remove('fin');$('#tn').style.display='none';$('#tt').textContent=m;$('#tu').textContent=label||t('Undo');$('#tu').style.display=undo?'':'none';$('#tu').onclick=()=>{undo&&undo();$('#ts').classList.remove('o')};$('#ts').classList.add('o');clearTimeout(tto);tto=setTimeout(()=>$('#ts').classList.remove('o'),4500)}
 let pto;function pillMsg(m){$('#tp').textContent=m;$('#tp').classList.add('o');clearTimeout(pto);pto=setTimeout(()=>$('#tp').classList.remove('o'),5000)}
 /* ---------- settings ---------- */
 let _g=0;const group=(title,rows)=>`<div class="grp ${_g++>0?'c':''}"><button class="gl gh" onclick="this.closest('.grp').classList.toggle('c')"><span>${t(title)}</span><span class="gch">${ic('chev',16)}</span></button><div class="gcw"><div class="gc">${rows}</div></div></div>`;
@@ -1040,17 +1042,35 @@ async function pushSync(force){try{if(!S.set.notif||typeof Notification=='undefi
 async function pushOff(){try{if(S.set.pushId)await fetch(CLOUD+'/api/tempo/push',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({id:S.set.pushId,tok:S.set.pushTok,off:true})});S.set.pushSig=''}catch(e){}}
 document.addEventListener('visibilitychange',()=>{if(document.hidden){cloudBackup(false);pushSync()}});
 /* ---------- notifications ---------- */
-async function notify(title,body,tag){pillMsg(title+' · '+body);
+async function notify(title,body,tag,extra){if(!(extra&&extra.fin))pillMsg(title+' · '+body);
  if(!('Notification'in window)||Notification.permission!='granted')return;
- try{const reg=await navigator.serviceWorker.getRegistration();if(reg)return reg.showNotification(title,{body,tag,icon:'icon-192.png',badge:'icon-192.png',renotify:true});new Notification(title,{body,tag,icon:'icon-192.png'})}catch(e){}}
+ try{const reg=await navigator.serviceWorker.getRegistration();if(reg)return reg.showNotification(title,Object.assign({body,tag,icon:'icon-192.png',badge:'icon-192.png',renotify:true},extra&&extra.fin?{actions:[{action:'yes',title:t('Yes')},{action:'no',title:t('Not yet')}],data:{fin:extra.fin}}:{}));new Notification(title,{body,tag,icon:'icon-192.png'})}catch(e){}}
+/* ---------- "Did you finish?" ----------
+   When a timed task's end passes and it is not marked done, ask. Skipped when the next task is at a DIFFERENT place (moving there already shows you finished). */
+function needsFinAsk(it,ds){if(!it.time||isDone(it,ds))return false;const en=tm(it.time)+Math.max(it.dur||0,0);if(!it.dur)return false;
+ const nx=occ(ds).filter(x=>x.id!=it.id&&x.time&&tm(x.time)>=en-5).sort((a,b)=>tm(a.time)-tm(b.time))[0];
+ if(nx&&nx.pl&&it.pl&&nx.pl!=it.pl)return false;return true}
+function finAlerts(){const out=[],td=today();for(const ds of [addD(td,-1),td]){for(const it of occ(ds)){if(!needsFinAsk(it,ds))continue;
+  const at=pd(ds).getTime()+(tm(it.time)+it.dur)*6e4;out.push({at,tag:'fin'+it.id+ds,title:`${iconTxt(it)}${it.title}`,body:t('Did you finish?'),fin:{id:it.id,ds}})}}return out}
+function finDone(id,ds,yes){if(yes){const it=S.items.find(i=>i.id==id);if(it){it.done=it.done||{};it.done[ds||'x']=1;save();render(0,true)}}else{S.fired['finre'+id+ds]=Date.now();save()}}
+function finAsk(a){const it=S.items.find(i=>i.id==a.fin.id);if(!it)return;const ts=$('#ts');ts.classList.add('fin');$('#tt').innerHTML=`<b>${esc(it.title)}</b><span>${t('Did you finish?')}</span>`;
+ const y=$('#tu'),n=$('#tn');y.textContent=t('Yes');y.style.display='';n.textContent=t('Not yet');n.style.display='';
+ const hide=()=>{ts.classList.remove('o');n.style.display='none';setTimeout(()=>ts.classList.remove('fin'),400)};y.onclick=()=>{finDone(a.fin.id,a.fin.ds,true);hide()};n.onclick=()=>{finDone(a.fin.id,a.fin.ds,false);hide()};
+ ts.classList.add('o');clearTimeout(tto);tto=setTimeout(hide,20000)}
+async function finPending(){try{const c=await caches.open('tempo-push'),r=await c.match('fin.json');if(!r)return;const l=await r.json();await c.delete('fin.json');let ch=false;for(const x of l){if(x.yes){finDone(x.id,x.ds,true);ch=true}else finDone(x.id,x.ds,false)}if(ch)render(0,true)}catch(e){}}
+document.addEventListener('visibilitychange',()=>{if(!document.hidden)finPending()});setTimeout(finPending,800);try{navigator.serviceWorker.addEventListener('message',e=>{if(e.data&&e.data.fin)finPending()})}catch(e){}
 function alertsAhead(){const out=[],td=today();for(const ds of [addD(td,-1),td,addD(td,1),addD(td,2)])for(const it of occ(ds)){if(!it.time||it.rem<0||it.rem==null||isDone(it,ds))continue;
   const tr=travFor(it,ds),tv=tr?tr.min:0,at=pd(ds).getTime()+(tm(it.time)-tv-it.rem)*6e4;
-  out.push({at,tag:it.id+ds,title:`${iconTxt(it)}${it.title}`,body:tv?(it.rem?`${t('Leave by')} ${ft(tm(it.time)-tv)} · ${it.time}`:`${t('Leave now')} · ${it.time}`):(it.rem?`${t('Starts in')} ${it.rem} ${t('min')} · ${it.time}`:`${t('Starting now')} · ${it.time}`)})}return out.sort((a,b)=>a.at-b.at)}
+  out.push({at,tag:it.id+ds,title:`${iconTxt(it)}${it.title}`,body:tv?(it.rem?`${t('Leave by')} ${ft(tm(it.time)-tv)} · ${it.time}`:`${t('Leave now')} · ${it.time}`):(it.rem?`${t('Starts in')} ${it.rem} ${t('min')} · ${it.time}`:`${t('Starting now')} · ${it.time}`)})}return out.concat(S.set.finAsk===false?[]:finAlerts()).sort((a,b)=>a.at-b.at)}
 function due(){if(!S.set.notif)return;const now=Date.now(),td=today();
  if(wkAskOpen()&&nowMin()>=S.set.ds*60&&!S.fired['wk'+td]){S.fired['wk'+td]=now;save();notify('👋 '+t('A new week started'),t('Do you have a focus this week?'),'wk'+td)}
  for(const ds of [addD(td,-1),td,addD(td,1)])for(const it of occ(ds)){if(!it.time||it.rem<0||it.rem==null||isDone(it,ds))continue;
   const tr=travFor(it,ds),tv=tr?tr.min:0,at=pd(ds).getTime()+(tm(it.time)-tv-it.rem)*6e4,key=it.id+ds;
   if(now>=at&&now-at<15*6e4&&!S.fired[key]){S.fired[key]=now;save();notify(`${iconTxt(it)}${it.title}`,tv?(it.rem?`${t('Leave by')} ${ft(tm(it.time)-tv)} · ${it.time}`:`${t('Leave now')} · ${it.time}`):(it.rem?`${t('Starts in')} ${it.rem} ${t('min')} · ${it.time}`:`${t('Starting now')} · ${it.time}`),key)}}
+ const finOpen=()=>$('#ts').classList.contains('o')&&$('#tn').style.display!='none';
+ if(S.set.finAsk!==false&&!finOpen())for(const a of finAlerts()){const k=a.tag,rk='finre'+a.fin.id+a.fin.ds;
+  if(now>=a.at&&now-a.at<4*36e5&&!S.fired[k]){S.fired[k]=now;save();if(document.hidden)notify(a.title,a.body,k,{fin:a.fin});else{finAsk(a);break}}
+  else if(S.fired[rk]&&now-S.fired[rk]>=15*6e4&&!S.fired[rk+'x']){S.fired[rk+'x']=now;save();if(document.hidden)notify(a.title,a.body,k+'b',{fin:a.fin});else{finAsk(a);break}}}
  for(const k in S.fired)if(now-S.fired[k]>2*864e5)delete S.fired[k]}
 /* ---------- buses: nearest stops + live estimates (open Stride API) ---------- */
 const API='https://open-bus-stride-api.hasadna.org.il';

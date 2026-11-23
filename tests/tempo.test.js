@@ -3,15 +3,81 @@ const { ok, T, chromium } = require('./lib');
 const path = require('path'), URL = 'file://' + path.join(__dirname, '..', 'tempo', 'index.html');
 const D = '2026-11-23T10:00';
 const item = (id, title, time, dur, area, date = '2026-11-23') => ({ id, title, date, time, dur, area, rem: 10, trav: 0 });
-async function open(b, lang) {
+async function open(b, lang, itemsOverride) {
   const c = await b.newContext({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 2 }); const p = await c.newPage(); p.errs = []; p.on('pageerror', e => p.errs.push(e.message));
   await p.addInitScript(([d, lang, items]) => {
     const t = new Date(d).getTime(), R = Date; class D extends R { constructor(...a) { a.length ? super(...a) : super(t) } static now() { return t } } window.Date = D;
     if (!localStorage.getItem('tempo.v1')) localStorage.setItem('tempo.v1', JSON.stringify({ items, set: { lang, onboarded: true, theme: 'light' } }));
-  }, [D, lang, [item('a', 'Standup', '09:00', 30, 'work'), item('b', 'Gym', '09:15', 60, 'health'), item('c', 'Dentist', '13:00', 45, 'social'), item('d', 'Buy gift', '', 0, 'home'), item('e', 'Tomorrow task', '11:00', 30, 'work', '2026-11-24')]]);
+  }, [D, lang, itemsOverride || [item('a', 'Standup', '09:00', 30, 'work'), item('b', 'Gym', '09:15', 60, 'health'), item('c', 'Dentist', '13:00', 45, 'social'), item('d', 'Buy gift', '', 0, 'home'), item('e', 'Tomorrow task', '11:00', 30, 'work', '2026-11-24')]]);
   await p.goto(URL); await p.waitForTimeout(900); return p;
 }
+async function newTask(b) {
+  const p = await open(b, 'en'); await p.evaluate(() => edit()); await p.waitForTimeout(800);
+  const m = () => p.evaluate(() => ({ sheet: Math.round(document.getElementById('sh').getBoundingClientRect().height), row: Math.round(document.getElementById('trw').getBoundingClientRect().height), op: getComputedStyle(document.getElementById('trw')).opacity }));
+  const a = await m();
+  ok('first window: the button row takes no space before anything is typed', a.row === 0 && a.op === '0', JSON.stringify(a));
+  ok('first window is compact (under 340px tall)', a.sheet < 340, String(a.sheet));
+  await p.fill('#fi', 'Gym session'); await p.waitForTimeout(250);
+  ok('while still typing the buttons stay hidden', (await m()).row === 0);
+  await p.waitForTimeout(1300);
+  const c = await m();
+  ok('after a short pause the window grows and the buttons appear', c.row >= 50 && c.sheet > a.sheet + 40 && c.op === '1', JSON.stringify(c));
+  await p.fill('#fi', ''); await p.waitForTimeout(400);
+  ok('clearing the name hides them again', (await m()).row === 0);
+  await p.fill('#fi', 'Read'); await p.click('[data-c="work"]'); await p.waitForTimeout(900);
+  ok('picking a category opens the buttons right away', (await m()).row >= 50);
+  await p.evaluate(() => { document.querySelector('#bn').click() }); await p.waitForTimeout(700);
+  ok('later steps always show the buttons', await p.evaluate(() => document.getElementById('trw').getBoundingClientRect().height >= 50));
+  ok('new task: no JS errors', !p.errs.length, p.errs.join('|')); await p.context().close();
+}
+async function finish(b) {
+  const mk = items => open(b, 'en', items);
+  const p = await mk([item('a', 'Report', '09:00', 30, 'work'), item('s', 'Gym', '09:00', 30, 'health'), item('n', 'Next', '09:30', 30, 'work')]);
+  const r = await p.evaluate(() => { S.places = [{ id: 'h', name: 'Home', home: true }, { id: 'g', name: 'Gym place' }, { id: 'o', name: 'Office' }]; const A = S.items.find(i => i.id == 'a'), N = S.items.find(i => i.id == 'n'), G = S.items.find(i => i.id == 's'); const d = '2026-11-23';
+    const base = needsFinAsk(A, d);
+    A.pl = 'o'; N.pl = 'o'; const same = needsFinAsk(A, d);
+    N.pl = 'g'; const diff = needsFinAsk(A, d);
+    A.pl = null; const noPlace = needsFinAsk(A, d);
+    A.pl = 'o'; N.pl = 'g'; A.done = { [d]: 1 }; const done = needsFinAsk(A, d); A.done = {};
+    const noDur = needsFinAsk(Object.assign({}, A, { dur: 0 }), d);
+    return { base, same, diff, noPlace, done, noDur } });
+  ok('asks when there is no place', r.base && r.noPlace);
+  ok('asks when the next task is at the same place', r.same);
+  ok('does not ask when the next task is at a different place (moving shows it)', !r.diff);
+  ok('does not ask for finished tasks or tasks without a length', !r.done && !r.noDur);
+  await p.context().close();
+  const p2 = await mk([item('a', 'Report', '09:00', 30, 'work')]); const pp = p; 
+  // the prompt
+  await p2.waitForTimeout(600); await p2.evaluate(() => { S.set.notif = true; due() }); await p2.waitForTimeout(400);
+  const q = await p2.evaluate(() => ({ txt: document.getElementById('tt').innerText, yes: document.getElementById('tu').innerText, no: document.getElementById('tn').innerText, shown: document.getElementById('ts').classList.contains('o') }));
+  ok('after the end time, Tempo asks "Did you finish?" with Yes and Not yet', q.shown && /Did you finish/.test(q.txt) && /Report/.test(q.txt) && q.yes === 'Yes' && q.no === 'Not yet', JSON.stringify(q));
+  await p2.evaluate(() => document.getElementById('tn').click()); await p2.waitForTimeout(300);
+  ok('Not yet leaves it undone and remembers to ask again', await p2.evaluate(() => { const a = S.items.find(i => i.id == 'a'); return !a.done || !a.done['2026-11-23'] }) && await p2.evaluate(() => Object.keys(S.fired).some(k => k.startsWith('finre'))));
+  const asked1 = await p2.evaluate(() => Object.keys(S.fired).filter(k => k.startsWith('fin')).length);
+  await p2.evaluate(() => { due() }); await p2.waitForTimeout(300);
+  ok('it does not nag again straight away', await p2.evaluate(() => !document.getElementById('ts').classList.contains('o')));
+  await p2.evaluate(() => { Object.keys(S.fired).forEach(k => { if (k.startsWith('finre') && !k.endsWith('x')) S.fired[k] -= 16 * 60000 }); due() }); await p2.waitForTimeout(400);
+  ok('15 minutes later it asks once more', await p2.evaluate(() => document.getElementById('ts').classList.contains('o') && /Did you finish/.test(document.getElementById('tt').innerText)));
+  await p2.evaluate(() => document.getElementById('tu').click()); await p2.waitForTimeout(400);
+  ok('Yes marks the task done', await p2.evaluate(() => S.items.find(i => i.id == 'a').done['2026-11-23'] === 1));
+  const al = await p2.evaluate(() => alertsAhead().filter(a => a.fin).map(a => a.fin.id));
+  ok('the closed-app reminder list includes the finish checks too', Array.isArray(al));
+  const p3 = await mk([item('a', 'Report', '09:00', 30, 'work'), item('s', 'Gym', '09:00', 30, 'health'), item('n', 'Lunch', '09:00', 30, 'home')]); await p3.evaluate(() => { S.set.notif = true });
+  // several tasks ending together are asked one at a time, never overwriting each other
+  await p3.evaluate(() => { S.fired = {}; S.items.forEach(i => { if (i.done) i.done = {} }); document.getElementById('ts').classList.remove('o'); document.getElementById('tn').style.display = 'none' });
+  const seq = [];
+  for (let k = 0; k < 3; k++) { await p3.evaluate(() => due()); await p3.waitForTimeout(200); seq.push(await p3.evaluate(() => document.getElementById('tt').innerText.split('\n')[0])); await p3.evaluate(() => document.getElementById('tu').click()); await p3.waitForTimeout(150) }
+  ok('tasks ending together are asked one by one, each answered separately', new Set(seq).size === 3, seq.join(' > '));
+  await p3.context().close();
+  // in a browser tab without the Cache API (file page) use a tiny stand-in for the next check
+  await p2.evaluate(() => { const m = {}; Object.defineProperty(window, 'caches', { configurable: true, value: { open: async () => ({ put: async (k, v) => { m[k] = await v.text() }, match: async k => m[k] != null ? new Response(m[k]) : undefined, delete: async k => { delete m[k] } }) } }) });
+  // service worker action: Yes pressed on the notification is applied when the app opens
+  await p2.evaluate(async () => { const A = S.items.find(i => i.id == 'a'); delete A.done['2026-11-23']; save(); const c = await caches.open('tempo-push'); await c.put('fin.json', new Response(JSON.stringify([{ id: 'a', ds: '2026-11-23', yes: true }]))); await finPending() }); await p2.waitForTimeout(400);
+  ok('a "Yes" tapped on the phone notification is applied when the app opens', await p2.evaluate(() => S.items.find(i => i.id == 'a').done['2026-11-23'] === 1));
+  ok('finish checks: no JS errors', !p2.errs.length, p2.errs.join('|')); await p2.context().close();
+}
 module.exports = async b => {
+  await newTask(b); await finish(b);
   const p = await open(b, 'en'); await p.evaluate(() => go(1)); await p.waitForTimeout(700);
   ok('a small layout button sits at the top of Schedule', await p.evaluate(() => !!document.querySelector('.sec .lay')));
   ok('the default layout is the list', await p.evaluate(() => !document.querySelector('.cal') && !!document.getElementById('wk')));
