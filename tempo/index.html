@@ -57,6 +57,12 @@ input:disabled{opacity:.4}
 .sw{display:flex;gap:10px;flex-wrap:wrap;margin:10px 0 4px}.sw button{width:32px;height:32px;border-radius:50%;border:3px solid transparent;box-shadow:inset 0 0 0 2px var(--sheet);transition:transform .25s var(--spring)}.sw button.on{border-color:var(--t);transform:scale(1.1)}
 .btn.s{background:var(--fl);color:var(--t)}
 .cv{color:var(--s);opacity:.6;display:flex;justify-content:center;margin-top:4px;transition:transform .35s var(--spring)}.cv.up{transform:rotate(180deg)}
+.bs{padding:2px 16px 8px}.bh{display:flex;justify-content:space-between;align-items:baseline;gap:10px;padding:14px 0 6px}.bh b{font-size:17px;font-weight:800;letter-spacing:-.01em}.bh .sub{white-space:nowrap;font-size:13px}
+.br{display:flex;align-items:center;gap:12px;padding:10px 0;border-top:1px solid var(--hr);transition:opacity .3s}.bh+.br{border-top:0}.br.dim{opacity:.45}
+.ln{min-width:48px;height:36px;padding:0 9px;border-radius:12px;background:var(--t);color:var(--bg);font-weight:800;font-size:16px;letter-spacing:-.02em;display:grid;place-items:center;flex:none}
+.bm{font-weight:800;font-size:18px;letter-spacing:-.02em;white-space:nowrap}.bm.lv{color:var(--a)}.bm.lv::before{content:'';display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--a);margin-inline-end:6px;vertical-align:middle;animation:pulse 1.8s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.35;transform:scale(.7)}}
+.br .gt .sub{display:block}.bfoot{display:flex;gap:8px;justify-content:center;margin-top:10px}
 .ar{border-top:1px solid var(--hr)}.arh{display:flex;align-items:center;gap:10px;width:100%;padding:15px 2px;font-weight:700;font-size:16px;text-align:start}.arh>span:first-child{flex:1}.arh svg{color:var(--s);transition:transform .35s var(--spring)}.arh.op svg{transform:rotate(180deg)}
 .fc{display:flex;align-items:center;gap:10px;width:100%;text-align:start;background:var(--c);border-radius:22px;padding:14px 16px;box-shadow:var(--sh);margin-bottom:4px;transition:transform .25s var(--spring)}.fc:active{transform:scale(.98)}.fc .gt b{font-weight:800}.fc .sub{display:block}
 .fb{display:block;height:6px;border-radius:4px;margin-top:8px;background:linear-gradient(to right,var(--a) var(--w,0%),var(--fl2) var(--w,0%))}:root[dir=rtl] .fb{transform:scaleX(-1)}
@@ -69,7 +75,7 @@ input:disabled{opacity:.4}
 <script>
 const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
 /* ---------- icons ---------- */
-const P={today:'<circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/>',week:'<rect x="3.5" y="5" width="17" height="15" rx="3.5"/><path d="M3.5 10h17M8 3v4M16 3v4"/>',later:'<path d="M5 7h14M5 12h14M5 17h9"/>',plus:'<path d="M12 5v14M5 12h14"/>',check:'<path d="M5 12.5l4.5 4.5L19 7.5"/>',gear:'<path d="M4 7h9M17 7h3M4 17h3M11 17h9"/><circle cx="15" cy="7" r="2"/><circle cx="9" cy="17" r="2"/>',trash:'<path d="M5 7h14M10 7V4.5h4V7M7 7l1 12.5h8L17 7"/>',left:'<path d="M14.5 6l-6 6 6 6"/>',right:'<path d="M9.5 6l6 6-6 6"/>',info:'<circle cx="12" cy="12" r="9"/><path d="M12 11v5.5M12 7.8v.1"/>',chev:'<path d="M6 9l6 6 6-6"/>',edit:'<path d="M4 20h4L19 9l-4-4L4 16v4zM13.5 6.5l4 4"/>',x:'<path d="M6 6l12 12M18 6L6 18"/>'};
+const P={today:'<circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/>',week:'<rect x="3.5" y="5" width="17" height="15" rx="3.5"/><path d="M3.5 10h17M8 3v4M16 3v4"/>',later:'<path d="M5 7h14M5 12h14M5 17h9"/>',bus:'<rect x="5" y="4" width="14" height="13" rx="3"/><path d="M5 11h14M8 17v2.5M16 17v2.5"/><path d="M9 14h.01M15 14h.01"/>',plus:'<path d="M12 5v14M5 12h14"/>',check:'<path d="M5 12.5l4.5 4.5L19 7.5"/>',gear:'<path d="M4 7h9M17 7h3M4 17h3M11 17h9"/><circle cx="15" cy="7" r="2"/><circle cx="9" cy="17" r="2"/>',trash:'<path d="M5 7h14M10 7V4.5h4V7M7 7l1 12.5h8L17 7"/>',left:'<path d="M14.5 6l-6 6 6 6"/>',right:'<path d="M9.5 6l6 6-6 6"/>',info:'<circle cx="12" cy="12" r="9"/><path d="M12 11v5.5M12 7.8v.1"/>',chev:'<path d="M6 9l6 6 6-6"/>',edit:'<path d="M4 20h4L19 9l-4-4L4 16v4zM13.5 6.5l4 4"/>',x:'<path d="M6 6l12 12M18 6L6 18"/>'};
 const ic=(n,s=24)=>`<svg class="${n=='left'||n=='right'?'fl':''}" width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">${P[n]}</svg>`;
 /* ---------- i18n ---------- */
 const HE={'Today':'היום','Week':'שבוע','Later':'אחר כך','New':'חדש','Edit':'עריכה','Settings':'הגדרות','Next up':'הבא','Now':'עכשיו','Free':'פנוי','All clear':'הכול בוצע','left':'נשארו','Done':'בוצעו','Left':'נותרו','Missed':'הוחמצו','Nothing planned. Tap + to add.':'אין תוכניות. לחצו + להוספה.','Nothing here. Tap + to add.':'אין כלום. לחצו + להוספה.','Title':'כותרת','What\'s the plan? e.g. Gym tomorrow 18:30 1h':'מה התוכנית? למשל: חדר כושר מחר 18:30 שעה','Date':'תאריך','Time':'שעה','Duration':'משך','Remind me':'תזכורת','Repeat':'חזרה','Off':'כבוי','At time':'בזמן','before':'לפני','Never':'לא','Daily':'יומי','Weekly':'שבועי','Save':'שמירה','Delete':'מחיקה','Deleted':'נמחק','Undo':'ביטול','General':'כללי','Language':'שפה','Theme':'עיצוב','Light':'בהיר','System':'מערכת','Dark':'כהה','Week starts':'השבוע מתחיל','Sun':'א׳','Mon':'ב׳','Reminders':'תזכורות','Notifications':'התראות','Default reminder':'תזכורת ברירת מחדל','Send a test':'שלח בדיקה','Data':'נתונים','Export backup':'ייצוא גיבוי','Import backup':'ייבוא גיבוי','Erase everything':'מחיקת הכול','Erase all your plans?':'למחוק את כל התוכניות?','Imported':'יובא','Test from Tempo':'בדיקה מ-Tempo','It works.':'זה עובד.','Starting now':'מתחיל עכשיו','Starts in':'מתחיל בעוד','min':'דק׳','in':'בעוד','Allowed':'מותר','Blocked in browser settings':'חסום בהגדרות הדפדפן','Needs Add to Home Screen first':'צריך קודם להוסיף למסך הבית','Quick add':'הוספה מהירה','Whole day':'כל היום','Tap to add a time':'ללא שעה','Notifications are not supported here.':'ההתראות לא נתמכות כאן.',
@@ -79,6 +85,7 @@ const HE={'Today':'היום','Week':'שבוע','Later':'אחר כך','New':'חד
 'Areas':'תחומים','Weekly goal':'יעד שבועי','Focus this week':'מיקוד השבוע','Steps':'שלבים','Add a step':'הוסיפו שלב','Notes':'הערות','All steps done':'כל השלבים בוצעו','Mark done':'סמנו כבוצע','Goals and focus for the week':'יעדים ומיקוד לשבוע',
 'Category':'קטגוריה','Starts':'התחלה','Ends':'סיום','Someday':'מתישהו','New area':'תחום חדש',
 'What\'s the plan?':'מה התוכנית?','Try: Gym tomorrow 18:30-19:30':'למשל: חדר כושר מחר 18:30-19:30',
+'Buses':'אוטובוסים','Here':'כאן','live':'חי','schedule':'לפי לוח','Updated':'עודכן','Loading…':'טוען…','Couldn\'t load buses':'לא הצלחתי לטעון אוטובוסים','Try again':'נסו שוב','City':'עיר','Debug':'בדיקה','No buses soon':'אין אוטובוסים בקרוב','walk':'הליכה','Nearest stop is far':'התחנה הקרובה רחוקה','Location unavailable. Pick a saved place.':'המיקום לא זמין. בחרו מקום שמור.','Exactly as in the stops list, for example נהריה':'בדיוק כמו ברשימת התחנות, למשל נהריה',
 'info.notif':'התראות מופיעות כשהאפליקציה פתוחה או ברקע. באייפון צריך קודם "הוסף למסך הבית". כשהאפליקציה סגורה לגמרי אין התראה בלי שרת דחיפה.','info.rem':'כמה זמן לפני כל אירוע חדש להתריע.','info.quick':'אפשר לכתוב בשפה חופשית: "פגישה מחר 14:00 שעה" והאפליקציה תמלא לבד.','info.data':'הכול נשמר רק בטלפון הזה. מומלץ לייצא גיבוי מדי פעם.'};
 const EN={'info.places':'Save home, work, the gym and bus stops. Attach a place to any event to get a travel estimate.','info.day':'Free time is only counted between these hours.','info.notif':'Alerts show while the app is open or in the background. On iPhone, Add to Home Screen first. With the app fully closed there is no alert without a push server.','info.rem':'How long before a new event to alert you.','info.quick':'Type naturally: "Dentist tomorrow 14:00 1h" and Tempo fills in the rest.','info.data':'Everything is stored only on this phone. Export a backup now and then.'};
 let S;const lang=()=>S.set.lang,t=k=>lang()=='he'?(HE[k]||k):(EN[k]||k);
@@ -86,7 +93,7 @@ const loc=()=>lang()=='he'?'he-IL':'en-GB';
 /* ---------- state ---------- */
 const KEY='tempo.v1';
 function load(){try{S=JSON.parse(localStorage.getItem(KEY))}catch(e){}
- if(!S||!S.items)S={items:[],set:{}};S.set=Object.assign({lang:/^he/.test(navigator.language)?'he':'en',theme:'',ws:0,notif:true,rem:10,ds:8,de:22},S.set);S.fired=S.fired||{};S.places=S.places||[];S.focus=S.focus||{};S.goals=S.goals||{};S.cats=S.cats||[['work','💼','Work','#4f8cff'],['home','🏠','Home','#f0a050'],['health','💪','Health','#ee5d7a'],['study','📚','Study','#9b7cf0'],['social','👥','Social','#2fb8a0']].map(([id,emoji,name,color])=>({id,emoji,name,color,def:1}));Object.values(S.focus).forEach(f=>{if(f.area&&f.hrs&&!S.goals[f.area])S.goals[f.area]=f.hrs})}
+ if(!S||!S.items)S={items:[],set:{}};S.set=Object.assign({lang:/^he/.test(navigator.language)?'he':'en',theme:'',ws:0,notif:true,rem:10,ds:8,de:22,city:'נהריה'},S.set);S.fired=S.fired||{};S.places=S.places||[];S.focus=S.focus||{};S.goals=S.goals||{};S.cats=S.cats||[['work','💼','Work','#4f8cff'],['home','🏠','Home','#f0a050'],['health','💪','Health','#ee5d7a'],['study','📚','Study','#9b7cf0'],['social','👥','Social','#2fb8a0']].map(([id,emoji,name,color])=>({id,emoji,name,color,def:1}));Object.values(S.focus).forEach(f=>{if(f.area&&f.hrs&&!S.goals[f.area])S.goals[f.area]=f.hrs})}
 const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}};
 const uid=()=>Math.random().toString(36).slice(2,9)+Date.now().toString(36).slice(-3);
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -194,7 +201,7 @@ function parse(txt,base){
  return r}
 /* ---------- UI plumbing ---------- */
 let showBar=false;const toggleBar=()=>{showBar=!showBar;const g=$('#bg'),c=$('#cv');g&&g.classList.toggle('o',showBar);c&&c.classList.toggle('up',showBar)};
-let tab=0,sel=today(),editing=null;const TABS=['Today','Week','Later'],TI=['today','week','later'];
+let tab=0,sel=today(),editing=null;const TABS=['Today','Week','Later','Buses'],TI=['today','week','later','bus'];
 function applyLang(){document.documentElement.lang=lang();document.documentElement.dir=lang()=='he'?'rtl':'ltr';if(S.set.theme)document.documentElement.dataset.theme=S.set.theme;else delete document.documentElement.dataset.theme;
  const dark=S.set.theme=='dark'||(!S.set.theme&&matchMedia('(prefers-color-scheme:dark)').matches);const c=dark?'#121214':'#f4f4f6';$$('meta[name=theme-color]').forEach(m=>m.content=c)}
 function row(it,ds,o={}){const dn=isDone(it,ds),st=it.time?tm(it.time):null,en=st!=null?st+(it.dur||0):null,td=ds==today();
@@ -223,11 +230,12 @@ function view(){
   <div class="strip">${days.map(d=>{const a=stats(d);return `<button class="dy ${d==sel?'on':''} ${d==td?'td':''}" onclick="sel='${d}';render(0,true)"><small>${fmtD(d,{weekday:'short'})}</small><b>${pd(d).getDate()}</b><span class="ld ${a.over?'hi':''}" style="--w:${Math.min(100,Math.round(a.load*100))}%"></span></button>`}).join('')}</div>
   ${focusCard()}
   <div class="sec" style="margin-top:14px"><span>${fmtD(sel,{weekday:'long',day:'numeric',month:'short'})}</span></div>${warn(sel)}<div class="card" id="wk">${list(occ(sel),sel)}</div>`}
+ if(tab==3)return busView();
  const L=later();return `<div class="hd"><h1>${t('Later')}</h1><span class="sub">${L.filter(i=>!isDone(i)).length}</span></div><div class="card">${list(L,null,{later:1})}</div>`}
 function render(anim,keep){const y=scrollY;$('#app').innerHTML=`<div class="${anim?'va':''}">${view()}</div>`;
  $('#nav').innerHTML=TABS.map((n,i)=>`<button class="${i==tab?'on':''}" onclick="go(${i})">${ic(TI[i])}<span>${t(n)}</span></button>`).join('');
- $('#fab').innerHTML=ic('plus',26);$('#gb').innerHTML=ic('gear',22);if(keep)scrollTo(0,y)}
-function go(i){if(i==tab)return scrollTo({top:0,behavior:'smooth'});tab=i;sel=i==1?today():sel;render(1);scrollTo(0,0)}
+ $('#fab').innerHTML=ic('plus',26);$('#fab').style.display=tab==3?'none':'';$('#gb').innerHTML=ic('gear',22);if(keep)scrollTo(0,y)}
+function go(i){if(i==tab)return scrollTo({top:0,behavior:'smooth'});tab=i;sel=i==1?today():sel;render(1);scrollTo(0,0);if(i==3){busDraw();busLoad()}}
 function shift(n){sel=addD(sel,n);render(1,true)}
 /* swipe between days on Week */
 let tx=null;addEventListener('touchstart',e=>{tx=e.touches[0].clientX},{passive:true});
@@ -405,10 +413,63 @@ function due(){if(!S.set.notif)return;const now=Date.now(),td=today();
   const tv=it.trav||0,at=pd(ds).getTime()+(tm(it.time)-tv-it.rem)*6e4,key=it.id+ds;
   if(now>=at&&now-at<15*6e4&&!S.fired[key]){S.fired[key]=now;save();notify(`${iconOf(it)} ${it.title}`,tv?(it.rem?`${t('Leave by')} ${ft(tm(it.time)-tv)} · ${it.time}`:`${t('Leave now')} · ${it.time}`):(it.rem?`${t('Starts in')} ${it.rem} ${t('min')} · ${it.time}`:`${t('Starting now')} · ${it.time}`),key)}}
  for(const k in S.fired)if(now-S.fired[k]>2*864e5)delete S.fired[k]}
+/* ---------- buses: nearest stops + live estimates (open Stride API) ---------- */
+const API='https://open-bus-stride-api.hasadna.org.il';
+const isoTz=d=>{const o=-d.getTimezoneOffset(),a=Math.abs(o);return `${d.getFullYear()}-${z(d.getMonth()+1)}-${z(d.getDate())}T${z(d.getHours())}:${z(d.getMinutes())}:${z(d.getSeconds())}${o>=0?'+':'-'}${z(Math.floor(a/60))}:${z(a%60)}`};
+const qs=o=>Object.entries(o).filter(([,v])=>v!=null&&v!=='').map(([k,v])=>k+'='+encodeURIComponent(v)).join('&');
+async function api(path,params){const r=await fetch(`${API}${path}?${qs(params)}`);if(!r.ok)throw new Error(path+' HTTP '+r.status);return r.json()}
+const pick=(r,o,k)=>{if(!r)return undefined;const v=r[o+'__'+k];if(v!==undefined&&v!==null)return v;if(r[o]&&typeof r[o]=='object'&&r[o][k]!==undefined)return r[o][k];return r[k]};
+let BUS={from:'here',res:null,err:null,loading:false,t:0,loc:null,far:0},BD={};
+function getLoc(){return new Promise((res,rej)=>navigator.geolocation?navigator.geolocation.getCurrentPosition(p=>res({lat:p.coords.latitude,lon:p.coords.longitude}),e=>rej(new Error('location')),{enableHighAccuracy:true,timeout:8000,maximumAge:30000}):rej(new Error('location')))}
+async function stopsFor(city){const key='tempo.stops.'+city+'.'+today();try{const c=JSON.parse(localStorage.getItem(key));if(c&&c.length)return c}catch(e){}
+ const j=await api('/gtfs_stops/list',{city,date_from:today(),date_to:today(),limit:6000});BD.stop=j[0];
+ const out=j.map(s=>({id:s.id,code:s.code,name:s.name,lat:+s.lat,lon:+s.lon})).filter(s=>isFinite(s.lat)&&isFinite(s.lon));
+ try{Object.keys(localStorage).filter(k=>k.startsWith('tempo.stops.')).forEach(k=>localStorage.removeItem(k));localStorage.setItem(key,JSON.stringify(out))}catch(e){}return out}
+const nearest=(stops,p,n)=>stops.map(s=>({...s,d:hav(p,s)*1000})).sort((a,b)=>a.d-b.d).slice(0,n);
+const destOf=(long,dir)=>{if(!long)return '';const parts=String(long).split('<->');let d=parts.length>1?(String(dir)=='2'?parts[0]:parts[1]):parts[0];return d.replace(/[-\d#]+$/,'').trim()};
+async function schedFor(stop){const n=new Date(),j=await api('/gtfs_ride_stops/list',{gtfs_stop_ids:stop.id,arrival_time_from:isoTz(new Date(n.getTime()-6*6e4)),arrival_time_to:isoTz(new Date(n.getTime()+100*6e4)),order_by:'arrival_time asc',limit:80});
+ if(!BD.rs)BD.rs=j[0];
+ return j.map(r=>({ride:String(r.gtfs_ride_id),at:new Date(r.arrival_time),line:pick(r,'gtfs_route','route_short_name'),dest:destOf(pick(r,'gtfs_route','route_long_name'),pick(r,'gtfs_route','route_direction')),dist:+pick(r,'gtfs_ride_stop','shape_dist_traveled')}))}
+async function liveNear(p){const n=new Date(),dl=.035,dn=.045;
+ const j=await api('/siri_vehicle_locations/list',{lat__greater_or_equal:p.lat-dl,lat__lower_or_equal:p.lat+dl,lon__greater_or_equal:p.lon-dn,lon__lower_or_equal:p.lon+dn,recorded_at_time_from:isoTz(new Date(n.getTime()-12*6e4)),recorded_at_time_to:isoTz(n),order_by:'recorded_at_time desc',limit:1500});
+ BD.vl=j[0];BD.vlCount=j.length;const by={};
+ for(const v of j){const ids=['gtfs_ride_id','route_gtfs_ride_id','journey_gtfs_ride_id'].map(k=>pick(v,'siri_ride',k)).filter(x=>x!=null).map(String);if(!ids.length)continue;
+  const rec=new Date(v.recorded_at_time);ids.forEach(id=>{if(!by[id]||rec>by[id].rec)by[id]={rec,lat:+v.lat,lon:+v.lon,dj:+v.distance_from_journey_start}})}
+ BD.vlMatched=Object.keys(by).length;return by}
+function buildRows(sched,live,stop){const now=Date.now(),rows=[];
+ for(const s of sched){const v=live[s.ride];let min=null,lv=false;
+  if(v){const age=(now-v.rec)/6e4;if(age<=8){let rem=s.dist-v.dj;if(!isFinite(rem)||rem>60000||rem<-60000)rem=hav({lat:v.lat,lon:v.lon},stop)*1000*1.3;
+   if(rem>=-80){min=Math.max(0,rem/6.1/60-age);lv=true}else continue}}
+  if(min==null){min=(s.at-now)/6e4;if(min<-1)continue}
+  rows.push({line:s.line,dest:s.dest,min,live:lv,at:new Date(now+min*6e4)})}
+ return rows.sort((a,b)=>a.min-b.min).slice(0,4)}
+async function busLoad(silent){if(BUS.loading)return;BUS.loading=true;if(!silent){BUS.res=null;BUS.err=null;busDraw()}
+ try{let p;if(BUS.from=='here'){try{p=await getLoc();BUS.loc=p}catch(e){const h=S.places.find(x=>x.home)||S.places[0];if(!h)throw new Error('location');BUS.from=h.id;p={lat:h.lat,lon:h.lon}}}else{const pl=placeOf(BUS.from)||S.places[0];if(!pl)throw new Error('location');p={lat:pl.lat,lon:pl.lon}}
+  const stops=await stopsFor(S.set.city);if(!stops.length)throw new Error('no stops in '+S.set.city);const near=nearest(stops,p,3);
+  const [live,...sc]=await Promise.all([liveNear(p).catch(e=>{BD.vlErr=e.message;return {}}),...near.map(s=>schedFor(s).catch(e=>{BD.rsErr=e.message;return []}))]);
+  BUS.res=near.map((s,i)=>({stop:s,walk:est(p,s).w,rows:buildRows(sc[i],live,s)}));BUS.far=near[0]?near[0].d:0;BUS.err=null;BUS.t=Date.now()}
+ catch(e){BUS.err=e.message||'error';BD.err=BUS.err}
+ BUS.loading=false;busDraw()}
+const busFrom=id=>{BUS.from=id;busLoad()};
+function busView(){return `<div class="hd"><h1>${t('Buses')}</h1><span class="sub" id="bus-up"></span></div><div class="rw" id="bus-from" style="margin-bottom:12px"></div><div id="busb"></div>
+ <div class="bfoot"><button class="pill" onclick="citySheet()">${t('City')}: ${esc(S.set.city)}</button><button class="pill" onclick="busDebug()">${t('Debug')}</button></div>`}
+function busRow(b,walk){const m=Math.round(b.min);return `<div class="br ${m<walk-1?'dim':''}"><span class="ln">${esc(b.line==null?'?':b.line)}</span><span class="gt"><b>${esc(b.dest||'')}</b><span class="sub">${b.live?t('live'):t('schedule')} · <bdi dir="ltr">${ft(b.at.getHours()*60+b.at.getMinutes())}</bdi></span></span><span class="bm ${b.live?'lv':''}">${m<1?t('Now'):m+' '+t('min')}</span></div>`}
+function busDraw(){if(tab!=3)return;const f=$('#bus-from'),b=$('#busb');if(!f||!b)return;
+ f.innerHTML=`<button class="pill ${BUS.from=='here'?'on':''}" onclick="busFrom('here')">📍 ${t('Here')}</button>`+S.places.map(p=>`<button class="pill ${BUS.from==p.id?'on':''}" onclick="busFrom('${p.id}')">${p.emoji} ${esc(p.name)}</button>`).join('');
+ const up=$('#bus-up');if(up)up.textContent=BUS.t?`${t('Updated')} ${ft(new Date(BUS.t).getHours()*60+new Date(BUS.t).getMinutes())}`:'';
+ if(BUS.loading&&!BUS.res){b.innerHTML=`<div class="empty">${t('Loading…')}</div>`;return}
+ if(BUS.err){b.innerHTML=`<div class="card"><div class="empty">${BUS.err=='location'?t('Location unavailable. Pick a saved place.'):t("Couldn't load buses")}<div class="sub" style="margin-top:6px">${esc(BUS.err=='location'?'':BUS.err)}</div></div></div><div style="text-align:center"><button class="pill" onclick="busLoad()">${t('Try again')}</button></div>`;return}
+ if(!BUS.res)return;
+ b.innerHTML=(BUS.far>3000?`<div class="wr" style="background:var(--fl)"><div class="gt"><span class="sub">${t('Nearest stop is far')}: ${(BUS.far/1000).toFixed(1)} km · ${t('City')}: ${esc(S.set.city)}</span></div></div>`:'')+BUS.res.map(r=>`<div class="card bs"><div class="bh"><b>${esc(r.stop.name)}</b><span class="sub">${r.stop.d<1000?Math.round(r.stop.d)+' m':(r.stop.d/1000).toFixed(1)+' km'} · ${r.walk} ${t('min')} ${t('walk')}</span></div>${r.rows.length?r.rows.map(x=>busRow(x,r.walk)).join(''):`<div class="empty" style="padding:14px 0">${t('No buses soon')}</div>`}</div>`).join('')}
+function citySheet(){openSh(`<div class="shd">${t('City')}</div><input class="f" id="cy" value="${esc(S.set.city)}" dir="auto" autocomplete="off" enterkeyhint="done"><div class="sub" style="text-align:center;margin-bottom:10px">${t('Exactly as in the stops list, for example נהריה')}</div><div class="trio"><button class="ib p" id="cys" aria-label="save">${ic('check')}</button></div>`,s=>{const go=()=>{const v=$('#cy').value.trim();if(v){S.set.city=v;save();closeSh();render(0,true);busLoad()}};$('#cys').onclick=go;$('#cy').onkeydown=e=>{if(e.key=='Enter')go()}})}
+function busDebug(){const short=o=>{try{return JSON.parse(JSON.stringify(o,(k,v)=>typeof v=='string'&&v.length>80?v.slice(0,80)+'…':v))}catch(e){return null}};
+ const d=JSON.stringify({city:S.set.city,from:BUS.from,loc:BUS.loc,counts:{vehicleRows:BD.vlCount,matchedRides:BD.vlMatched},errors:{main:BD.err,rideStops:BD.rsErr,vehicles:BD.vlErr},sample:{stop:short(BD.stop),rideStop:short(BD.rs),vehicle:short(BD.vl)}},null,1);
+ openSh(`<div class="shd">${t('Debug')}</div><textarea class="f nt" rows="14" readonly onclick="this.select()" style="font-size:12px;font-family:ui-monospace,monospace">${esc(d)}</textarea>`)}
 /* ---------- boot ---------- */
 load();applyLang();render(1);
 $('#gb').onclick=settings;
 setInterval(()=>{due();if(tab==0&&!$('#sh')){const[h,l]=hero(),a=$('#hv'),b=$('#hl'),nn=$('#nn'),bw=$('#bw');if(a&&(a.textContent!=h||b.innerHTML!=l)){a.textContent=h;b.innerHTML=l}if(nn){const x=nowNext();if(nn.innerHTML!=x)nn.innerHTML=x}if(bw){const x=bar(today());if(bw.innerHTML!=x)bw.innerHTML=x}}},15000);
+setInterval(()=>{if(tab==3&&!$('#sh')&&!document.hidden)busLoad(true)},30000);
 document.addEventListener('visibilitychange',()=>{if(!document.hidden){due();if(!$('#sh')){if(sel<today()&&tab!=1)sel=today();render(0,true)}}});
 due();
 if('serviceWorker'in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{});
