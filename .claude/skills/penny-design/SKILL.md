@@ -13,6 +13,36 @@ Use this whenever the goal is "make it feel like Penny". Files next to this one:
 ## The feel in one paragraph
 Quiet and confident. Lots of air, one huge number as the hero, small calm labels, soft rounded cards on a very light (or near-black) background with a barely visible colour glow behind everything. Everything you touch gives back: it squashes slightly under the finger and springs back. Nothing shouts: one accent (green) and one warning (red). No clutter, no duplicate controls, no walls of text.
 
+## UI review questions (ask every single time)
+Run these on every screen you build or change, with real screenshots in both languages. A "no" is a fix to make now.
+
+**Understanding**
+1. Can someone understand what this screen is for, and what to do next, in 3 seconds?
+2. Is there one clear main thing (one hero, one primary button)?
+3. Does every word, number, colour and icon have a reason? Is anything unexplained (a bare number, a red line with no label, a faded row with no reason)?
+
+**Amount**
+4. Is it overwhelming? What is the minimum to show by default, what can be revealed on tap, and what can be removed?
+5. Is anything shown twice (two pickers for one thing, an icon next to the same icon, a place name repeating the title)?
+6. Would a long form be better as steps, with a way to finish early?
+
+**Logic**
+7. Does every option make sense given the earlier answers? Hide what no longer applies (duration once start and end are set, travel with no place).
+8. Can a button be pressed when it shouldn't be? Then grey it and say why under it.
+9. Are sensible defaults already chosen (today, 30 minutes, guessed category)?
+
+**Layout and motion**
+10. Does anything wrap onto several lines that should be one scrolling row? Does every scrolling area fade at the edge where there is more?
+11. Do long lists show a few, with the most relevant first, and a way to see the rest?
+12. Does anything open fully expanded with no way to close it? Can every panel be collapsed again?
+13. Is it consistent with Penny (line icons in tiles, pills, sheets, spacing) and with the rest of this app?
+
+**Every case**
+14. Empty, one item, many items, very long names: does each still look right?
+15. Hebrew right-to-left: are times, arrows, fades and order correct?
+16. Dark mode, small phone, keyboard open: anything hidden or broken?
+17. Is anything still not polished? Then improve it now, not later.
+
 ## Principles
 1. **Minimal first.** Show titles, not paragraphs. An explanation lives behind a small ⓘ that opens with an animation. Remove a control rather than adding a second way to do the same thing.
 2. **One hero number per screen**, huge (76px, weight 800, letter-spacing -0.05em), centred, tappable to explain itself.
