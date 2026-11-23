@@ -24,6 +24,7 @@ Quiet and confident. Lots of air, one huge number as the hero, small calm labels
 8. **Honest empty states** in one line ("Tap − to log a payment").
 9. **Both languages from day one.** English and Hebrew (RTL) are both first-class; test both.
 10. **Offline-first, single file where possible.** No framework needed for this look; plain HTML/CSS/JS with a service worker.
+11. **Steps, not forms.** Before building any window with more than about four fields, stop and ask: what is the minimum the user must answer, and in what order? Put one question group per step (for a task: *What?* with title and category, then *When?* with date, time and length). Make the earliest step enough to finish ("Add now"), put everything advanced behind a "More options" step, and let the user skip. Show a progress indicator and a back button. When editing, show collapsed rows with a one-line summary of the current value and open only the row being changed. Ask of every screen: what is shown by default, what can be revealed on tap, and what can be left out entirely? Choose smart defaults (today, 30 minutes, guessed category) so most fields never need touching.
 
 ## Tokens (see tokens.css for all values)
 - Light: `--bg #f4f4f6`, card `#fff`, text `#111113`, secondary `#8a8a91`, accent green `#13a068`, red `#ec4a3e`.
@@ -83,6 +84,7 @@ Short, plain, friendly. Sentence case. Titles are nouns or short verbs ("Back up
 1. Copy `tokens.css`, start from `starter.html`.
 2. Decide the hero number and the 2 stat cards for the home screen.
 3. Keep navigation to 3 or 4 tabs; everything else opens as a sheet.
+3b. Every sheet or form: apply principle 11. One question group per step, a way to finish early, advanced options hidden.
 4. Settings: grouped, collapsible, titles only, ⓘ for explanations, no duplicate controls.
 5. Add `t()` with English and Hebrew, set `dir`, test both.
 6. Dark mode via the token block (follow system, allow override).
