@@ -77,7 +77,7 @@ input:disabled{opacity:.4}
 .ib.dis,.pill.dis{opacity:.32;box-shadow:none;filter:grayscale(1)}.ib.dis:active,.pill.dis:active{transform:none}
 .why{text-align:center;color:var(--s);font-size:13.5px;font-weight:600;min-height:18px;margin-top:10px}.why:empty{display:none}.why.shk{animation:shk .4s;color:var(--r)}
 @keyframes shk{0%,100%{transform:none}20%{transform:translateX(-6px)}40%{transform:translateX(6px)}60%{transform:translateX(-4px)}80%{transform:translateX(4px)}}
-.cpv{position:relative;width:96px;margin:0 auto 14px}.cpi{width:96px;height:96px;border-radius:50%;font-size:44px;display:grid;place-items:center;transition:transform .3s var(--spring),background .3s}.cpi:active{transform:scale(.92)}
+.cpv{position:relative;width:96px;margin:0 auto 14px}.cpi{width:96px;height:96px;border-radius:50%;font-size:44px;display:grid;place-items:center;transition:transform .3s var(--spring),background .3s}.cpi:active{transform:scale(.92)}.cpi.op{box-shadow:0 0 0 3px var(--t)}.eplus{display:grid;place-items:center;color:var(--s);background:transparent!important;box-shadow:inset 0 0 0 1.5px var(--fl2)}#cpr{margin-bottom:10px}
 .cpe{position:absolute;bottom:2px;inset-inline-end:2px;width:30px;height:30px;border-radius:50%;background:var(--t);color:var(--bg);display:grid;place-items:center;pointer-events:none;box-shadow:0 2px 8px rgba(0,0,0,.2)}
 .egrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(44px,1fr));gap:8px;margin-bottom:10px}.egrid button{height:44px;border-radius:14px;background:var(--fl);font-size:22px;transition:transform .2s var(--spring)}.egrid button.on{background:var(--t)}.egrid button:active{transform:scale(.9)}
 .cpr{display:flex;align-items:center;gap:14px;background:var(--fl);border-radius:18px;padding:10px 14px;margin-bottom:6px}.cpr .pill{flex:none}.cpr .li{flex:1;min-width:0;min-height:0}
@@ -301,7 +301,7 @@ const remL=r=>r[0]>1?r[1]+' '+t('min'):t(r[1]);
 function catPopup(cat,done){const c=cat?{...cat,name:cat.def?t(cat.name):cat.name}:{id:'c_'+uid(),emoji:'🎯',color:COLORS[0],name:'',def:0};let gopen=false;
  openPop(`<div class="shd">${t(cat?'Edit category':'New category')}</div>
  <div class="cpv"><button class="cpi" id="cpi" type="button" aria-label="${t('Change icon')}"></button><span class="cpe">${ic('edit',14)}</span></div>
- <div class="gx" id="cpg"><div><div class="egrid">${CE.map(e=>`<button type="button" data-ce="${e}">${e}</button>`).join('')}</div><input class="f" id="cpo" maxlength="8" autocomplete="off" placeholder="${t('Or type any emoji')}"></div></div>
+ <div class="gx" id="cpg"><div><div class="ems hs" id="cpr">${CE.map(e=>`<button type="button" data-ce="${e}">${e}</button>`).join('')}<button type="button" class="eplus" data-ck="1" aria-label="${t('Or type any emoji')}">${ic('plus',18)}</button></div><input class="f" id="cpo" maxlength="8" autocomplete="off" placeholder="${t('Or type any emoji')}" style="display:none"></div></div>
  <input class="f" id="cpn" maxlength="20" autocomplete="off" enterkeyhint="done" placeholder="${t('Name')}" value="${esc(c.name)}">
  <div class="lb">${t('Color')}</div><div class="sw hs">${COLORS.map(x=>`<button type="button" data-cc="${x}" aria-label="color" style="background:${x}"></button>`).join('')}</div>
  <div class="lb" style="margin-top:14px">${t('Preview')}</div><div class="cpr"><span class="pill on" id="cpp"></span><span class="li" style="cursor:default;border:0;padding:6px 0"><span class="ic" id="cpic"></span><span class="gt"><b id="cpt"></b><span class="sub">09:00–10:00</span></span></span></div>
@@ -313,10 +313,11 @@ function catPopup(cat,done){const c=cat?{...cat,name:cat.def?t(cat.name):cat.nam
    s.querySelectorAll('[data-cc]').forEach(x=>x.classList.toggle('on',x.dataset.cc==c.color));s.querySelectorAll('[data-ce]').forEach(x=>x.classList.toggle('on',x.dataset.ce==c.emoji));
    gate($('#cps'),n?'':t('Give it a name first'),$('#cpw'),'cpn')};
   draw();$('#cpn').oninput=draw;$('#cpn').onkeydown=e=>{if(e.key=='Enter')$('#cps').click()};
-  $('#cpo').oninput=e=>{const v=e.target.value.trim();if(!v)return;const g=typeof Intl!='undefined'&&Intl.Segmenter?[...new Intl.Segmenter().segment(v)].map(x=>x.segment):Array.from(v);c.emoji=g[g.length-1];e.target.value='';gopen=false;$('#cpg').classList.remove('o');draw()};
+  $('#cpo').oninput=e=>{const v=e.target.value.trim();if(!v)return;const g=typeof Intl!='undefined'&&Intl.Segmenter?[...new Intl.Segmenter().segment(v)].map(x=>x.segment):Array.from(v);c.emoji=g[g.length-1];e.target.value='';e.target.style.display='none';gopen=false;$('#cpg').classList.remove('o');$('#cpi').classList.remove('op');draw()};
   s.onclick=e=>{const b=e.target.closest('button');if(!b)return;const d=b.dataset;
-   if(b.id=='cpi'){gopen=!gopen;$('#cpg').classList.toggle('o',gopen);return}
-   if(d.ce){c.emoji=d.ce;gopen=false;$('#cpg').classList.remove('o');draw();return}
+   if(b.id=='cpi'){gopen=!gopen;$('#cpg').classList.toggle('o',gopen);$('#cpi').classList.toggle('op',gopen);if(gopen)setTimeout(()=>{const on=$('#cpr .on');if(on)on.scrollIntoView({block:'nearest',inline:'center'});fitRows()},80);else $('#cpo').style.display='none';return}
+   if(d.ck){const o=$('#cpo');o.style.display='';o.focus();return}
+   if(d.ce){c.emoji=d.ce;gopen=false;$('#cpg').classList.remove('o');$('#cpi').classList.remove('op');draw();return}
    if(d.cc){c.color=d.cc;draw();return}
    if(b.id=='cpx'){closePop();return}
    if(b.id=='cps'){const n=nm();if(!n)return;if(cat){if(!(cat.def&&n===t(cat.name))){cat.name=n;cat.def=0}cat.emoji=c.emoji;cat.color=c.color}else{c.name=n}closePop();done(cat||c)}};
