@@ -19,6 +19,10 @@ jobs:
       url: ${{ steps.d.outputs.page_url }}
     steps:
       - uses: actions/checkout@v4
+      - name: Stamp version
+        run: |
+          B="${GITHUB_SHA::7} · $(TZ=Asia/Jerusalem date '+%d.%m.%Y %H:%M')"
+          sed -i "s|__BUILD__|$B|g" tempo/index.html tempo/sw.js
       - uses: actions/upload-pages-artifact@v3
         with:
           path: tempo
