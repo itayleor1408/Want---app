@@ -79,15 +79,17 @@ input:disabled{opacity:.4}
 @keyframes shk{0%,100%{transform:none}20%{transform:translateX(-6px)}40%{transform:translateX(6px)}60%{transform:translateX(-4px)}80%{transform:translateX(4px)}}
 .nn svg,.hl svg,.shd svg,.fc b svg,.sgh .sub svg{width:18px;height:18px;vertical-align:-3px}
 .cph{display:flex;align-items:center;justify-content:center;gap:22px;margin:0 0 14px}
-.cps2{width:48px;height:48px;border-radius:16px;background:var(--fl);color:var(--t);display:grid;place-items:center;transition:transform .25s var(--spring),box-shadow .2s}.cps2:active{transform:scale(.9)}.cps2.on{box-shadow:0 0 0 2.5px var(--t)}
+.cpb{position:relative;display:flex;flex-direction:column;align-items:center;gap:5px}.cpb small{font-size:11.5px;font-weight:700;color:var(--s)}
+.pb{position:absolute;top:-4px;inset-inline-end:-4px;width:20px;height:20px;border-radius:50%;background:var(--t);color:var(--bg);display:grid;place-items:center;pointer-events:none;box-shadow:0 2px 6px rgba(0,0,0,.2)}
+.cps2{font-size:22px;box-shadow:0 2px 8px rgba(0,0,0,.08);width:48px;height:48px;border-radius:16px;background:var(--fl);color:var(--t);display:grid;place-items:center;transition:transform .25s var(--spring),box-shadow .2s}.cps2:active{transform:scale(.9)}.cps2.on{box-shadow:0 0 0 2.5px var(--t)}
 .cps2 .dot{width:26px;height:26px;border-radius:50%;box-shadow:inset 0 0 0 2px rgba(255,255,255,.35)}
 .ctile{width:54px;height:54px;border-radius:18px;background:var(--fl);display:grid;place-items:center;flex:none;transition:transform .25s var(--spring),box-shadow .2s}.ctile span{width:30px;height:30px;border-radius:50%}.ctile.on{box-shadow:inset 0 0 0 2.5px var(--t)}.ctile:active{transform:scale(.92)}
-.tile{width:54px;height:54px;border-radius:18px;background:var(--fl);color:var(--t);display:grid;place-items:center;flex:none;transition:transform .25s var(--spring),background .2s,color .2s}.tile:active{transform:scale(.92)}.tile.on{background:var(--t);color:var(--bg)}
+.tile{font-size:24px;width:54px;height:54px;border-radius:18px;background:var(--fl);color:var(--t);display:grid;place-items:center;flex:none;transition:transform .25s var(--spring),background .2s,color .2s}.tile:active{transform:scale(.92)}.tile.on{background:var(--t);color:var(--bg)}
 .emj{font-size:1.05em;line-height:1}.ic .emj{font-size:19px}
 .cpv{position:relative;width:92px;margin:0 auto 14px}.cpi{flex:none;width:92px;height:92px;border-radius:30px;font-size:44px;display:grid;place-items:center;transition:transform .3s var(--spring),background .3s}.cpi:active{transform:scale(.92)}.cpi.op{box-shadow:0 0 0 3px var(--t)}.eplus{display:grid;place-items:center;color:var(--s);background:transparent!important;box-shadow:inset 0 0 0 1.5px var(--fl2)}#cpr{margin-bottom:10px}
 .cpe{position:absolute;bottom:2px;inset-inline-end:2px;width:30px;height:30px;border-radius:50%;background:var(--t);color:var(--bg);display:grid;place-items:center;pointer-events:none;box-shadow:0 2px 8px rgba(0,0,0,.2)}
 .egrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(44px,1fr));gap:8px;margin-bottom:10px}.egrid button{height:44px;border-radius:14px;background:var(--fl);font-size:22px;transition:transform .2s var(--spring)}.egrid button.on{background:var(--t)}.egrid button:active{transform:scale(.9)}
-.cpr{display:flex;align-items:center;gap:14px;background:var(--fl);border-radius:18px;padding:10px 14px;margin-bottom:6px}.cpr .pill{flex:none}.cpr .li{flex:1;min-width:0;min-height:0}
+.cpr{display:flex;align-items:center;gap:12px;width:fit-content;max-width:86%;min-width:62%;margin:0 auto 20px;background:var(--c);border-radius:20px;padding:10px 18px 10px 12px;box-shadow:var(--sh);pointer-events:none}.cpr .gt b{font-size:15.5px}.cpr .sub{display:block;font-size:13px}.cpr .pill{flex:none}.cpr .li{flex:1;min-width:0;min-height:0}
 .nw2{background:transparent;box-shadow:inset 0 0 0 1.5px var(--fl2)}
 .hrow{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;padding:2px 0 10px}.hrow::-webkit-scrollbar{display:none}.hrow>*{flex:none}
 .hs{-webkit-mask-image:linear-gradient(to right,transparent 0,#000 var(--fs,0px),#000 calc(100% - var(--fe,0px)),transparent 100%);mask-image:linear-gradient(to right,transparent 0,#000 var(--fs,0px),#000 calc(100% - var(--fe,0px)),transparent 100%)}
@@ -203,7 +205,7 @@ const HE={'Today':'היום','Week':'שבוע','Later':'אחר כך','New':'חד
 'Buses':'אוטובוסים','Here':'כאן','live':'חי','schedule':'לפי לוח','Updated':'עודכן','Loading…':'טוען…','Couldn\'t load buses':'לא הצלחתי לטעון אוטובוסים','Try again':'נסו שוב','City':'עיר','Debug':'בדיקה','No buses soon':'אין אוטובוסים בקרוב','walk':'הליכה','Nearest stop is far':'התחנה הקרובה רחוקה','Location unavailable. Pick a saved place.':'המיקום לא זמין. בחרו מקום שמור.','Exactly as in the stops list, for example נהריה':'בדיוק כמו ברשימת התחנות, למשל נהריה',
 'What?':'מה?','When?':'מתי?','More options':'עוד אפשרויות','Add now':'הוסיפו עכשיו','Tomorrow':'מחר','Pick a date':'בחרו תאריך','Anytime':'בכל שעה','At a time':'בשעה','Time':'שעה',
 'Leave':'צא','tasks':'משימות','Too soon to walk there':'מוקדם מדי להגיע בהליכה','Add a note':'הוסיפו הערה',
-'Edit category':'עריכת קטגוריה','New category':'קטגוריה חדשה','Change icon':'שינוי סמל','Or type any emoji':'או הקלידו כל אימוג׳י','Color':'צבע','Preview':'תצוגה מקדימה','Icon':'סמל','Give it a name first':'קודם תנו שם','Write what the task is first':'קודם כתבו מה המשימה','Pick a date first':'קודם בחרו תאריך','Search and choose the address first':'קודם חפשו ובחרו כתובת','Give the place a name first':'קודם תנו שם למקום','Write a city name first':'קודם כתבו שם עיר','Not done':'לא בוצע',
+'Edit category':'עריכת קטגוריה','New category':'קטגוריה חדשה','Change icon':'שינוי סמל','Or type any emoji':'או הקלידו כל אימוג׳י','Color':'צבע','Preview':'תצוגה מקדימה','Icon':'סמל','Category name':'שם הקטגוריה','e.g. Reading':'למשל: קריאה','Give it a name first':'קודם תנו שם','Write what the task is first':'קודם כתבו מה המשימה','Pick a date first':'קודם בחרו תאריך','Search and choose the address first':'קודם חפשו ובחרו כתובת','Give the place a name first':'קודם תנו שם למקום','Write a city name first':'קודם כתבו שם עיר','Not done':'לא בוצע',
 'info.notif':'התראות מופיעות כשהאפליקציה פתוחה או ברקע. באייפון צריך קודם "הוסף למסך הבית". כשהאפליקציה סגורה לגמרי אין התראה בלי שרת דחיפה.','info.rem':'כמה זמן לפני כל אירוע חדש להתריע.','info.quick':'אפשר לכתוב בשפה חופשית: "פגישה מחר 14:00 שעה" והאפליקציה תמלא לבד.','info.data':'הכול נשמר רק בטלפון הזה. מומלץ לייצא גיבוי מדי פעם.'};
 const EN={'info.places':'Save home, work, the gym and bus stops. Attach a place to any event to get a travel estimate.','info.day':'Free time is only counted between these hours.','info.notif':'Alerts show while the app is open or in the background. On iPhone, Add to Home Screen first. With the app fully closed there is no alert without a push server.','info.rem':'How long before a new event to alert you.','info.quick':'Type naturally: "Dentist tomorrow 14:00 1h" and Tempo fills in the rest.','info.data':'Everything is stored only on this phone. Export a backup now and then.'};
 let S;const lang=()=>S.set.lang,t=k=>lang()=='he'?(HE[k]||k):(EN[k]||k);
@@ -234,7 +236,7 @@ const later=()=>{const fa=(S.focus[weekStart(today())]||{}).area;return S.items.
 const missed=()=>{const t=today(),out=[];S.items.forEach(i=>{if(i.date&&(!i.rep||i.rep=='none')&&i.date<t&&i.date>=addD(t,-14)&&!isDone(i,i.date))out.push(i)});return out.sort((a,b)=>a.date.localeCompare(b.date))};
 function toggle(id,ds){navigator.vibrate&&navigator.vibrate(8);const it=S.items.find(i=>i.id==id);it.done=it.done||{};const k=ds||'x';if(it.done[k])delete it.done[k];else it.done[k]=1;save();render(0,true)}
 /* ---------- places ---------- */
-const PLI={'🏠':'home','💼':'brief','💪':'gym','🚌':'bus','📍':'pin'};const plIc=(p,z=18)=>ic(PLI[p.emoji]||'pin',z);
+const PLI={'🏠':'home','💼':'brief','💪':'gym','🚌':'bus','📍':'pin'};const plIc=(p,z=18)=>`<span class="emj">${esc(p.emoji||'📍')}</span>`;
 const placeOf=id=>S.places.find(p=>p.id==id);
 const hav=(a,b)=>{const R=6371,r=x=>x*Math.PI/180,dl=r(b.lat-a.lat),dn=r(b.lon-a.lon),h=Math.sin(dl/2)**2+Math.cos(r(a.lat))*Math.cos(r(b.lat))*Math.sin(dn/2)**2;return 2*R*Math.asin(Math.sqrt(h))};
 function est(a,b){const d=hav(a,b);return{km:d,w:Math.max(1,Math.round(d*1.3/5*60)),d:Math.max(3,Math.round(d*1.4/(d<8?30:55)*60+3))}}
@@ -253,7 +255,7 @@ function placesSheet(){openSh(`<div class="shd">${t('My places')}</div><div id="
 function pSync(){if(!PF)return;const n=$('#pn'),q=$('#pq');if(n)PF.name=n.value;if(q)PF.q=q.value}
 function pdraw(){const el=$('#pl');if(!el)return;
  const list=S.places.length?vlist(recent(S.places,S.plUse,p=>p.id,null).map(p=>`<div class="li" style="cursor:default"><span class="ic">${plIc(p)}</span><span class="gt"><b>${esc(p.name)}</b><span class="sub">${esc((p.addr||'').slice(0,60))}</span></span><button class="ib" aria-label="delete" style="width:38px;height:38px;box-shadow:none;color:var(--r)" onclick="delPlace('${p.id}')">${ic('trash',18)}</button></div>`).join(''),4,66):`<div class="empty">${t('No places yet')}</div>`;
- const types=`<div class="hrow hs">${[['Home','🏠'],['Work','💼'],['Gym','💪'],['Bus station','🚌'],['Other','📍']].map(([n,e])=>`<button class="pill ${PF&&PF.emoji==e?'on':''}" onclick="pSync();PF.name='${t(n)}';PF.emoji='${e}';PF.home=${n=='Home'};pdraw()">${ic(PLI[e],18)} ${t(n)}</button>`).join('')}</div>`;
+ const types=`<div class="hrow hs">${[['Home','🏠'],['Work','💼'],['Gym','💪'],['Bus station','🚌'],['Other','📍']].map(([n,e])=>`<button class="pill ${PF&&PF.emoji==e?'on':''}" onclick="pSync();PF.name='${t(n)}';PF.emoji='${e}';PF.home=${n=='Home'};pdraw()">${e} ${t(n)}</button>`).join('')}</div>`;
  const form=PF?(PF.step?`<div class="sd"><span></span><span class="on"></span></div><div class="sub" style="text-align:center;margin:0 0 12px;font-weight:800">${PF.emoji} ${esc(PF.name)}</div>
  <input class="f" id="pq" value="${esc(PF.q)}" placeholder="${t('Address')}" onkeydown="if(event.key=='Enter')pSearch()">
  <div class="rw"><button class="pill" onclick="pSearch()">🔎 ${t('Search')}</button><button class="pill" onclick="pLoc()">📍 ${t('Use my location')}</button></div>
@@ -379,43 +381,42 @@ const DEFCATS=[['work','💼','Work','#4f8cff'],['home','🏠','Home','#f0a050']
 const COLORS=['#4f8cff','#f0a050','#ee5d7a','#9b7cf0','#2fb8a0','#e5c33c','#6c7a89','#d96ad0'];
 const CICONS=['brief','home','gym','health','edu','book','people','heart','coffee','food','cart','shop','bus','car','plane','phone','laptop','music','film','game','paw','baby','plant','sun','moon','star','sparkle','gift','cake','ball','bike','tooth','pill','tools','repair','broom','laundry','mail','pen','cal','clock','pin','trophy','smile','wallet','bank','camera','ticket','bed','spa','globe','mail'];
 const DEFICON={work:'brief',home:'home',health:'gym',study:'edu',social:'people'};
-const catHtml=(c,z=20)=>c.icon?ic(c.icon,z):`<span class="emj">${esc(c.emoji||'')}</span>`;
+const catHtml=(c,z=20)=>c.emoji?`<span class="emj" style="font-size:${Math.round(z*1.05)}px">${esc(c.emoji)}</span>`:c.icon?ic(c.icon,z):'';
 const CE=['💼','🏠','💪','📚','👥','🍽️','🩺','📞','🛒','🎉','✈️','🧘','🎯','💡','🎨','🎮','🚗','🐶','🛠️','❤️'];
 const catList=()=>S.cats.map(c=>[c.id,catHtml(c),c.def?t(c.name):c.name,c.color]);
 const areaOf=k=>k?catList().find(a=>a[0]==k):null;
 const iconOf=it=>{const a=areaOf(it.area);return a?a[1]:(it.emoji&&it.emoji!='📌'?`<span class="emj">${esc(it.emoji)}</span>`:ic('pin',20))};
-const iconTxt=it=>{const c=it.area&&S.cats.find(x=>x.id==it.area);return c&&!c.icon&&c.emoji?c.emoji+' ':''};
+const iconTxt=it=>{const c=it.area&&S.cats.find(x=>x.id==it.area);return c&&c.emoji?c.emoji+' ':''};
 const areaTint=k=>{const a=areaOf(k);return a?`background:color-mix(in srgb,${a[3]} 18%,var(--fl));color:color-mix(in srgb,${a[3]} 78%,var(--t))`:''};
 const guessArea=s=>{for(const[r,e]of EM)if(r.test(s)){const id=({'💼':'work','💪':'health','🩺':'health','📚':'study','👥':'social','🎉':'social','🏠':'home'})[e];if(id&&S.cats.some(c=>c.id==id))return id}return null};
 const remL=r=>r[0]>1?r[1]+' '+t('min'):t(r[1]);
 /* create / edit a category inside container el */
-function catPopup(cat,done){const c=cat?{...cat,name:cat.def?t(cat.name):cat.name}:{id:'c_'+uid(),icon:'star',emoji:'',color:COLORS[0],name:'',def:0};let open=null;
- const icons=CICONS.filter((x,i,a)=>a.indexOf(x)==i);
+function catPopup(cat,done){const c=cat?{...cat,name:cat.def?t(cat.name):cat.name}:{id:'c_'+uid(),emoji:'🎯',color:COLORS[0],name:'',def:0};let open=null;
  openPop(`<div class="shd">${t(cat?'Edit category':'New category')}</div>
- <div class="cph"><button class="cps2" id="cbi" type="button" aria-label="${t('Icon')}"></button><button class="cpi" id="cpi" type="button" aria-label="${t('Icon')}"></button><button class="cps2" id="cbc" type="button" aria-label="${t('Color')}"><span class="dot"></span></button></div>
+ <div class="cph"><div class="cpb"><button class="cps2" id="cbi" type="button" aria-label="${t('Icon')}"></button><span class="pb">${ic('edit',11)}</span><small>${t('Icon')}</small></div><button class="cpi" id="cpi" type="button" aria-label="${t('Icon')}"></button><div class="cpb"><button class="cps2" id="cbc" type="button" aria-label="${t('Color')}"><span class="dot"></span></button><span class="pb">${ic('edit',11)}</span><small>${t('Color')}</small></div></div>
  <div class="gx" id="cpg"><div><div class="hrow hs" id="cpr" style="padding:4px 0 14px"></div></div></div>
- <input class="f" id="cpn" maxlength="20" autocomplete="off" enterkeyhint="done" placeholder="${t('Name')}" value="${esc(c.name)}">
- <div class="cpr"><span class="li" style="cursor:default;border:0;padding:4px 0;min-height:0"><span class="ic" id="cpic"></span><span class="gt"><b id="cpt"></b><span class="sub"><bdi dir="ltr">09:00–10:00</bdi></span></span></span></div>
+ <div class="lb">${t('Category name')}</div><input class="f" id="cpn" maxlength="20" autocomplete="off" enterkeyhint="done" placeholder="${t('e.g. Reading')}" value="${esc(c.name)}">
+ <div class="lb" style="text-align:center;margin-top:10px">${t('Preview')}</div><div class="cpr"><span class="ic" id="cpic"></span><span class="gt"><b id="cpt"></b><span class="sub"><bdi dir="ltr">09:00–10:00</bdi></span></span></div>
  <div class="trio"><button class="ib" id="cpx" type="button" aria-label="cancel">${ic('x')}</button><button class="ib p" id="cps" type="button" aria-label="save">${ic('check')}</button></div><div class="why" id="cpw"></div>`,s=>{
   const nm=()=>$('#cpn').value.trim();
   const draw=()=>{const n=nm(),bg=`color-mix(in srgb,${c.color} 18%,var(--fl))`,fg=`color-mix(in srgb,${c.color} 78%,var(--t))`;
    $('#cpi').innerHTML=catHtml(c,40);$('#cpi').style.background=bg;$('#cpi').style.color=fg;$('#cpic').innerHTML=catHtml(c,20);$('#cpic').style.background=bg;$('#cpic').style.color=fg;
    $('#cbi').innerHTML=catHtml(c,20);$('#cbc .dot').style.background=c.color;
-   $('#cpt').textContent=n||t('Name');$('#cpt').style.opacity=n?1:.4;
+   $('#cpt').textContent=n||t('Category name');$('#cpt').style.opacity=n?1:.4;
    $('#cbi').classList.toggle('on',open=='i');$('#cbc').classList.toggle('on',open=='c');
-   s.querySelectorAll('[data-ci]').forEach(x=>x.classList.toggle('on',x.dataset.ci==c.icon));s.querySelectorAll('[data-cc]').forEach(x=>x.classList.toggle('on',x.dataset.cc==c.color));
+   s.querySelectorAll('[data-ce]').forEach(x=>x.classList.toggle('on',x.dataset.ce==c.emoji));s.querySelectorAll('[data-cc]').forEach(x=>x.classList.toggle('on',x.dataset.cc==c.color));
    gate($('#cps'),n?'':t('Give it a name first'),$('#cpw'),'cpn')};
   const setOpen=v=>{open=v;const g=$('#cpg'),r=$('#cpr');
-   if(v){r.innerHTML=v=='i'?icons.map(n=>`<button type="button" class="tile" data-ci="${n}" aria-label="${n}">${ic(n,24)}</button>`).join(''):COLORS.map(x=>`<button type="button" class="ctile" data-cc="${x}" aria-label="color"><span style="background:${x}"></span></button>`).join('');r.scrollLeft=0;g.classList.add('o');setTimeout(()=>{const on=$('#cpr .on');if(on)on.scrollIntoView({block:'nearest',inline:'center'});fitRows()},60)}
+   if(v){r.innerHTML=v=='i'?CE.map(n=>`<button type="button" class="tile" data-ce="${n}">${n}</button>`).join(''):COLORS.map(x=>`<button type="button" class="ctile" data-cc="${x}" aria-label="color"><span style="background:${x}"></span></button>`).join('');r.scrollLeft=0;g.classList.add('o');setTimeout(()=>{const on=$('#cpr .on');if(on)on.scrollIntoView({block:'nearest',inline:'center'});fitRows()},60)}
    else g.classList.remove('o');draw()};
   draw();$('#cpn').oninput=draw;$('#cpn').onkeydown=e=>{if(e.key=='Enter')$('#cps').click()};
   s.onclick=e=>{const b=e.target.closest('button');if(!b)return;const d=b.dataset;
    if(b.id=='cbi'||b.id=='cpi'){setOpen(open=='i'?null:'i');return}
    if(b.id=='cbc'){setOpen(open=='c'?null:'c');return}
-   if(d.ci){c.icon=d.ci;setOpen(null);return}
+   if(d.ce){c.emoji=d.ce;c.icon=null;setOpen(null);return}
    if(d.cc){c.color=d.cc;setOpen(null);return}
    if(b.id=='cpx'){closePop();return}
-   if(b.id=='cps'){const n=nm();if(!n)return;if(cat){if(!(cat.def&&n===t(cat.name))){cat.name=n;cat.def=0}cat.icon=c.icon;cat.color=c.color}else{c.name=n}closePop();done(cat||c)}};
+   if(b.id=='cps'){const n=nm();if(!n)return;if(cat){if(!(cat.def&&n===t(cat.name))){cat.name=n;cat.def=0}cat.emoji=c.emoji;cat.icon=c.icon;cat.color=c.color}else{c.name=n}closePop();done(cat||c)}};
   if(!cat)setTimeout(()=>$('#cpn').focus(),420)})}
 function delCat(id){const snap=JSON.stringify(S.cats),its=S.items.filter(i=>i.area==id).map(i=>i.id),goal=S.goals[id],fc=JSON.stringify(S.focus);
  S.cats=S.cats.filter(c=>c.id!=id);S.items.forEach(i=>{if(i.area==id)i.area=null});delete S.goals[id];Object.values(S.focus).forEach(f=>{if(f.area==id)f.area=null});save();render(0,true);
