@@ -13,6 +13,36 @@ Use this whenever the goal is "make it feel like Penny". Files next to this one:
 ## The feel in one paragraph
 Quiet and confident. Lots of air, one huge number as the hero, small calm labels, soft rounded cards on a very light (or near-black) background with a barely visible colour glow behind everything. Everything you touch gives back: it squashes slightly under the finger and springs back. Nothing shouts: one accent (green) and one warning (red). No clutter, no duplicate controls, no walls of text.
 
+## UI review questions (ask every single time)
+Run these on every screen you build or change, with real screenshots in both languages. A "no" is a fix to make now.
+
+**Understanding**
+1. Can someone understand what this screen is for, and what to do next, in 3 seconds?
+2. Is there one clear main thing (one hero, one primary button)?
+3. Does every word, number, colour and icon have a reason? Is anything unexplained (a bare number, a red line with no label, a faded row with no reason)?
+
+**Amount**
+4. Is it overwhelming? What is the minimum to show by default, what can be revealed on tap, and what can be removed?
+5. Is anything shown twice (two pickers for one thing, an icon next to the same icon, a place name repeating the title)?
+6. Would a long form be better as steps, with a way to finish early?
+
+**Logic**
+7. Does every option make sense given the earlier answers? Hide what no longer applies (duration once start and end are set, travel with no place).
+8. Can a button be pressed when it shouldn't be? Then grey it and say why under it.
+9. Are sensible defaults already chosen (today, 30 minutes, guessed category)?
+
+**Layout and motion**
+10. Does anything wrap onto several lines that should be one scrolling row? Does every scrolling area fade at the edge where there is more?
+11. Do long lists show a few, with the most relevant first, and a way to see the rest?
+12. Does anything open fully expanded with no way to close it? Can every panel be collapsed again?
+13. Is it consistent with Penny (line icons in tiles, pills, sheets, spacing) and with the rest of this app?
+
+**Every case**
+14. Empty, one item, many items, very long names: does each still look right?
+15. Hebrew right-to-left: are times, arrows, fades and order correct?
+16. Dark mode, small phone, keyboard open: anything hidden or broken?
+17. Is anything still not polished? Then improve it now, not later.
+
 ## Principles
 1. **Minimal first.** Show titles, not paragraphs. An explanation lives behind a small ⓘ that opens with an animation. Remove a control rather than adding a second way to do the same thing.
 2. **One hero number per screen**, huge (76px, weight 800, letter-spacing -0.05em), centred, tappable to explain itself.
@@ -24,6 +54,13 @@ Quiet and confident. Lots of air, one huge number as the hero, small calm labels
 8. **Honest empty states** in one line ("Tap − to log a payment").
 9. **Both languages from day one.** English and Hebrew (RTL) are both first-class; test both.
 10. **Offline-first, single file where possible.** No framework needed for this look; plain HTML/CSS/JS with a service worker.
+11. **Steps, not forms.** Before building any window with more than about four fields, stop and ask: what is the minimum the user must answer, and in what order? Put one question group per step (for a task: *What?* with title and category, then *When?* with date, time and length). Make the earliest step enough to finish ("Add now"), put everything advanced behind a "More options" step, and let the user skip. Show a progress indicator and a back button. When editing, show collapsed rows with a one-line summary of the current value and open only the row being changed. Ask of every screen: what is shown by default, what can be revealed on tap, and what can be left out entirely? Choose smart defaults (today, 30 minutes, guessed category) so most fields never need touching.
+12. **Long lists and chip rows: show a few, fade, arrow.** Anywhere options or items can grow (categories, places, durations, reminders, lists of tasks, saved things), show only the most relevant few and reveal the rest with a soft fade and a small arrow. Unordered sets (categories, places) show the most recently used first and pin the selected one to the front; ordered scales (durations, reminders, goal hours) keep their natural order and only pull the selected value forward if it would be hidden. Chip rows are one line that fades at the end; vertical lists show about three to eight rows and fade at the bottom. The arrow appears only when there is more to show, and everything must keep working in right-to-left. In code this is `chipRow()`, `vlist()` and `fitRows()` in `tempo/index.html`. Apply this to every new screen by default; it is a house rule, not a one-off.
+13. **Anything that scrolls fades at the edge where there is more.** Sideways rows (class `hs`) fade on the side with hidden content; tall sheets scroll inside `.shb` and fade at the top or bottom. Never leave a scrolling area with a hard cut and no hint. Rows of chips that would wrap onto several lines should be one scrolling row instead (class `hrow hs`).
+14. **Only show an option when it makes sense given the earlier choices.** If one answer makes another one redundant or meaningless, hide the second. Examples already in the app: duration buttons only when no start and end time is set (the end time defines the duration); Remind me only when there is a time; Travel only when there is a place and a time; Repeat only when there is a date; Go and Fit in never on the same row; the default-reminder rows only when notifications are on. Before shipping a screen, walk through each combination of earlier answers and ask what no longer applies.
+15. **A button that can't be used yet is grey and says why.** Never let a tap fail silently or jump back a step. Grey it out (`gate(btn, reason, whyEl, fieldId)`), write the reason in one short line under it ("Write what the task is first"), and if it is tapped anyway shake the reason and focus the missing field.
+16. **Creating something inside a flow opens its own pop-up, with a live preview.** For example a new category opens over the task form (`openPop`), shows a big tappable icon (tap to change it), the name, colours, and a preview of exactly how it will look in the app. Don't expand editors inline in the middle of another form.
+17. **Features connect; show only what the user needs.** A screen that depends on setup the user hasn't done shows one clear empty state with the single action that fixes it (e.g. Buses with no places: "Add a place"), never a list of irrelevant data. Data the user entered in one place (a task's place and time) drives the others (the travel line between tasks, the leave time, the next bus) without being asked twice.
 
 ## Tokens (see tokens.css for all values)
 - Light: `--bg #f4f4f6`, card `#fff`, text `#111113`, secondary `#8a8a91`, accent green `#13a068`, red `#ec4a3e`.
@@ -83,6 +120,7 @@ Short, plain, friendly. Sentence case. Titles are nouns or short verbs ("Back up
 1. Copy `tokens.css`, start from `starter.html`.
 2. Decide the hero number and the 2 stat cards for the home screen.
 3. Keep navigation to 3 or 4 tabs; everything else opens as a sheet.
+3b. Every sheet or form: apply principle 11. One question group per step, a way to finish early, advanced options hidden.
 4. Settings: grouped, collapsible, titles only, ⓘ for explanations, no duplicate controls.
 5. Add `t()` with English and Hebrew, set `dir`, test both.
 6. Dark mode via the token block (follow system, allow override).
