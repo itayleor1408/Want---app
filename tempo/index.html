@@ -62,7 +62,7 @@ input:disabled{opacity:.4}
 .ln{min-width:48px;height:36px;padding:0 9px;border-radius:12px;background:var(--t);color:var(--bg);font-weight:800;font-size:16px;letter-spacing:-.02em;display:grid;place-items:center;flex:none}
 .bm{font-weight:800;font-size:18px;letter-spacing:-.02em;white-space:nowrap}.bm.lv{color:var(--a)}.bm.lv::before{content:'';display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--a);margin-inline-end:6px;vertical-align:middle;animation:pulse 1.8s ease-in-out infinite}
 @keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.35;transform:scale(.7)}}
-.br .gt .sub{display:block}.bfoot{display:flex;gap:8px;justify-content:center;margin-top:10px}
+.br .gt{min-width:0}.br .gt .sub{display:block}.bfoot{display:flex;gap:8px;justify-content:center;margin-top:10px}
 .sd{display:flex;gap:6px;justify-content:center;margin:-6px 0 16px}.sd span{width:7px;height:7px;border-radius:4px;background:var(--fl2);transition:width .4s var(--spring),background .2s}.sd span.on{width:24px;background:var(--t)}
 .sgh{display:flex;align-items:center;gap:10px;width:100%;padding:15px 2px;font-weight:800;font-size:17px;text-align:start;border-top:1px solid var(--hr)}.sg:first-child>.sgh{border-top:0}.sgh>span:first-child{flex:1}.sgh .sub{max-width:55%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.sgh svg{color:var(--s);flex:none;transition:transform .35s var(--spring)}.sgh.op svg{transform:rotate(180deg)}
 .sgb{padding:2px 0 10px}
@@ -84,6 +84,11 @@ input:disabled{opacity:.4}
 .cps2{font-size:22px;box-shadow:0 2px 8px rgba(0,0,0,.08);width:48px;height:48px;border-radius:16px;background:var(--fl);color:var(--t);display:grid;place-items:center;transition:transform .25s var(--spring),box-shadow .2s}.cps2:active{transform:scale(.9)}.cps2.on{box-shadow:0 0 0 2.5px var(--t)}
 .cps2 .dot{width:26px;height:26px;border-radius:50%;box-shadow:inset 0 0 0 2px rgba(255,255,255,.35)}
 .ctile{width:54px;height:54px;border-radius:18px;background:var(--fl);display:grid;place-items:center;flex:none;transition:transform .25s var(--spring),box-shadow .2s}.ctile span{width:30px;height:30px;border-radius:50%}.ctile.on{box-shadow:inset 0 0 0 2.5px var(--t)}.ctile:active{transform:scale(.92)}
+.cn{display:flex;align-items:center;gap:6px;width:100%;padding:8px 0 8px 92px;border-top:1px solid var(--hr);color:var(--s2);font-size:13.5px;font-weight:700;text-align:start}:root[dir=rtl] .cn{padding:8px 92px 8px 0}.card>.cn:first-child{border-top:0}.cn+.li{border-top:0}
+.cnt{background:var(--fl);border-radius:12px;padding:6px 11px}.cn>svg{color:var(--s)}.cn:active .cnt{background:var(--fl2)}
+.dbtn.dim>span{color:var(--s)}
+.bempty{text-align:center;padding:26px 20px 22px}.bempty b{display:block;font-size:19px;font-weight:800;letter-spacing:-.02em;margin:8px 0 6px}.bempty p{margin:0 0 18px;line-height:1.45}.bei{font-size:44px}
+.hint{display:flex;align-items:center;gap:12px;padding:16px 18px;color:var(--s2);font-weight:600;font-size:14.5px}.hint svg{flex:none;color:var(--s)}
 .tile{font-size:24px;width:54px;height:54px;border-radius:18px;background:var(--fl);color:var(--t);display:grid;place-items:center;flex:none;transition:transform .25s var(--spring),background .2s,color .2s}.tile:active{transform:scale(.92)}.tile.on{background:var(--t);color:var(--bg)}
 .emj{font-size:1.05em;line-height:1}.ic .emj{font-size:19px}
 .cpv{position:relative;width:92px;margin:0 auto 14px}.cpi{flex:none;width:92px;height:92px;border-radius:30px;font-size:44px;display:grid;place-items:center;transition:transform .3s var(--spring),background .3s}.cpi:active{transform:scale(.92)}.cpi.op{box-shadow:0 0 0 3px var(--t)}.eplus{display:grid;place-items:center;color:var(--s);background:transparent!important;box-shadow:inset 0 0 0 1.5px var(--fl2)}#cpr{margin-bottom:10px}
@@ -206,8 +211,9 @@ const HE={'Today':'היום','Week':'שבוע','Later':'אחר כך','New':'חד
 'What?':'מה?','When?':'מתי?','More options':'עוד אפשרויות','Add now':'הוסיפו עכשיו','Tomorrow':'מחר','Pick a date':'בחרו תאריך','Anytime':'בכל שעה','At a time':'בשעה','Time':'שעה',
 'Leave':'צא','tasks':'משימות','Too soon to walk there':'מוקדם מדי להגיע בהליכה','Add a note':'הוסיפו הערה',
 'Edit category':'עריכת קטגוריה','New category':'קטגוריה חדשה','Change icon':'שינוי סמל','Or type any emoji':'או הקלידו כל אימוג׳י','Color':'צבע','Preview':'תצוגה מקדימה','Icon':'סמל','Category name':'שם הקטגוריה','e.g. Reading':'למשל: קריאה','Give it a name first':'קודם תנו שם','Write what the task is first':'קודם כתבו מה המשימה','Pick a date first':'קודם בחרו תאריך','Search and choose the address first':'קודם חפשו ובחרו כתובת','Give the place a name first':'קודם תנו שם למקום','Write a city name first':'קודם כתבו שם עיר','Not done':'לא בוצע',
+'Where?':'איפה?','Your plan':'התוכנית שלך','New place':'מקום חדש','Type':'סוג','e.g. Gym':'למשל: חדר כושר','Street, city':'רחוב, עיר','Getting there':'איך מגיעים','Direct buses':'אוטובוסים ישירים','Finding buses…':'מחפש אוטובוסים…','No direct bus found':'לא נמצא אוטובוס ישיר','No bus stop near one of the places':'אין תחנה ליד אחד המקומות','Late':'מאחר','Open Moovit':'פתיחה ב-Moovit','Next trip':'הנסיעה הבאה','Nearest stop':'התחנה הקרובה','Show only the buses you need':'רק האוטובוסים שאתם צריכים','Add a place':'הוסיפו מקום','Add a place to a task to see the bus you need for it.':'הוסיפו מקום למשימה כדי לראות את האוטובוס שצריך אליה.','info.busEmpty':'הוסיפו את המקומות שאתם הולכים אליהם (בית, עבודה, חדר כושר), ו-Tempo יראה רק את האוטובוס הבא לכל אחד.',
 'info.notif':'התראות מופיעות כשהאפליקציה פתוחה או ברקע. באייפון צריך קודם "הוסף למסך הבית". כשהאפליקציה סגורה לגמרי אין התראה בלי שרת דחיפה.','info.rem':'כמה זמן לפני כל אירוע חדש להתריע.','info.quick':'אפשר לכתוב בשפה חופשית: "פגישה מחר 14:00 שעה" והאפליקציה תמלא לבד.','info.data':'הכול נשמר רק בטלפון הזה. מומלץ לייצא גיבוי מדי פעם.'};
-const EN={'info.places':'Save home, work, the gym and bus stops. Attach a place to any event to get a travel estimate.','info.day':'Free time is only counted between these hours.','info.notif':'Alerts show while the app is open or in the background. On iPhone, Add to Home Screen first. With the app fully closed there is no alert without a push server.','info.rem':'How long before a new event to alert you.','info.quick':'Type naturally: "Dentist tomorrow 14:00 1h" and Tempo fills in the rest.','info.data':'Everything is stored only on this phone. Export a backup now and then.'};
+const EN={'info.busEmpty':'Add the places you go to (home, work, the gym) and Tempo will show only the next bus to each one.','info.places':'Save home, work, the gym and bus stops. Attach a place to any event to get a travel estimate.','info.day':'Free time is only counted between these hours.','info.notif':'Alerts show while the app is open or in the background. On iPhone, Add to Home Screen first. With the app fully closed there is no alert without a push server.','info.rem':'How long before a new event to alert you.','info.quick':'Type naturally: "Dentist tomorrow 14:00 1h" and Tempo fills in the rest.','info.data':'Everything is stored only on this phone. Export a backup now and then.'};
 let S;const lang=()=>S.set.lang,t=k=>lang()=='he'?(HE[k]||k):(EN[k]||k);
 const loc=()=>lang()=='he'?'he-IL':'en-GB';
 /* ---------- state ---------- */
@@ -245,12 +251,45 @@ function originFor(pid,ds,time){const dest=placeOf(pid);if(!dest)return null;let
  const oid=prev||(S.places.find(p=>p.home)||{}).id;return !oid||oid==pid?null:placeOf(oid)}
 function goSheet(id,ds){const it=S.items.find(i=>i.id==id),p=it&&placeOf(it.pl);if(!p)return;const o=originFor(p.id,ds,it.time),e=o&&est(o,p),q=encodeURIComponent(p.name),ll=p.lat+','+p.lon;
  const row=(ico,ti,sub,href,ext)=>`<a class="tr" ${ext?'target="_blank" rel="noopener" ':''}href="${href}"><span class="ic">${ico}</span><span class="gt"><b>${ti}</b><span class="sub">${sub}</span></span>${ic('right',18)}</a>`;
- openSh(`<div class="shd">${plIc(p)} ${esc(p.name)}</div>${o?`<div class="sub" style="text-align:center;margin:-8px 0 14px">${t('from')} ${esc(o.name)}</div>`:''}
- <div class="card" style="margin:0 0 12px">${row('🚶',t('Walk'),e?'≈ '+hm(e.w):'',`https://www.google.com/maps/dir/?api=1&destination=${ll}&travelmode=walking`,1)}
+ openSh(`<div class="shd">${plIc(p)} ${esc(p.name)}</div>${o?`<div class="sub" style="text-align:center;margin:-8px 0 14px">${fromTxt(o.name)}</div>`:''}
+ <div class="lb">🚌 ${t('Direct buses')}</div><div class="card bs" id="gbus" style="margin:0 0 14px">${tripBlock(null,p)}</div><div class="card" style="margin:0 0 12px">${row('🚶',t('Walk'),e?'≈ '+hm(e.w):'',`https://www.google.com/maps/dir/?api=1&destination=${ll}&travelmode=walking`,1)}
  ${row('🚌',t('Bus'),t('Live in Moovit'),`moovit://directions?dest_lat=${p.lat}&dest_lon=${p.lon}&dest_name=${q}`,0)}
  ${row('🚗',t('Drive'),e?'≈ '+hm(e.d):'',`https://waze.com/ul?ll=${ll}&navigate=yes`,1)}</div>
- <a class="sub" style="display:block;text-align:center" target="_blank" rel="noopener" href="https://www.google.com/maps/dir/?api=1&destination=${ll}&travelmode=transit">Google Maps · ${t('Bus')}</a>`)}
+ <a class="sub" style="display:block;text-align:center" target="_blank" rel="noopener" href="https://www.google.com/maps/dir/?api=1&destination=${ll}&travelmode=transit">Google Maps · ${t('Bus')}</a>`);
+ (async()=>{let o2=o;if(!o2){try{const g=await getLoc();o2={...g,name:t('Here')}}catch(e){}}const el=$('#gbus');if(!el)return;if(!o2){el.innerHTML=tripBlock({opts:[],why:'noorigin'},p);return}
+  const arriveBy=it.time&&ds?new Date(pd(ds).getTime()+tm(it.time)*6e4):null;let r;try{r=await findTrips(o2,p,arriveBy)}catch(e){r={opts:[],why:'err'}}const el2=$('#gbus');if(el2)el2.innerHTML=tripBlock(r,p)})()}
+const fromTxt=n=>lang()=='he'?'מ'+esc(n):t('from')+' '+esc(n);
 let PF=null;
+const MODE={walk:['🚶','Walk'],bus:['🚌','Bus'],drive:['🚗','Drive']};
+function autoTrav(o,p){const e=est(o,p);return e.w<=20?{mode:'walk',min:e.w}:{mode:'bus',min:Math.round(e.d*1.5+8)}}
+function placePopup(done){const P2={name:'',emoji:'📍',home:false,q:'',res:[],sel:null,step:0,msg:''};
+ const TY=[['Home','🏠'],['Work','💼'],['Gym','💪'],['Bus station','🚌'],['Other','📍']];
+ openPop(`<div class="shd">${t('New place')}</div><div class="sd" id="ppd"><span class="on"></span><span></span></div><div id="ppb"></div><div class="trio" id="ppr"></div><div class="why" id="ppw"></div>`,s=>{
+  const gateP=()=>{if(!P2.step){const n=$('#ppn');if(n)P2.name=n.value;gate(s.querySelector('[data-pn]'),P2.name.trim()?'':t('Give the place a name first'),$('#ppw'),'ppn')}else gate(s.querySelector('[data-pv]'),P2.sel?'':t('Search and choose the address first'),$('#ppw'),'ppq')};
+  const draw=()=>{const b=$('#ppb');$$('#ppd span').forEach((d,i)=>d.classList.toggle('on',i==P2.step));
+   if(!P2.step){b.innerHTML=`<div class="lb">${t('Type')}</div><div class="hrow hs">${TY.map(([n,e])=>`<button type="button" class="pill ${P2.emoji==e?'on':''}" data-ty="${n}|${e}">${e} ${t(n)}</button>`).join('')}</div><div class="lb">${t('Name')}</div><input class="f" id="ppn" maxlength="30" autocomplete="off" value="${esc(P2.name)}" placeholder="${t('e.g. Gym')}" enterkeyhint="next">`;
+    $('#ppr').innerHTML=`<button class="ib" type="button" data-px="1" aria-label="cancel">${ic('x')}</button><button class="ib p" type="button" data-pn="1" aria-label="next">${ic('right')}</button>`;
+    $('#ppn').oninput=gateP;$('#ppn').onkeydown=e=>{if(e.key=='Enter')next()}}
+   else{b.innerHTML=`<div class="sub" style="text-align:center;margin:-4px 0 12px;font-weight:800">${P2.emoji} ${esc(P2.name)}</div><div class="lb">${t('Address')}</div><input class="f" id="ppq" autocomplete="off" value="${esc(P2.q)}" placeholder="${t('Street, city')}" enterkeyhint="search"><div class="rw"><button type="button" class="pill" data-ps="1">🔎 ${t('Search')}</button><button type="button" class="pill" data-pl="1">📍 ${t('Use my location')}</button></div>${P2.msg?`<div class="pv">${esc(P2.msg)}</div>`:''}${P2.res.length?`<div class="card" style="margin:0 0 6px;box-shadow:none;background:var(--fl)">${P2.res.map((r,i)=>`<button type="button" class="li" data-pr="${i}" style="width:100%;text-align:start"><span class="ic">${P2.sel&&P2.sel.addr==r.addr?ic('check',18):ic('pin',18)}</span><span class="gt"><b style="white-space:normal;font-size:14.5px">${esc(r.addr)}</b></span></button>`).join('')}</div>`:''}`;
+    $('#ppr').innerHTML=`<button class="ib" type="button" data-pb="1" aria-label="back">${ic('left')}</button><button class="ib p" type="button" data-pv="1" aria-label="save">${ic('check')}</button>`;
+    $('#ppq').oninput=e=>{P2.q=e.target.value};$('#ppq').onkeydown=e=>{if(e.key=='Enter')search()}}
+   gateP();fitRows()};
+  const next=()=>{if(!P2.name.trim())return;P2.step=1;draw();setTimeout(()=>{const q=$('#ppq');if(q)q.focus()},60)};
+  const search=async()=>{if(!P2.q.trim())return;P2.msg=t('Searching…');draw();try{const r=await fetch(`https://nominatim.openstreetmap.org/search?format=jsonv2&limit=5&accept-language=${lang()}&q=${encodeURIComponent(P2.q)}`),j=await r.json();P2.res=j.map(x=>({addr:x.display_name,lat:+x.lat,lon:+x.lon}));P2.msg=P2.res.length?'':t('No results');if(P2.res.length==1)P2.sel=P2.res[0]}catch(e){P2.msg=t('No results')}draw()};
+  s.onclick=async e=>{const b=e.target.closest('button');if(!b)return;const d=b.dataset;
+   if(d.ty){const[n,em]=d.ty.split('|');P2.emoji=em;P2.home=n=='Home';const inp=$('#ppn');if(!inp.value.trim()||TY.some(x=>t(x[0])==inp.value.trim()))inp.value=t(n);P2.name=inp.value;draw();return}
+   if(d.px){closePop();return}if(d.pn){next();return}if(d.pb){P2.step=0;draw();return}if(d.ps){search();return}
+   if(d.pl){P2.msg=t('Searching…');draw();try{const p=await getLoc();P2.sel={addr:t('Current location'),lat:p.lat,lon:p.lon};P2.res=[P2.sel];P2.msg=''}catch(err){P2.msg=t('Location unavailable')}draw();return}
+   if(d.pr!==undefined){P2.sel=P2.res[+d.pr];draw();return}
+   if(d.pv){if(!P2.sel)return;const pl={id:uid(),name:P2.name.trim(),emoji:P2.emoji,addr:P2.sel.addr,lat:P2.sel.lat,lon:P2.sel.lon,home:P2.home&&!S.places.some(x=>x.home)};S.places.push(pl);S.plUse[pl.id]=Date.now();save();closePop();if(done)done(pl)}};
+  draw();setTimeout(()=>{const n=$('#ppn');if(n)n.focus()},420)})}
+/* "how to get there" line between two tasks at different places */
+function legHtml(it,ds,prevId){const p=placeOf(it.pl),o=prevId?placeOf(prevId):null,st=tm(it.time);let mode=it.mode,min=it.trav;if((!min||!mode)&&o){const a=autoTrav(o,p);mode=mode||a.mode;min=min||a.min}
+ const m=MODE[mode||'walk'],txt=min?`${m[0]} ${t(m[1])} · ${hm(min)} · ${t('Leave')} <bdi dir="ltr">${ft(st-min)}</bdi>`:`🧭 ${t('Getting there')}`;
+ return `<button class="cn" type="button" onclick="goSheet('${it.id}','${ds}')"><span class="cnt">${txt}</span>${ic('right',14)}</button>`}
+function dayList(arr,ds){if(!arr.length)return list(arr,ds);const hm0=(S.places.find(p=>p.home)||{}).id;let prev=hm0;const out=[],fut=ds>=today();
+ arr.forEach(it=>{const dn=isDone(it,ds);if(fut&&it.time&&it.pl&&!dn&&it.pl!=prev&&placeOf(it.pl)&&!(ds==today()&&tm(it.time)<nowMin()))out.push(legHtml(it,ds,prev&&placeOf(prev)?prev:null));out.push(row(it,ds));if(it.time&&it.pl)prev=it.pl});return out.join('')}
+
 function placesSheet(){openSh(`<div class="shd">${t('My places')}</div><div id="pl"></div>`,pdraw)}
 function pSync(){if(!PF)return;const n=$('#pn'),q=$('#pq');if(n)PF.name=n.value;if(q)PF.q=q.value}
 function pdraw(){const el=$('#pl');if(!el)return;
@@ -263,7 +302,7 @@ function pdraw(){const el=$('#pl');if(!el)return;
  <div class="trio"><button class="ib" aria-label="back" onclick="pSync();PF.step=0;pdraw()">${ic('left')}</button><button class="ib p" aria-label="save" onclick="pSave()">${ic('check')}</button></div><div class="why"></div>`
  :`<div class="sd"><span class="on"></span><span></span></div><div class="lb">${t('Name')}</div>${types}<input class="f" id="pn" value="${esc(PF.name)}" placeholder="${t('Name')}" oninput="pGate()" onkeydown="if(event.key=='Enter')pNext()">
  <div class="trio"><button class="ib" aria-label="cancel" onclick="PF=null;pdraw()">${ic('x')}</button><button class="ib p" aria-label="next" onclick="pNext()">${ic('right')}</button></div><div class="why"></div>`)
- :`<button class="btn" onclick="PF={name:'',emoji:'📍',q:'',res:[],sel:null,step:0};pdraw()">${t('Add place')}</button>`;
+ :`<button class="btn" onclick="placePopup(()=>pdraw())">${t('Add place')}</button>`;
  setTimeout(()=>{fitRows();pGate()},0);el.innerHTML=(PF?'':`<div class="card" style="margin:0 0 14px;box-shadow:none;background:var(--fl)">${list}</div>`)+form}
 function pGate(){if(!PF)return;const b=$('#pl .trio .ib.p'),n=$('#pn');gate(b,PF.step?(PF.sel?'':t('Search and choose the address first')):(n&&n.value.trim()?'':t('Give the place a name first')),$('#pl .why'),PF.step?'pq':'pn')}
 function pNext(){pSync();if(!PF.name.trim()){$('#pn').focus();return}PF.step=1;pdraw()}
@@ -334,14 +373,13 @@ function row(it,ds,o={}){const dn=isDone(it,ds),st=it.time?tm(it.time):null,en=s
  const cur=td&&!dn&&st!=null&&nowMin()>=st&&nowMin()<(en>st?en:st+1);
  const late=!dn&&((ds&&ds<today())||(td&&en!=null&&nowMin()>=Math.max(en,st+1)));
  let sub=it.time?`<bdi dir="ltr">${it.dur?`${it.time}–${ft(en)}`:it.time}</bdi>`:(it.date?t('Whole day')+(it.dur?' · '+hm(it.dur):''):(it.dur?hm(it.dur):''));
- const lv=it.time&&it.trav?`<span class="sub lv">${t('Leave')} <bdi dir="ltr">${ft(st-it.trav)}</bdi></span>`:'';
  if(it.steps&&it.steps.length)sub+=` · ✓ ${it.steps.filter(x=>x.d).length}/${it.steps.length}`;
  const pl=it.pl&&placeOf(it.pl);if(pl&&!(it.title.toLowerCase().includes(pl.name.toLowerCase())||pl.name.toLowerCase().includes(it.title.toLowerCase())))sub+=` · 📍 ${esc(pl.name)}`;
  const fitOk=!dn&&!it.time&&(!it.rep||it.rep=='none')&&(!it.date||it.date>=today());
  if(o.showDate&&ds)sub=fmtD(ds,{weekday:'short',day:'numeric',month:'short'})+(it.time?' · '+it.time:'');
  if(late&&!o.showDate)sub+=` · ${t('Not done')}`;
  if(it.rep&&it.rep!='none')sub+=' · ↻';
- return `<div class="li ${dn?'dn':''} ${cur?'nw':''}" onclick="detail('${it.id}','${ds||''}')"><button class="ck" aria-label="done" onclick="event.stopPropagation();toggle('${it.id}','${ds||''}')">${ic('check',16)}</button><span class="ic" style="${areaTint(it.area)}">${iconOf(it)}</span><span class="gt"><b>${esc(it.title)}</b><span class="sub ${late?'neg':''}">${sub}</span>${lv}</span>${pl&&it.time&&!dn&&ds==today()?`<button class="pill fit" onclick="event.stopPropagation();goSheet('${it.id}','${ds}')">${t('Go')}</button>`:''}${fitOk?`<button class="pill fit" onclick="event.stopPropagation();fit('${it.id}')">${t('Fit in')}</button>`:''}</div>`}
+ return `<div class="li ${dn?'dn':''} ${cur?'nw':''}" onclick="detail('${it.id}','${ds||''}')"><button class="ck" aria-label="done" onclick="event.stopPropagation();toggle('${it.id}','${ds||''}')">${ic('check',16)}</button><span class="ic" style="${areaTint(it.area)}">${iconOf(it)}</span><span class="gt"><b>${esc(it.title)}</b><span class="sub ${late?'neg':''}">${sub}</span></span>${fitOk?`<button class="pill fit" onclick="event.stopPropagation();fit('${it.id}')">${t('Fit in')}</button>`:''}</div>`}
 const list=(arr,ds,o)=>arr.length?((o&&o.n&&arr.length>o.n)?vlist(arr.map(i=>row(i,ds,o)).join(''),o.n,66):arr.map(i=>row(i,ds,o)).join('')):`<div class="empty">${t(o&&o.later?'Nothing here. Tap + to add.':'Nothing planned. Tap + to add.')}</div>`;
 function view(){
  if(tab==0){const td=today(),all=occ(td),dn=all.filter(i=>isDone(i,td)).length,[h,l]=hero(),ms=missed();
@@ -351,12 +389,12 @@ function view(){
   <div class="nnw"><span class="nn" id="nn">${nowNext()}</span></div>
   ${warn(td)}
   ${ms.length?`<div class="sec"><span>${t('Missed')}</span></div><div class="card">${ms.length>3?vlist(ms.map(i=>row(i,i.date,{showDate:1})).join(''),3,66):ms.map(i=>row(i,i.date,{showDate:1})).join('')}</div>`:''}
-  <div class="sec"><span>${t('Plan')}</span><span class="sub">${all.length?`${all.length-dn} ${t('left')} · ${dn} ${t('Done').toLowerCase()}`:''}</span></div><div class="card">${list(all,td)}</div>`}
+  <div class="sec"><span>${t('Plan')}</span><span class="sub">${all.length?`${all.length-dn} ${t('left')} · ${dn} ${t('Done').toLowerCase()}`:''}</span></div><div class="card">${dayList(all,td)}</div>`}
  if(tab==1){const w=weekStart(sel),days=[...Array(7)].map((_,i)=>addD(w,i)),td=today();
   return `<div class="hd"><h1>${fmtD(sel,{month:'long'})}</h1><div class="wn"><button class="ib" onclick="shift(-7)" aria-label="prev">${ic('left',20)}</button><button class="pill" onclick="sel=today();render(0,true)">${t('Today')}</button><button class="ib" onclick="shift(7)" aria-label="next">${ic('right',20)}</button></div></div>
   <div class="strip">${days.map(d=>{const a=stats(d);return `<button class="dy ${d==sel?'on':''} ${d==td?'td':''}" onclick="sel='${d}';render(0,true)"><small>${fmtD(d,{weekday:'short'})}</small><b>${pd(d).getDate()}</b><span class="ld ${a.over?'hi':''}" style="--w:${Math.min(100,Math.round(a.load*100))}%"></span></button>`}).join('')}</div>
   ${focusCard()}
-  <div class="sec" style="margin-top:14px"><span>${fmtD(sel,{weekday:'long',day:'numeric',month:'short'})}</span><span class="sub">${(()=>{const a=stats(sel);return a.tot?hm(a.tot)+' '+t('planned'):''})()}</span></div>${warn(sel)}<div class="card" id="wk">${list(occ(sel),sel)}</div>`}
+  <div class="sec" style="margin-top:14px"><span>${fmtD(sel,{weekday:'long',day:'numeric',month:'short'})}</span><span class="sub">${(()=>{const a=stats(sel);return a.tot?hm(a.tot)+' '+t('planned'):''})()}</span></div>${warn(sel)}<div class="card" id="wk">${dayList(occ(sel),sel)}</div>`}
  if(tab==3)return busView();
  const L=later();return `<div class="hd"><h1>${t('Later')}</h1><span class="sub">${L.filter(i=>!isDone(i)).length} ${t('tasks')}</span></div><div class="card">${list(L,null,{later:1,n:8})}</div>`}
 function render(anim,keep){const y=scrollY;$('#app').innerHTML=`<div class="${anim?'va':''}">${view()}</div>`;
@@ -436,12 +474,12 @@ document.addEventListener('click',e=>{const b=e.target.closest('[data-ca],[data-
  x.style.setProperty('--full',x.scrollHeight+'px');x.classList.toggle('x');b.classList.toggle('x');if(x.classList.contains('x'))w.classList.add('has')});
 let F;
 function edit(id,ds){const it=id?S.items.find(i=>i.id==id):null,wz=!it;
- F=it?{id:it.id,title:it.title,date:it.date,time:it.time||'',dur:it.dur||30,rem:it.rem??-1,trav:it.trav||0,pl:it.pl||null,rep:it.rep||'none',area:it.area||null,areaPick:true,open:null,g:'what',step:0,dm:null}
-  :{title:'',date:tab==2?null:(tab==1?sel:today()),time:'',dur:S.set.dur||30,rem:S.set.rem,trav:0,pl:null,rep:'none',area:null,areaPick:false,open:null,g:'what',step:0,dm:null};
+ F=it?{id:it.id,title:it.title,date:it.date,time:it.time||'',dur:it.dur||30,rem:it.rem??-1,trav:it.trav||0,mode:it.mode||null,travPick:!!it.trav,pl:it.pl||null,rep:it.rep||'none',area:it.area||null,areaPick:true,open:null,g:'what',step:0,dm:null}
+  :{title:'',date:tab==2?null:(tab==1?sel:today()),time:'',dur:S.set.dur||30,rem:S.set.rem,trav:0,mode:null,travPick:false,pl:null,rep:'none',area:null,areaPick:false,open:null,g:'what',step:0,dm:null};
  const grp=(k,title,body,flat)=>`<div class="sg ${flat?'flat':''}" data-g="${k}"><button class="sgh" data-gh="${k}" type="button"><span>${title}</span><span class="sub" id="sm-${k}"></span>${ic('chev',16)}</button><div class="gx" id="gx-${k}"><div><div class="sgb">${body}</div></div></div></div>`;
  openSh(`<div class="shd" id="sht">${t(it?'Edit':STEPS[0])}</div>${wz?'<div class="sd" id="sd"></div>':''}<div id="fw" class="${wz?'wz':''}">
  ${grp('what',t('What?'),`<input class="f" id="fi" maxlength="120" autocomplete="off" placeholder="${t("What's the plan?")}" value="${esc(F.title)}" enterkeyhint="${wz?'next':'done'}"><div class="pv h" id="pv"></div><div class="lb">${t('Category')}</div><div class="hrow hs" id="cat"></div>`)}
- ${grp('when',t('When?'),`<button class="dbtn" id="dbtn" type="button"></button><div class="gx" id="dgx"><div><div class="hrow hs" id="rdt"></div><input class="f" type="date" id="fd" style="display:none"></div></div><div id="tmw"></div><div id="dwrap"><div class="lb">${t('Duration')} · <span id="dsum"></span></div><div class="hrow hs" id="rd"></div></div>`)}
+ ${grp('when',t('When?'),`<button class="dbtn" id="dbtn" type="button"></button><div class="gx" id="dgx"><div><div class="hrow hs" id="rdt"></div><input class="f" type="date" id="fd" style="display:none"></div></div><div id="tmw"></div><div id="dwrap"><div class="lb">${t('Duration')} · <span id="dsum"></span></div><div class="hrow hs" id="rd"></div></div><button class="dbtn" id="wbtn" type="button"></button><div class="gx" id="wgx"><div><div class="hrow hs" id="rwh"></div></div></div>`)}
  ${grp('more',t('More options'),`<div class="ac" id="ac"></div>`,true)}</div><div id="tr"></div>`,s=>{
   const fi=$('#fi'),P=(k,v,on,l)=>`<button class="pill ${on?'on':''}" data-${k}="${v}" type="button">${l}</button>`;
   const dmode=()=>F.dm||(!F.date?'none':F.date==today()?'today':F.date==addD(today(),1)?'tom':[2,3,4,5,6].some(i=>F.date==addD(today(),i))?'d:'+F.date:'pick');
@@ -452,7 +490,7 @@ function edit(id,ds){const it=id?S.items.find(i=>i.id==id):null,wz=!it;
   const drawDur=()=>{const ds=DURS;
    $('#rd').innerHTML=`${ds.map(d=>P('d',d,F.dur==d,hm(d))).join('')}<input class="pill cinp" id="cd" type="number" inputmode="numeric" min="5" max="720" step="5" placeholder="${t('min')}" value="${DURS.includes(F.dur)?'':F.dur}">`;$('#dsum').textContent=hm(F.dur);fitRows()};
   const drawTime=()=>{const m=dmode(),w=$('#tmw');$('#dwrap').style.display=F.time?'none':'';if(m=='none'){w.innerHTML='';return}
-   w.innerHTML=`<div class="lb">${t('Time')}</div><div class="rw">${P('tm','any',!F.time,t('Anytime'))}${P('tm','at',!!F.time,t('At a time'))}</div>`+(F.time?`<div class="f2"><label class="fld"><span>${t('Starts')}</span><input class="f" type="time" id="ft" value="${F.time}"></label><label class="fld"><span>${t('Ends')}</span><input class="f" type="time" id="fe" value="${endOf()}"></label></div><div class="sub" id="dsum2" style="margin:-4px 6px 12px">${t('Duration')} · ${hm(F.dur)}</div>`:'')};
+   w.innerHTML=`<div class="lb">${t('Time')}</div><div class="rw">${P('tm','any',!F.time,t('Anytime'))}${P('tm','at',!!F.time,t('At a time'))}</div>`+(F.time?`<div class="f2"><label class="fld"><span>${t('Starts')}</span><input class="f" type="time" id="ft" value="${F.time}"></label><label class="fld"><span>${t('Ends')}</span><input class="f" type="time" id="fe" value="${endOf()}"></label></div><div class="sub" id="dsum2" style="margin:-4px 6px 12px">${t('Duration')} · ${hm(F.dur)}</div>`:'');drawWhere()};
   const drawDate=()=>{const m=dmode(),t0=today();
    const chips=[...Array(7)].map((_,i)=>{const d=addD(t0,i),k=i==0?'today':i==1?'tom':'d:'+d;return P('dd',k,m==k,i==0?t('Today'):i==1?t('Tomorrow'):fmtD(d,{weekday:'short',day:'numeric'}))}).join('')+P('dd','pick',m=='pick',t('Pick a date'))+P('dd','none',m=='none',t('Someday'));
    $('#rdt').innerHTML=chips;const d=$('#fd');d.style.display=m=='pick'?'':'none';d.value=F.date||'';
@@ -460,14 +498,18 @@ function edit(id,ds){const it=id?S.items.find(i=>i.id==id):null,wz=!it;
    setTimeout(()=>{if(!F.dopen)return;const on=$('#rdt .on');if(on)on.scrollIntoView({block:'nearest',inline:'center'});fitRows()},60)};
   const drawCat=()=>{const cs=catList().sort((a,b)=>(a[0]==F.area?-1:b[0]==F.area?1:0)||((S.catUse[b[0]]||0)-(S.catUse[a[0]]||0)));
    $('#cat').innerHTML=`<button class="pill nw2" data-nc="1" type="button">+ ${t('New')}</button>${cs.map(x=>P('c',F.area==x[0]?'':x[0],F.area==x[0],x[1]+' '+esc(x[2]))).join('')}`;$('#cat').scrollLeft=0;fitRows()};
+  const drawWhere=()=>{const pl=F.pl&&placeOf(F.pl),og=pl&&originFor(F.pl,F.date,F.time);let lab=t('Where?'),dim=true;
+   if(pl){dim=false;lab=`${plIc(pl)} ${esc(pl.name)}`;const a=og&&autoTrav(og,pl),tv=F.trav||(a&&a.min)||0,md=F.mode||(a&&a.mode)||'walk';if(tv&&F.time)lab+=` <span class="sub" style="font-weight:700">· ${MODE[md][0]} ${hm(tv)}</span>`}
+   const w=$('#wbtn');w.innerHTML=`${ic('pin',20)}<span>${lab}</span>${ic('chev',16)}`;w.classList.toggle('op',!!F.wopen);w.classList.toggle('dim',dim);$('#wgx').classList.toggle('o',!!F.wopen);
+   $('#rwh').innerHTML=`<button class="pill nw2" data-np="1" type="button">+ ${t('New place')}</button>`+recent(S.places,S.plUse,p=>p.id,F.pl).map(p=>P('wl',F.pl==p.id?'':p.id,F.pl==p.id,plIc(p)+' '+esc(p.name))).join('');fitRows()};
   const drawMore=()=>{const pl=F.pl&&placeOf(F.pl),og=pl&&originFor(F.pl,F.date,F.time),ee=og&&est(og,pl);
-   const rows=[['pl',t('Where'),pl?plIc(pl)+' '+esc(pl.name):'—',S.places.length?`<div class="hrow hs" style="flex:0 0 100%;min-width:0">${S.places.slice().sort((a,b)=>(a.id==F.pl?-1:b.id==F.pl?1:0)||((S.plUse[b.id]||0)-(S.plUse[a.id]||0))).map(p=>P('l',F.pl==p.id?'':p.id,F.pl==p.id,plIc(p)+' '+esc(p.name))).join('')}</div>`:`<span class="sub">${t('Add places in Settings')}</span>`]];
-   if(pl&&F.time)rows.push(['tv',t('Travel'),F.trav?F.trav+' '+t('min'):t('None'),(ee?`<span class="sub" style="flex:0 0 100%">${t('from')} ${esc(og.name)}</span>`:'')+chipRow((ee?[['🚶',ee.w],['🚗',ee.d]].filter(x=>x[1]<=120).map(x=>P('v',x[1],F.trav==x[1],`${x[0]} ≈${x[1]} ${t('min')}`)).join(''):'')+[...new Set([0,10,15,30,45,60,F.trav])].sort((x,y)=>x-y).map(n=>P('t',n,F.trav==n,n?n+' '+t('min'):t('None'))).join(''),'flex:0 0 100%;min-width:0',1)]);
+   const rows=[];
+   if(pl&&F.time)rows.push(['tv',t('Travel'),F.trav?F.trav+' '+t('min'):t('None'),(ee?`<span class="sub" style="flex:0 0 100%">${fromTxt(og.name)}</span>`:'')+chipRow((ee?[['walk','🚶',ee.w],['bus','🚌',Math.round(ee.d*1.5+8)],['drive','🚗',ee.d]].filter(x=>x[2]<=150).map(x=>P('v',x[0]+':'+x[2],F.trav==x[2]&&F.mode==x[0],`${x[1]} ≈${x[2]} ${t('min')}`)).join(''):'')+[...new Set([0,10,15,30,45,60,F.trav])].sort((x,y)=>x-y).map(n=>P('t',n,F.trav==n,n?n+' '+t('min'):t('None'))).join(''),'flex:0 0 100%;min-width:0',1)]);
    if(F.time)rows.push(['rm',t('Remind me'),remL(REMS.find(r=>r[0]==F.rem)||REMS[0]),chipRow(REMS.map(r=>P('r',r[0],F.rem==r[0],remL(r))).join(''),'flex:0 0 100%;min-width:0',1)]);
    if(F.date)rows.push(['rp',t('Repeat'),t((REPS.find(r=>r[0]==F.rep)||REPS[0])[1]),REPS.map(r=>P('p',r[0],F.rep==r[0],t(r[1]))).join('')]);
    $('#ac').innerHTML=rows.map(([k,l,sm,body])=>`<div class="ar"><button class="arh ${F.open==k?'op':''}" data-o="${k}" type="button"><span>${l}</span><span class="sub">${sm}</span>${ic('chev',16)}</button><div class="gx ${F.open==k?'o':''}"><div><div class="rw" style="padding:2px 0 12px">${body}</div></div></div></div>`).join('');fitRows()};
   const sums=()=>{const a=areaOf(F.area),w=(k,v)=>{const e=$('#sm-'+k);if(e)e.innerHTML=v};w('what',(a?a[1]+' ':'')+esc(F.title||'—'));w('when',esc(dlabel())+' · '+(F.time?`<bdi dir="ltr">${F.time}–${endOf()}</bdi>`:hm(F.dur)))};
-  const drawAll=()=>{drawDate();drawTime();drawDur();drawCat();drawMore();sums()};
+  const drawAll=()=>{drawDate();drawTime();drawDur();drawCat();drawWhere();drawMore();sums()};
   const prev=()=>{if(typeof gateW=='function'&&$('#tr').innerHTML)gateW();const p=parse(fi.value,F.date||today()),b=[];if(p.date)b.push(fmtD(p.date,{weekday:'short',day:'numeric',month:'short'}));if(p.time)b.push(p.time);if(p.dur)b.push(hm(p.dur));if(p.trav)b.push('🚗 '+p.trav+'m');
    $('#pv').classList.toggle('h',!b.length);$('#pv').textContent=b.length?'✦ '+b.join(' · '):(fi.value?'':t('Try: Gym tomorrow 18:30-19:30'));
    if(!F.areaPick){const g=guessArea(fi.value);if(g!==F.area){F.area=g;drawCat();sums()}}};
@@ -480,7 +522,8 @@ function edit(id,ds){const it=id?S.items.find(i=>i.id==id):null,wz=!it;
   const gateW=()=>{const noT=!fi.value.trim(),noD=dmode()=='pick'&&!F.date,r=noT?t('Write what the task is first'):noD?t('Pick a date first'):'';['bn','ba','bs'].forEach(id=>gate($('#'+id),r,null,noT?'fi':'fd'));const w=$('#why');if(w)w.textContent=r};
   const doSave=()=>{applyParse();const title=F.title;if(!title){setStep(0);fi.focus();return}
    let date=F.date||null,time=F.time||'';if(time&&!date)date=today();if(F.rep!='none'&&!date)date=today();const a=areaOf(F.area);
-   const o={title,date,time,dur:F.dur,trav:F.trav,pl:F.pl,rem:time?F.rem:-1,rep:date?F.rep:'none',area:F.area||null,emoji:'📌'};
+   if(F.pl&&time&&!F.trav){const og=originFor(F.pl,date,time),pz=placeOf(F.pl);if(og&&pz){const a=autoTrav(og,pz);F.trav=a.min;F.mode=a.mode}}
+   const o={title,date,time,dur:F.dur,trav:F.trav,mode:F.mode||null,pl:F.pl,rem:time?F.rem:-1,rep:date?F.rep:'none',area:F.area||null,emoji:'📌'};
    if(F.id)Object.assign(S.items.find(i=>i.id==F.id),o);else S.items.push(Object.assign({id:uid(),created:Date.now(),done:{}},o));
    S.durUse[F.dur]=Date.now();if(F.area)S.catUse[F.area]=Date.now();if(F.pl)S.plUse[F.pl]=Date.now();
    if(date&&tab==1)sel=date;save();closeSh();render(0,true);due()};
@@ -496,6 +539,9 @@ function edit(id,ds){const it=id?S.items.find(i=>i.id==id):null,wz=!it;
   fi.onkeydown=e=>{if(e.key=='Enter'){e.preventDefault();if(wz&&F.step==0)$('#bn').click();else $('#bs').click()}};
   s.onclick=e=>{const b=e.target.closest('button');if(!b)return;const d=b.dataset,id=b.id;
    if(id=='dbtn'){F.dopen=!F.dopen;drawDate();return}
+   if(id=='wbtn'){if(!S.places.length){placePopup(pl=>{F.pl=pl.id;drawWhere();drawMore();sums()});return}F.wopen=!F.wopen;drawWhere();return}
+   if(d.np){placePopup(pl=>{F.pl=pl.id;F.wopen=false;if(!F.travPick){F.trav=0;F.mode=null}drawWhere();drawMore();sums()});return}
+   if(d.wl!==undefined){F.pl=d.wl||null;F.wopen=false;if(!F.travPick){F.trav=0;F.mode=null}drawWhere();drawMore();sums();return}
    if(id=='bn'){applyParse();if(!F.title){fi.focus();return}setStep(1);return}
    if(id=='ba'){doSave();return}
    if(id=='bb'){setStep(F.step-1);return}
@@ -508,7 +554,7 @@ function edit(id,ds){const it=id?S.items.find(i=>i.id==id):null,wz=!it;
    if(d.dd){const k=d.dd;F.dopen=(k=='pick');if(k=='today'){F.date=today();F.dm=null}else if(k=='tom'){F.date=addD(today(),1);F.dm=null}else if(k=='none'){F.date=null;F.time='';F.dm=null}else if(k.startsWith('d:')){F.date=k.slice(2);F.dm=null}else{F.dm='pick';if(!F.date)F.date=today()}drawDate();drawTime();drawMore();sums();return}
    if(d.tm){if(d.tm=='any')F.time='';else if(!F.time)F.time=dmode()=='today'?ft(Math.min(Math.ceil((nowMin()+1)/30)*30,23*60+30)):'09:00';drawTime();drawMore();sums();return}
    if(d.d){F.dur=+d.d;drawDur();syncEnd();sums();return}
-   if(d.r)F.rem=+d.r;else if(d.p)F.rep=d.p;else if(d.t)F.trav=+d.t;else if(d.v)F.trav=+d.v;else if(d.l!==undefined)F.pl=d.l||null;else if(d.c!==undefined){F.area=d.c||null;F.areaPick=true;drawCat();sums();return}else return;drawMore();sums()};
+   if(d.r)F.rem=+d.r;else if(d.p)F.rep=d.p;else if(d.t){F.trav=+d.t;F.travPick=true}else if(d.v){const[m,n]=d.v.split(':');F.trav=+n;F.mode=m;F.travPick=true}else if(d.c!==undefined){F.area=d.c||null;F.areaPick=true;drawCat();sums();return}else return;drawMore();sums()};
   if(!it)setTimeout(()=>fi.focus(),420)})}
 /* ---------- weekly focus / areas ---------- */
 function areaMin(w,key){let m=0;for(let i=0;i<7;i++)occ(addD(w,i)).forEach(it=>{if(it.area==key)m+=it.dur||0});return m}
@@ -630,6 +676,30 @@ async function liveNear(p){const n=new Date(),dl=.035,dn=.045;
  for(const v of j){const ids=['gtfs_ride_id','route_gtfs_ride_id','journey_gtfs_ride_id'].map(k=>pick(v,'siri_ride',k)).filter(x=>x!=null).map(String);if(!ids.length)continue;
   const rec=new Date(v.recorded_at_time);ids.forEach(id=>{if(!by[id]||rec>by[id].rec)by[id]={rec,lat:+v.lat,lon:+v.lon,dj:+v.distance_from_journey_start}})}
  BD.vlMatched=Object.keys(by).length;return by}
+const TRIPC={},hhmm=d=>ft(d.getHours()*60+d.getMinutes());
+async function findTrips(o,d,arriveBy){const key=[o.lat,o.lon,d.lat,d.lon,arriveBy?+arriveBy:0].join(',');const c=TRIPC[key];if(c&&Date.now()-c.t<6e4)return c.v;
+ const stops=await stopsFor(S.set.city),near=p=>nearest(stops,p,4).filter(x=>x.d<=800),os=near(o),dsx=near(d);
+ if(!os.length||!dsx.length)return (TRIPC[key]={t:Date.now(),v:{opts:[],why:'nostop'}}).v;
+ const now=new Date(),fut=arriveBy&&arriveBy.getTime()>now.getTime()+30*6e4,from=fut?new Date(Math.max(now.getTime(),arriveBy.getTime()-120*6e4)):now,to=fut?arriveBy:new Date(now.getTime()+90*6e4);
+ const q=(ss,a,b)=>api('/gtfs_ride_stops/list',{gtfs_stop_ids:ss.map(x=>x.id).join(','),arrival_time_from:isoTz(a),arrival_time_to:isoTz(b),order_by:'arrival_time asc',limit:600});
+ const [A,B,live]=await Promise.all([q(os,from,to),q(dsx,from,new Date(to.getTime()+45*6e4)),liveNear(o).catch(()=>({}))]);
+ const dmap={};B.forEach(r=>{const id=String(r.gtfs_ride_id),st=dsx.find(x=>x.id==r.gtfs_stop_id);if(!st)return;if(!dmap[id]||st.d<dmap[id].st.d)dmap[id]={at:new Date(r.arrival_time),st,seq:+r.stop_sequence}});
+ const best={};A.forEach(r=>{const id=String(r.gtfs_ride_id),dd=dmap[id],st=os.find(x=>x.id==r.gtfs_stop_id);if(!dd||!st)return;const at=new Date(r.arrival_time);if(dd.at<=at)return;if(isFinite(+r.stop_sequence)&&isFinite(dd.seq)&&dd.seq<=+r.stop_sequence)return;
+  const wTo=est(o,st).w,wFrom=est(dd.st,d).w;let dep=at,lv=false;const v=live[id];
+  if(v){const age=(now-v.rec)/6e4,dist=+pick(r,'gtfs_ride_stop','shape_dist_traveled');if(age<=8){let rem=dist-v.dj;if(!isFinite(rem)||Math.abs(rem)>60000)rem=hav({lat:v.lat,lon:v.lon},st)*1300;if(rem>=-80){dep=new Date(now.getTime()+Math.max(0,rem/6.1/60-age)*6e4);lv=true}}}
+  if(dep.getTime()<now.getTime()+(wTo-1)*6e4)return;
+  const x={ride:id,line:pick(r,'gtfs_route','route_short_name'),dep,depStop:st,arr:dd.at,arrStop:dd.st,wTo,wFrom,live:lv,leave:new Date(dep.getTime()-wTo*6e4),reach:new Date(dd.at.getTime()+wFrom*6e4)};
+  if(!best[id]||x.wTo<best[id].wTo)best[id]=x});
+ let opts=Object.values(best).sort((a,b)=>a.dep-b.dep);
+ if(arriveBy){const ok=opts.filter(x=>x.reach<=arriveBy);opts=ok.length?ok.slice(-3):opts.slice(0,3)}else opts=opts.slice(0,3);
+ opts.forEach(x=>x.late=!!(arriveBy&&x.reach>arriveBy));
+ return (TRIPC[key]={t:Date.now(),v:{opts,why:opts.length?'':'nodirect'}}).v}
+function tripRow(x){const lv=Math.round((x.leave-Date.now())/6e4);
+ return `<div class="br"><span class="ln">${esc(x.line==null?'?':x.line)}</span><span class="gt"><b><bdi dir="ltr">${hhmm(x.dep)} → ${hhmm(x.arr)}</bdi></b><span class="sub" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">🚶 ${x.wTo} ${t('min')} · <bdi>${esc(x.depStop.name)}</bdi>${x.late?` · <span class="neg">${t('Late')}</span>`:''}</span></span><span class="bm ${x.live?'lv':''}">${lv<=0?t('Leave now'):`${t('Leave')} <bdi dir="ltr">${hhmm(x.leave)}</bdi>`}</span></div>`}
+function tripBlock(r,p){if(!r)return `<div class="empty" style="padding:14px 0">${t('Finding buses…')}</div>`;
+ if(r.opts&&r.opts.length)return r.opts.map(tripRow).join('');
+ const why=r.why=='nostop'?t('No bus stop near one of the places'):r.why=='noorigin'?t('Location unavailable. Pick a saved place.'):r.why=='err'?t("Couldn't load buses"):t('No direct bus found');
+ return `<div class="empty" style="padding:12px 0 6px">${why}</div><a class="lnk" style="margin:0 auto 12px" href="moovit://directions?dest_lat=${p.lat}&dest_lon=${p.lon}&dest_name=${encodeURIComponent(p.name)}">${t('Open Moovit')} ›</a>`}
 function buildRows(sched,live,stop){const now=Date.now(),rows=[];
  for(const s of sched){const v=live[s.ride];let min=null,lv=false;
   if(v){const age=(now-v.rec)/6e4;if(age<=8){let rem=s.dist-v.dj;if(!isFinite(rem)||rem>60000||rem<-60000)rem=hav({lat:v.lat,lon:v.lon},stop)*1000*1.3;
@@ -637,24 +707,33 @@ function buildRows(sched,live,stop){const now=Date.now(),rows=[];
   if(min==null){min=(s.at-now)/6e4;if(min<-1)continue}
   rows.push({line:s.line,dest:s.dest,min,live:lv,at:new Date(now+min*6e4)})}
  return rows.sort((a,b)=>a.min-b.min).slice(0,4)}
-async function busLoad(silent){if(BUS.loading)return;BUS.loading=true;if(!silent){BUS.res=null;BUS.err=null;busDraw()}
- try{let p;if(BUS.from=='here'){try{p=await getLoc();BUS.loc=p}catch(e){const h=S.places.find(x=>x.home)||S.places[0];if(!h)throw new Error('location');BUS.from=h.id;p={lat:h.lat,lon:h.lon}}}else{const pl=placeOf(BUS.from)||S.places[0];if(!pl)throw new Error('location');p={lat:pl.lat,lon:pl.lon}}
-  const stops=await stopsFor(S.set.city);if(!stops.length)throw new Error('no stops in '+S.set.city);const near=nearest(stops,p,3);
-  const [live,...sc]=await Promise.all([liveNear(p).catch(e=>{BD.vlErr=e.message;return {}}),...near.map(s=>schedFor(s).catch(e=>{BD.rsErr=e.message;return []}))]);
-  BUS.res=near.map((s,i)=>({stop:s,walk:est(p,s).w,rows:buildRows(sc[i],live,s)}));BUS.far=near[0]?near[0].d:0;BUS.err=null;BUS.t=Date.now()}
- catch(e){BUS.err=e.message||'error';BD.err=BUS.err}
+function nextTrip(){const n=nowMin();for(const ds of [today(),addD(today(),1)]){const it=occ(ds).find(i=>i.time&&i.pl&&placeOf(i.pl)&&!isDone(i,ds)&&(ds>today()||tm(i.time)>n));if(it)return{it,ds,p:placeOf(it.pl),o:originFor(it.pl,ds,it.time)}}return null}
+async function busLoad(silent){if(!S.places.length){busDraw();return}if(BUS.loading)return;BUS.loading=true;if(!silent){BUS.res=null;BUS.err=null;BUS.trip=null;busDraw()}
+ const nt=nextTrip();
+ const tripP=(async()=>{if(!nt)return null;let o=nt.o;if(!o){try{const g=BUS.loc||await getLoc();BUS.loc=g;o={...g,name:t('Here')}}catch(e){o=null}}
+  if(!o)return{nt,opts:[],why:'noorigin'};const arriveBy=new Date(pd(nt.ds).getTime()+tm(nt.it.time)*6e4);try{return{nt,o,...await findTrips(o,nt.p,arriveBy)}}catch(e){return{nt,o,opts:[],why:'err'}}})();
+ const nearP=(async()=>{try{let p;if(BUS.from=='here'){try{p=await getLoc();BUS.loc=p}catch(e){const h=S.places.find(x=>x.home)||S.places[0];BUS.from=h.id;p={lat:h.lat,lon:h.lon}}}else{const pl=placeOf(BUS.from)||S.places[0];p={lat:pl.lat,lon:pl.lon}}
+  const stops=await stopsFor(S.set.city);if(!stops.length)throw new Error('no stops in '+S.set.city);const near=nearest(stops,p,1);
+  const [live,sc]=await Promise.all([liveNear(p).catch(e=>{BD.vlErr=e.message;return {}}),schedFor(near[0]).catch(e=>{BD.rsErr=e.message;return []})]);
+  BUS.res=[{stop:near[0],walk:est(p,near[0]).w,rows:buildRows(sc,live,near[0])}];BUS.far=near[0].d;BUS.err=null}catch(e){BUS.err=e.message||'error';BD.err=BUS.err}})();
+ BUS.trip=await tripP;await nearP;BUS.t=Date.now();
  BUS.loading=false;busDraw()}
 const busFrom=id=>{BUS.from=id;if(id!='here')S.plUse[id]=Date.now();save();busLoad()};
-function busView(){return `<div class="hd"><h1>${t('Buses')}</h1><span class="sub" id="bus-up"></span></div><div id="bus-from" style="margin-bottom:12px"></div><div id="busb"></div>
- <div class="bfoot"><button class="pill" onclick="citySheet()">${t('City')}: ${esc(S.set.city)}</button></div>`}
+function busView(){return `<div class="hd"><h1>${t('Buses')}</h1><span class="sub" id="bus-up"></span></div><div id="busb"></div>
+ ${S.places.length?`<div class="bfoot"><button class="pill" onclick="citySheet()">${t('City')}: ${esc(S.set.city)}</button></div>`:''}`}
 function busRow(b,walk){const m=Math.round(b.min);return `<div class="br ${m<walk-1?'dim':''}"><span class="ln">${esc(b.line==null?'?':b.line)}</span><span class="gt"><b>${esc(b.dest||'')}</b><span class="sub">${m<walk-1?t('Too soon to walk there'):`${b.live?t('live'):t('schedule')} · <bdi dir="ltr">${ft(b.at.getHours()*60+b.at.getMinutes())}</bdi>`}</span></span><span class="bm ${b.live?'lv':''}">${m<1?t('Now'):m+' '+t('min')}</span></div>`}
-function busDraw(){if(tab!=3)return;const f=$('#bus-from'),b=$('#busb');if(!f||!b)return;
- f.innerHTML=chipRow(`<button class="pill ${BUS.from=='here'?'on':''}" onclick="busFrom('here')">📍 ${t('Here')}</button>`+recent(S.places,S.plUse,p=>p.id,BUS.from).map(p=>`<button class="pill ${BUS.from==p.id?'on':''}" onclick="busFrom('${p.id}')">${plIc(p)} ${esc(p.name)}</button>`).join(''));fitRows();
- const up=$('#bus-up');if(up)up.textContent=BUS.t?`${t('Updated')} ${ft(new Date(BUS.t).getHours()*60+new Date(BUS.t).getMinutes())}`:'';
- if(BUS.loading&&!BUS.res){b.innerHTML=`<div class="empty">${t('Loading…')}</div>`;return}
- if(BUS.err){b.innerHTML=`<div class="card"><div class="empty">${BUS.err=='location'?t('Location unavailable. Pick a saved place.'):t("Couldn't load buses")}<div class="sub" style="margin-top:6px">${esc(BUS.err=='location'?'':BUS.err)}</div></div></div><div style="text-align:center"><button class="pill" onclick="busLoad()">${t('Try again')}</button></div>`;return}
- if(!BUS.res)return;
- b.innerHTML=(BUS.far>3000?`<div class="wr" style="background:var(--fl)"><div class="gt"><span class="sub">${t('Nearest stop is far')}: ${(BUS.far/1000).toFixed(1)} km · ${t('City')}: ${esc(S.set.city)}</span></div></div>`:'')+BUS.res.map(r=>`<div class="card bs"><div class="bh"><b>${esc(r.stop.name)}</b><span class="sub">${r.stop.d<1000?Math.round(r.stop.d)+' m':(r.stop.d/1000).toFixed(1)+' km'} · ${r.walk} ${t('min')} ${t('walk')}</span></div>${r.rows.length?r.rows.map(x=>busRow(x,r.walk)).join(''):`<div class="empty" style="padding:14px 0">${t('No buses soon')}</div>`}</div>`).join('')}
+function busDraw(){if(tab!=3)return;const b=$('#busb');if(!b)return;
+ if(!S.places.length){b.innerHTML=`<div class="card bempty"><div class="bei">🚌</div><b>${t('Show only the buses you need')}</b><p class="sub">${t('info.busEmpty')}</p><button class="btn" onclick="placePopup(()=>{render(0,true);busLoad()})">${t('Add a place')}</button></div>`;return}
+ const up=$('#bus-up');if(up)up.textContent=BUS.t?`${t('Updated')} ${hhmm(new Date(BUS.t))}`:'';
+ const nt=nextTrip(),T=BUS.trip;let h='';
+ if(nt){const o=T&&T.o;h+=`<div class="sec" style="margin-top:0"><span>${t('Next trip')}</span><span class="sub">${nt.ds==today()?t('Today'):t('Tomorrow')}</span></div>
+  <div class="card bs"><div class="bh" style="display:block"><b>${plIc(nt.p)} ${esc(nt.p.name)} · <bdi dir="ltr">${nt.it.time}</bdi></b><span class="sub" style="display:block;white-space:normal;margin-top:2px">${esc(nt.it.title)}${o?` · ${fromTxt(o.name)}`:''}</span>${(()=>{const p=nt.it.pl&&placeOf(nt.it.pl),a=o&&p?autoTrav(o,p):null,md=nt.it.mode||(a&&a.mode),mn=nt.it.trav||(a&&a.min);return md&&mn?`<span class="cnt" style="display:inline-block;margin-top:8px;font-size:13.5px;font-weight:700;color:var(--s2)">${t('Your plan')}: ${MODE[md][0]} ${t(MODE[md][1])} · ${hm(mn)} · ${t('Leave')} <bdi dir="ltr">${ft(tm(nt.it.time)-mn)}</bdi></span>`:''})()}</div>${tripBlock(BUS.loading&&!T?null:(T||{opts:[],why:'nodirect'}),nt.p)}</div>`}
+ else h+=`<div class="card hint">${ic('pin',20)}<span>${t('Add a place to a task to see the bus you need for it.')}</span></div>`;
+ h+=`<div class="sec"><span>${t('Nearest stop')}</span></div><div style="margin-bottom:10px">${chipRow(`<button class="pill ${BUS.from=='here'?'on':''}" onclick="busFrom('here')">📍 ${t('Here')}</button>`+recent(S.places,S.plUse,p=>p.id,BUS.from).map(p=>`<button class="pill ${BUS.from==p.id?'on':''}" onclick="busFrom('${p.id}')">${plIc(p)} ${esc(p.name)}</button>`).join(''))}</div>`;
+ if(BUS.loading&&!BUS.res)h+=`<div class="card"><div class="empty">${t('Loading…')}</div></div>`;
+ else if(BUS.err)h+=`<div class="card"><div class="empty">${t("Couldn't load buses")}<div class="sub" style="margin-top:6px">${esc(BUS.err)}</div></div></div><div style="text-align:center"><button class="pill" onclick="busLoad()">${t('Try again')}</button></div>`;
+ else if(BUS.res)h+=(BUS.far>3000?`<div class="wr" style="background:var(--fl)"><div class="gt"><span class="sub">${t('Nearest stop is far')}: ${(BUS.far/1000).toFixed(1)} km · ${t('City')}: ${esc(S.set.city)}</span></div></div>`:'')+BUS.res.map(r=>`<div class="card bs"><div class="bh"><b>${esc(r.stop.name)}</b><span class="sub">🚶 ${r.walk} ${t('min')} · <bdi dir="ltr">${r.stop.d<1000?Math.round(r.stop.d)+' m':(r.stop.d/1000).toFixed(1)+' km'}</bdi></span></div>${r.rows.length?r.rows.map(x=>busRow(x,r.walk)).join(''):`<div class="empty" style="padding:14px 0">${t('No buses soon')}</div>`}</div>`).join('');
+ b.innerHTML=h;fitRows()}
 function citySheet(){openSh(`<div class="shd">${t('City')}</div><input class="f" id="cy" value="${esc(S.set.city)}" dir="auto" autocomplete="off" enterkeyhint="done"><div class="sub" style="text-align:center;margin-bottom:10px">${t('Exactly as in the stops list, for example נהריה')}</div><div class="alt" style="margin:0 0 14px"><button class="pill" onclick="busDebug()">${t('Debug')}</button></div><div class="trio"><button class="ib p" id="cys" aria-label="save">${ic('check')}</button></div><div class="why"></div>`,s=>{const g=()=>gate($('#cys'),$('#cy').value.trim()?'':t('Write a city name first'),s.querySelector('.why'),'cy');g();$('#cy').oninput=g;const go=()=>{const v=$('#cy').value.trim();if(v){S.set.city=v;save();closeSh();render(0,true);busLoad()}};$('#cys').onclick=go;$('#cy').onkeydown=e=>{if(e.key=='Enter')go()}})}
 function busDebug(){const short=o=>{try{return JSON.parse(JSON.stringify(o,(k,v)=>typeof v=='string'&&v.length>80?v.slice(0,80)+'…':v))}catch(e){return null}};
  const d=JSON.stringify({city:S.set.city,from:BUS.from,loc:BUS.loc,counts:{vehicleRows:BD.vlCount,matchedRides:BD.vlMatched},errors:{main:BD.err,rideStops:BD.rsErr,vehicles:BD.vlErr},sample:{stop:short(BD.stop),rideStop:short(BD.rs),vehicle:short(BD.vl)}},null,1);
