@@ -36,7 +36,7 @@ if shutil.which('node'):
 # a short id of this exact page: the app asks /version to learn whether a newer build exists
 BUILD=hashlib.sha1(app.encode('utf-8')).hexdigest()[:8]
 app=app.replace('<script>','<script>window.WANT_API="/api";window.WANT_BUILD="'+BUILD+'";</script><script>',1)
-extract=open('extract.js',encoding='utf-8').read()+'\n'+open('sync_api.js',encoding='utf-8').read()
+extract=open('extract.js',encoding='utf-8').read()+'\n'+open('sync_api.js',encoding='utf-8').read()+'\n'+open('tempo_api.js',encoding='utf-8').read()
 manifest=json.dumps({"name":"Penny.","short_name":"Penny.","start_url":"/","display":"standalone","background_color":"#f4f4f6","theme_color":"#f4f4f6","icons":[{"src":"/icon-180.png?v="+IV,"sizes":"180x180","type":"image/png"},{"src":"/icon-512.png?v="+IV,"sizes":"512x512","type":"image/png","purpose":"any maskable"}]})
 sw="""const C='want-v5';
 self.addEventListener('install',e=>{e.waitUntil(caches.open(C).then(c=>c.addAll(['/','/manifest.webmanifest','/icon-180.png?v=IVX','/icon-512.png?v=IVX','/inter.woff2'])));self.skipWaiting()});
@@ -120,6 +120,7 @@ export default {{
     switch(url.pathname){{
       case '/api/product':return product(url.searchParams.get('u')||'');
       case '/api/ping':case '/api/state':case '/api/ingest':case '/api/bank':case '/api/card':case '/api/ack':case '/api/reset-seen':case '/api/wish':case '/api/join':case '/api/config':case '/api/google':case '/api/google-cb':case '/api/email-start':case '/api/email-verify':case '/api/backup':case '/api/forget':return syncApi(req,env,url.pathname);
+      case '/api/tempo/vapid':case '/api/tempo/push':case '/api/tempo/backup':return tempoApi(req,env,url.pathname);
       case '/manifest.webmanifest':return new Response(MANIFEST,{{headers:{{'content-type':'application/manifest+json'}}}});
       case '/version':return new Response(BUILD,{{headers:{{'content-type':'text/plain','cache-control':'no-store'}}}});
       case '/sw.js':return new Response(SW,{{headers:{{'content-type':'text/javascript','cache-control':'no-cache'}}}});
@@ -128,7 +129,8 @@ export default {{
       case '/inter.woff2':return new Response(Uint8Array.from(atob(FONT),c=>c.charCodeAt(0)),{{headers:{{'content-type':'font/woff2','cache-control':'public, max-age=31536000'}}}});
       default:return new Response(APP,{{headers:{{'content-type':'text/html; charset=utf-8','cache-control':'no-cache'}}}});
     }}
-  }}
+  }},
+  async scheduled(event,env,ctx){{ctx.waitUntil(tempoCron(env||{{}}))}}
 }};
 """
 open('worker.js','w',encoding='utf-8').write(worker)

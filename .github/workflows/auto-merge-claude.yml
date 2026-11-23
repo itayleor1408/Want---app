@@ -1,0 +1,41 @@
+name: Auto-merge Claude's branch
+# Every push to a claude/* branch is checked and merged into main, then Tempo is published.
+# Penny is redeployed by Cloudflare as usual when main changes.
+on:
+  push:
+    branches: ['claude/**']
+permissions:
+  contents: write
+  actions: write
+concurrency:
+  group: auto-merge
+  cancel-in-progress: false
+jobs:
+  merge:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with: { python-version: '3.12' }
+      - name: Checks (Penny's worker builds, scripts parse)
+        run: |
+          pip install pillow
+          python3 build_worker.py
+          git diff --exit-code worker.js || (echo "worker.js is stale" && exit 1)
+          node --check worker.js
+          node --check tempo/sw.js
+          node -e "const h=require('fs').readFileSync('tempo/index.html','utf8');new Function(h.match(/<script>([\s\S]*)<\/script>/)[1])"
+      - name: Merge into main
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git checkout main
+          git pull --ff-only origin main
+          git merge --no-edit "origin/${GITHUB_REF_NAME}"
+          git push origin main
+      - name: Publish Tempo
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh workflow run tempo-pages.yml --ref main
