@@ -34,6 +34,8 @@ module.exports = async b => {
   await p.evaluate(() => setOpt('theme', 'dark')); await p.waitForTimeout(800);
   for (const r of await fit()) ok(`after theme change: ${r.id} still fits`, r.dw < 1.5 && r.dx < 1.5, JSON.stringify(r));
   ok('theme changed', await p.evaluate(() => S.theme === 'dark'));
+  // the balance setting is shown even when a bank is connected (it sets each profile's balance)
+  ok('with a bank connected the balance setting is still there', await p.evaluate(() => /(Starting|Current) balance/.test(document.getElementById('sh').innerText)));
   // an owner with no bank or card connected yet sees no bank row at all
   await fetch('http://localhost:8787/__kvclear?prefix=bank'); await fetch('http://localhost:8787/__kvclear?prefix=card'); // other tests push bank and card data for the owner; start clean
   const nb = await openPage(b, { state: baseState({ sync: { key: 'test-key-123456', bank: null, card: null, useBank: false, last: 0, err: '' } }) }); await nb.waitForTimeout(3000);
