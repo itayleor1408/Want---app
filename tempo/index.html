@@ -90,7 +90,7 @@ input:disabled{opacity:.4}
 .bempty{text-align:center;padding:26px 20px 22px}.bempty b{display:block;font-size:19px;font-weight:800;letter-spacing:-.02em;margin:8px 0 6px}.bempty p{margin:0 0 18px;line-height:1.45}.bei{font-size:44px}
 .hint{display:flex;align-items:center;gap:12px;padding:16px 18px;color:var(--s2);font-weight:600;font-size:14.5px}.hint svg{flex:none;color:var(--s)}
 .ver{text-align:center;color:var(--s);font-size:12.5px;font-weight:600;margin:16px 0 4px;user-select:text;-webkit-user-select:text}
-@media (max-width:360px){.hd h1{font-size:28px}.wn{gap:6px}.wn .ib{width:34px;height:34px}.wn .pill{padding:7px 10px;font-size:13px}.br .bm{font-size:15px}.br .ln{min-width:40px;padding:0 7px}.br .gt b{font-size:14.5px}}
+@media (max-width:360px){.cn{padding:8px 0 8px 40px!important}:root[dir=rtl] .cn{padding:8px 40px 8px 0!important}.cnt{font-size:12.5px}.hd h1{font-size:28px}.wn{gap:6px}.wn .ib{width:34px;height:34px}.wn .pill{padding:7px 10px;font-size:13px}.br .bm{font-size:15px}.br .ln{min-width:40px;padding:0 7px}.br .gt b{font-size:14.5px}}
 .br .gt b{white-space:nowrap}.br .bm{flex:none}
 .ov.top3{z-index:30}.sh.top3{z-index:31}
 .tplus{background:transparent!important;color:var(--s)!important;box-shadow:inset 0 0 0 1.5px var(--fl2)}
@@ -357,7 +357,7 @@ function placePopup(done){const P2={name:'',emoji:'',home:false,q:'',res:[],sel:
   draw();setTimeout(()=>{const n=$('#ppn');if(n)n.focus()},420)})}
 /* "how to get there" line between two tasks at different places */
 function legHtml(it,ds,prevId){const p=placeOf(it.pl),o=prevId?placeOf(prevId):null,st=tm(it.time);let mode=it.mode,min=it.trav;if((!min||!mode)&&o){const a=autoTrav(o,p);mode=mode||a.mode;min=min||a.min}
- const m=MODE[mode||'walk'],txt=min?`${m[0]} ${mode=='bus'&&it.busLine?t('Bus')+' '+esc(it.busLine):t(m[1])+' · '+hm(min)} · ${t('Leave')} <bdi dir="ltr">${ft(st-min)}</bdi>`:`🧭 ${t('Getting there')}`;
+ const m=MODE[mode||'walk'],txt=min?`${m[0]} ${t('Leave')} <bdi dir="ltr">${ft(st-min)}</bdi> · ${mode=='bus'&&it.busLine?t('Bus')+' '+esc(it.busLine):t(m[1])+' '+hm(min)}`:`🧭 ${t('Getting there')}`;
  return `<button class="cn" type="button" onclick="goSheet('${it.id}','${ds}')"><span class="cnt">${txt}</span>${ic('right',14)}</button>`}
 function dayList(arr,ds){if(!arr.length)return list(arr,ds);const hm0=(S.places.find(p=>p.home)||{}).id;let prev=hm0;const out=[],fut=ds>=today();
  arr.forEach(it=>{const dn=isDone(it,ds);if(fut&&it.time&&it.pl&&!dn&&it.pl!=prev&&placeOf(it.pl)&&!(ds==today()&&tm(it.time)<nowMin()))out.push(legHtml(it,ds,prev&&placeOf(prev)?prev:null));out.push(row(it,ds));if(it.time&&it.pl)prev=it.pl});return out.join('')}
@@ -479,14 +479,13 @@ function view(){
   ${weekAsk()}
   <div class="hero"><div class="sub" id="hk">${H.k}</div><div class="hv" id="hv">${H.h}</div><div class="hl" id="hl">${H.l}</div></div>
   ${fl?`<button class="fline" onclick="toggleBar()"><span id="hf">${fl}</span><span class="cv ${showBar?'up':''}" id="cv">${ic('chev',14)}</span></button><div class="gx ${showBar?'o':''}" id="bg"><div><div id="bw">${bar(td)}</div></div></div>`:''}
-  ${warn(td)}
   ${ms.length?`<button class="mline" onclick="showMiss=!showMiss;render(0,true)"><span>${ms.length} ${t('missed')}</span>${ic('chev',14)}</button><div class="gx ${showMiss?'o':''}"><div><div class="card">${ms.map(i=>row(i,i.date,{showDate:1})).join('')}</div></div></div>`:''}
   ${all.length?`<div class="sec"><span>${t('Plan')}</span><span class="sub">${dn}/${all.length} ${t('done')}</span></div><div class="card">${dayList(all,td)}</div>`:''}`}
  if(tab==1){const w=weekStart(sel),days=[...Array(7)].map((_,i)=>addD(w,i)),td=today(),L=later(),Lo=L.filter(i=>!isDone(i)).length;
   return `<div class="hd"><h1>${fmtD(sel,{month:'long'})}</h1><div class="wn"><button class="ib" onclick="shift(-7)" aria-label="prev">${ic('left',20)}</button><button class="pill" onclick="sel=today();render(0,true)">${t('Today')}</button><button class="ib" onclick="shift(7)" aria-label="next">${ic('right',20)}</button></div></div>
-  <div class="strip">${days.map(d=>{const a=stats(d);return `<button class="dy ${d==sel?'on':''} ${d==td?'td':''}" onclick="sel='${d}';render(0,true)"><small>${fmtD(d,{weekday:'short'})}</small><b>${pd(d).getDate()}</b><span class="ld ${a.over?'hi':''}" style="--w:${Math.min(100,Math.round(a.load*100))}%"></span></button>`}).join('')}</div>
+  <div class="strip">${days.map(d=>{const a=stats(d);return `<button class="dy ${d==sel?'on':''} ${d==td?'td':''}" onclick="sel='${d}';render(0,true)"><small>${fmtD(d,{weekday:'short'})}</small><b>${pd(d).getDate()}</b><span class="ld" style="--w:${Math.min(100,Math.round(a.load*100))}%"></span></button>`}).join('')}</div>
   ${S.set.focusOn?focusCard():''}
-  <div class="sec" style="margin-top:14px"><span>${fmtD(sel,{weekday:'long',day:'numeric',month:'short'})}</span><span class="sub">${(()=>{const a=stats(sel);return a.tot?hm(a.tot)+' '+t('planned'):''})()}</span></div>${warn(sel)}<div class="card" id="wk">${dayList(occ(sel),sel)}</div>
+  <div class="sec" style="margin-top:14px"><span>${fmtD(sel,{weekday:'long',day:'numeric',month:'short'})}</span></div><div class="card" id="wk">${dayList(occ(sel),sel)}</div>
   <button class="sec sbtn" onclick="showSome=!showSome;render(0,true)"><span>${t('Someday')}${Lo?` <span class="cnt2">${Lo}</span>`:''}</span><span class="cv ${showSome?'up':''}">${ic('chev',16)}</span></button>
   <div class="gx ${showSome?'o':''}"><div><div class="card">${list(L,null,{later:1,n:8})}</div><div class="alt" style="margin:-4px 0 10px"><button class="pill" onclick="edit(null,null,{someday:1})">+ ${t('Add for someday')}</button></div></div></div>`}
  if(tab==3)return busView();
