@@ -39,7 +39,7 @@ module.exports = async b => {
   ok('stops were also searched by position, not only by municipality', log.some(l => /gtfs_stops\/list.*lat__greater_or_equal/.test(l)));
   ok('bus times are asked for in batches, not one request per stop', log.filter(l => /gtfs_ride_stops\/list/.test(l)).length <= 8, String(log.filter(l => /gtfs_ride_stops/.test(l)).length));
   // no direct bus -> nearby buses are listed
-  const r2 = await p.evaluate(async () => { const o = { lat: 33.0, lon: 35.1 }, d = { lat: 33.05, lon: 35.1 }; const x = await findTrips(o, d, null); const html = tripBlock(x, null, null); return { why: x.why, near: (x.near || []).map(n => n.line + '@' + n.stop.name), html: /Buses from nearby stops/.test(html) } });
-  ok('with no direct bus, it says so and lists the buses from nearby stops', r2.why === 'nostop' || (r2.why === 'nodirect' && r2.html && r2.near.length >= 1), JSON.stringify(r2));
+  const r2 = await p.evaluate(async () => { const o = { lat: 33.0, lon: 35.1 }, d = { lat: 33.05, lon: 35.1 }; const x = await findTrips(o, d, null); const html = tripBlock(x, null, null); return { why: x.why, near: (x.near || []).map(n => n.line + '@' + n.stop.name), html: !/No direct bus|Buses from nearby|change/.test(html) && /class="ln"/.test(html) } });
+  ok('with no direct bus, it just lists the buses from nearby stops, with no extra text', r2.why === 'nostop' || (r2.why === 'nodirect' && r2.near.length >= 1 && r2.html), JSON.stringify(r2));
   ok('no JS errors', !p.errs.length, p.errs.join('|')); await c.close();
 };

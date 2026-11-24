@@ -1176,8 +1176,8 @@ function tripBlock(r,p,chosenRide){if(!r)return `<div class="empty" style="paddi
  if(r.opts&&r.opts.length){const rec=r.opts.find(x=>x.rec)||r.opts[0],rest=r.opts.filter(x=>x!==rec);
   return recCard(rec,chosenRide==rec.ride)+stopLink(rec)+(rest.length?`<button type="button" class="more2" data-moreb="1"><span>${t('Other buses')} · ${rest.length}</span>${ic('chev',14)}</button><div class="gx" id="obus"><div><div class="card bs" style="margin:6px 0 0">${rest.map(x=>tripRow(x,chosenRide==x.ride)).join('')}</div></div></div>`:'')}
  const why=r.why=='nostop'?t('No bus stop near one of the places'):r.why=='noorigin'?t('Location unavailable. Pick a saved place.'):r.why=='err'?t("Couldn't load buses"):t('No direct bus found');
- const nb=(r.near||[]).length?`<div class="lb" style="margin:12px 6px 6px">${t('Buses from nearby stops')}</div><div class="card bs" style="margin:0">${r.near.map(x=>`<div class="li"><span class="ln">${esc(x.line)}</span><span class="gt"><b><bdi dir="ltr">${hhmm(x.at)}</bdi></b><span class="sub">🚶 ${x.w} ${t('min')} · <bdi>${esc(x.stop.name)}</bdi></span></span></div>`).join('')}</div><div class="sub" style="text-align:center;margin:8px 10px">${t('None of these go straight to this place. You may need a change.')}</div>`:'';
- return `<div class="empty" style="padding:12px 0 6px">${why}</div>${nb}`}
+ const nb=(r.near||[]).length?`<div class="card bs" style="margin:0">${r.near.map(x=>`<div class="li"><span class="ln">${esc(x.line)}</span><span class="gt"><b><bdi dir="ltr">${hhmm(x.at)}</bdi></b><span class="sub">🚶 ${x.w} ${t('min')} · <bdi>${esc(x.stop.name)}</bdi></span></span></div>`).join('')}</div>`:'';
+ return nb||`<div class="empty" style="padding:12px 0 6px">${why}</div>`}
 function buildRows(sched,live,stop){const now=Date.now(),rows=[];
  for(const s of sched){const v=live[s.ride];let min=null,lv=false;
   if(v){const age=(now-v.rec)/6e4;if(age<=8){let rem=s.dist-v.dj;if(!isFinite(rem)||rem>60000||rem<-60000)rem=hav({lat:v.lat,lon:v.lon},stop)*1000*1.3;
