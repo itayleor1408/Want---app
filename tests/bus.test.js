@@ -54,8 +54,27 @@ async function soonest(b) {
   ok('buses are listed in time order, with a recommended one among them', r.sorted && r.hasRec, JSON.stringify(r));
   ok('soonest: no JS errors', !p.errs.length, p.errs.join('|')); await c.close();
 }
+
+// Live minutes: a countdown that ticks by itself, LIVE marking, and no "Walk to the stop" link
+async function liveMin(b) {
+  const c = await b.newContext({ viewport: { width: 390, height: 800 } }); const p = await c.newPage(); p.errs = []; p.on('pageerror', e => p.errs.push(e.message));
+  await p.addInitScript(() => { localStorage.setItem('tempo.v1', JSON.stringify({ items: [], places: [], set: { lang: 'en', onboarded: true } })) });
+  await p.goto(URL); await p.waitForTimeout(600);
+  const r = await p.evaluate(() => { const n = Date.now(), mk = (ride, line, dm, live, rec) => ({ ride, line, dep: new Date(n + (dm + 3) * 6e4), arr: new Date(n + (dm + 30) * 6e4), depStop: { name: 'Herzl', lat: 1, lon: 1 }, arrStop: { name: 'x' }, wTo: 3, wFrom: 3, total: 33, walk: 6, live, leave: new Date(n + dm * 6e4), reach: new Date(n + (dm + 33) * 6e4), rec });
+    openSh('<div id="x">' + tripBlock({ opts: [mk('a', '3', 9, true, 1), mk('b', '5', 20, false)] }, null, null) + '</div>');
+    const g = () => [...document.querySelectorAll('[data-cd] b')].map(e => e.textContent);
+    const before = g(), live = document.querySelectorAll('.cd.lv').length, lbl = [...document.querySelectorAll('.cd small')].map(e => e.textContent.trim());
+    document.querySelectorAll('[data-cd]').forEach(e => e.dataset.cd = String(+e.dataset.cd - 120000)); cdTick();
+    return { before, after: g(), live, lbl, walkLink: !!document.querySelector('.wstop') || /Walk to the stop/.test(document.body.innerText) } });
+  ok('each bus shows minutes until you must leave', r.before.join() === '9 min,20 min', r.before.join());
+  ok('the minutes count down by themselves (two minutes pass: 7 and 18)', r.after.join() === '7 min,18 min', r.after.join());
+  ok('a bus tracked live is marked LIVE (green), the scheduled one says "Leave in"', r.live === 1 && r.lbl.some(x => /LIVE/.test(x)) && r.lbl.some(x => /Leave in/.test(x)), r.lbl.join('|'));
+  ok('there is no "Walk to the stop" link any more', !r.walkLink);
+  ok('a bus that has left shows "Now"', await p.evaluate(() => { document.querySelectorAll('[data-cd]').forEach(e => e.dataset.cd = String(Date.now() - 1000)); cdTick(); return [...document.querySelectorAll('[data-cd] b')].every(e => e.textContent === 'Now') }));
+  ok('live minutes: no JS errors', !p.errs.length, p.errs.join('|')); await c.close();
+}
 module.exports = async b => {
-  await ranking(b); await soonest(b);
+  await ranking(b); await soonest(b); await liveMin(b);
   const c = await b.newContext({ viewport: { width: 390, height: 844 } }); const p = await c.newPage(); p.errs = []; p.on('pageerror', e => p.errs.push(e.message));
   await p.addInitScript(() => {
     const t = new Date('2026-11-24T06:38').getTime(), R = Date; class D extends R { constructor(...a) { a.length ? super(...a) : super(t) } static now() { return t } } window.Date = D;
