@@ -123,7 +123,7 @@ async function everyLine(b) {
   await p.goto(URL); await p.waitForTimeout(700);
   const r = await p.evaluate(async () => { const x = await findTrips({ lat: 33.0, lon: 35.1 }, { lat: 33.02, lon: 35.1 }, null); const by = {}; x.opts.forEach(o => by[o.line] = (by[o.line] || 0) + 1); const t3 = x.opts.filter(o => o.line == '3'); return { by, n: x.opts.length, t3: t3.map(o => [o.depStop.name, o.arrStop.name]), reqs: window.__reqs } });
   ok('with a very busy bus 5 and a capped answer, bus 3 (from a stop further away) is still offered', (r.by['3'] || 0) >= 1 && (r.by['5'] || 0) >= 1, JSON.stringify(r));
-  ok('every line gets a place in the list (up to 3 of each), not only the busiest', (r.by['5'] || 0) <= 3 && (r.by['3'] || 0) >= 2, JSON.stringify(r.by));
+  ok('every line shows once, not only the busiest', (r.by['5'] || 0) === 1 && (r.by['3'] || 0) === 1, JSON.stringify(r.by));
   ok('bus 3 is boarded at its own stop and left at its own stop', r.t3.length > 0 && r.t3.every(x => x[0] === 'Stop B (bus 3)' && x[1] === 'Dest 3'), JSON.stringify(r.t3));
   ok('every line: no JS errors', !p.errs.length, p.errs.join('|')); await c.close();
 }

@@ -1211,7 +1211,7 @@ async function findTrips(o,d,arriveBy){const key=[o.lat,o.lon,d.lat,d.lon,arrive
  opts.sort((a,b)=>a.dep-b.dep);const pool=opts.slice();
  /* for a task at a set time: only the buses around that time (arriving within 90 minutes before it, and a couple just after), not everything since now */
  let rec=null;if(arriveBy){const all=opts.filter(x=>x.reach<=arriveBy),near=all.filter(x=>+x.reach>=+arriveBy-90*6e4),ok=near.length?near:all;rec=ok.reduce((m,x)=>!m||x.score<m.score-.01||(Math.abs(x.score-m.score)<=.01&&x.leave>m.leave)?x:m,null);opts=ok.length?ok.concat(opts.filter(x=>x.reach>arriveBy&&+x.reach<=+arriveBy+30*6e4).slice(0,2)):opts.slice(0,8)}else{rec=opts.reduce((m,x)=>!m||x.reach<m.reach?x:m,null)}if(rec)rec.rec=1;
- {const cnt={},keep=[];opts.slice().sort((a,b)=>a.dep-b.dep).forEach(x=>{const k=String(x.line);cnt[k]=(cnt[k]||0)+1;if(cnt[k]<=3||x===rec)keep.push(x)});opts=keep.slice(0,16)}
+ {const seen={},keep=[],recK=rec?String(rec.line):'';opts.slice().sort((a,b)=>a.dep-b.dep).forEach(x=>{const k=String(x.line);if(seen[k])return;seen[k]=1;keep.push(x)});if(rec){const kr=keep.find(x=>String(x.line)==recK);if(kr&&kr!==rec){rec.rec=0;kr.rec=1;rec=kr}}opts=keep.slice(0,16)}
  opts.forEach(x=>{x.nx=pool.filter(y=>String(y.line)==String(x.line)&&y.depStop.id==x.depStop.id&&+y.dep>=+x.dep).map(y=>y.dep).sort((a,b)=>a-b).filter((d,i,a)=>!i||+d!=+a[i-1]).slice(0,3)});
  opts.forEach(x=>x.late=!!(arriveBy&&x.reach>arriveBy));
  return (TRIPC[key]={t:Date.now(),v:{opts,why:opts.length?'':'nodirect',near:opts.length?[]:nearBuses}}).v}
