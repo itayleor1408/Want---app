@@ -181,6 +181,13 @@ a.lnk{display:block;text-align:center;color:var(--s2);text-decoration:none;font-
 .wme i{display:block;width:22px;height:22px;border-radius:50%;background:#2f80ff;border:3px solid #fff;box-shadow:0 0 0 6px rgba(47,128,255,.25),0 2px 6px rgba(0,0,0,.3)}
 #wm .leaflet-control-attribution{font-size:10px;margin-bottom:150px}
 .lvg{color:var(--a)!important}
+.stp{display:flex;align-items:center;gap:6px;min-width:0;flex-wrap:nowrap}.stp .sep,.tpw .sep{font-style:normal;color:var(--s);opacity:.6;font-weight:700}:root[dir=rtl] .sep{display:inline-block;transform:scaleX(-1)}
+.wlk{display:inline-flex;align-items:center;gap:2px;font-weight:800;font-size:15px;color:var(--s2)}.wi{font-size:17px}.sta{font-style:normal;color:#e8a100;font-size:14px;flex:none}
+.brw>.brs{display:block!important;padding:12px 0 12px 14px!important}:root[dir=rtl] .brw>.brs{padding:12px 14px 12px 0!important}
+.bpill{display:inline-grid;grid-auto-flow:column;align-items:center;justify-content:start;column-gap:8px;height:34px;border-radius:12px;padding:5px 10px;background:var(--t);color:var(--bg);font-weight:800;white-space:nowrap;flex:none}.bpill *{white-space:nowrap}.bpill .bl b{color:var(--bg);font-size:16px;line-height:1}.bpill .bl svg,.tpw .ln svg{display:block;flex:none}.bpill .cd.in b{line-height:1}.bpill>*{align-self:center;margin:0}.bpill .bl{color:var(--bg)}.bpill .bl{display:inline-flex;align-items:center;gap:4px;font-size:16px}.bpill .cd.in{flex-direction:row;gap:4px;align-items:center;font-size:14px}.bpill .cd.in b{font-size:14px}
+.bpill .cd.in.lv b,.bpill .cd.in.lv i{color:#3ccf92}.bpill .cd.in.wk b{color:#ffb454}.bpill .cd.in.ls b{color:#ff7a6e}.bpill .cd.in.sc b{color:var(--bg);opacity:.85}.bpill .cd.in i{width:6px;height:6px}
+.tpw .ln svg{margin-inline-end:4px}.tpw .ln{display:inline-flex;align-items:center;padding:0 10px}
+
 .cd{display:inline-flex;flex-direction:column;align-items:flex-end;font-weight:800;font-variant-numeric:tabular-nums;line-height:1.15}.cd small{font-size:11px;font-weight:800;letter-spacing:.03em;display:flex;align-items:center;gap:4px;color:var(--s)}.cd i{width:7px;height:7px;border-radius:50%;background:var(--a);animation:pulse 1.8s ease-in-out infinite;flex:none}
 .cd.lv b,.cd.lv small{color:var(--a)}.cd.wk b,.cd.wk small{color:#e8890c}.cd.ls b,.cd.ls small{color:var(--r)}
 .tph{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:6px 4px 14px}.arv{font-weight:800;font-size:15px;color:var(--t);margin-top:2px}.tpc .cd{align-items:flex-start}.tpc .cd b{font-size:34px;letter-spacing:-.03em}.tpc .cd small{font-size:12px}
@@ -1188,11 +1195,14 @@ setInterval(cdTick,10000);
 window.__MG={};window.__EX=window.__EX||{};
 document.addEventListener('click',e=>{const g=e.target.closest&&e.target.closest('[data-mg]');if(g){e.stopPropagation();e.preventDefault();const x=window.__MG[g.dataset.mg];if(x)walkMap(x.depStop.lat,x.depStop.lon,String(x.depStop.name),hhmm(x.dep),String(x.line));return}
  const m=e.target.closest&&e.target.closest('[data-more]');if(m){e.stopPropagation();e.preventDefault();const w=m.closest('.brw'),d=w&&w.querySelector('.gx');if(d){const on=d.classList.toggle('o');m.classList.toggle('op',on);window.__EX[m.dataset.more]=on;setTimeout(fitRows,60)}}},true);
-const wk=n=>`🚶 ${n} ${t('min')}`;
+/* walking step: icon, and minutes only when they matter (a 1-2 minute stroll is just the icon) */
+const wkc=n=>`<span class="wlk"><span class="wi">🚶</span>${n>=3?`<b>${n}</b>`:''}</span>`;
+const cdIn=x=>{const g=SIG[x.sig||'sched'];return `<span class="cd in ${g[1]}" data-cd="${+x.leave}">${x.sig=='live'?'<i></i>':''}<b>${cdTxt(+x.leave)}</b></span>`};
+const chev=`<i class="sep">›</i>`;
 /* the top of the window: what the chosen bus asks of you, dynamically (walk to the stop, the bus, walk from the stop) */
-function tripTop(x){return `<div class="tph"><div class="tpc">${cdHtml(x)}<div class="arv">${t('Arrive')} <bdi dir="ltr">${hhmm(x.reach)}</bdi></div></div><div class="tpw"><span>${wk(x.wTo)}</span><i>›</i><span class="ln">${esc(x.line==null?'?':x.line)}</span><i>›</i><span>${wk(x.wFrom)}</span></div></div>`}
+function tripTop(x){return `<div class="tph"><div class="tpc">${cdHtml(x)}<div class="arv">${t('Arrive')} <bdi dir="ltr">${hhmm(x.reach)}</bdi></div></div><div class="tpw">${wkc(x.wTo)}${chev}<span class="ln">${ic('bus',15)}${esc(x.line==null?'?':x.line)}</span>${chev}${wkc(x.wFrom)}</div></div>`}
 function tripRow(x,sel){window.__MG[x.ride]=x;const ex=!!window.__EX[x.ride];
- return `<div class="brw ${sel?'ch':''}"><button type="button" class="br brs" data-ride="${x.ride}"><span class="ln">${esc(x.line==null?'?':x.line)}</span><span class="gt"><b>${x.rec?'★ ':''}${wk(x.wTo)}</b></span><span class="bm">${cdHtml(x)}</span></button><button type="button" class="mgo ${ex?'op':''}" data-more="${x.ride}" aria-label="${t('More')}">${ic('chev',16)}</button>
+ return `<div class="brw ${sel?'ch':''}"><button type="button" class="br brs" data-ride="${x.ride}"><span class="stp">${x.rec?'<em class="sta">★</em>':''}${wkc(x.wTo)}${chev}<span class="bpill"><span class="bl">${ic('bus',15)}<b>${esc(x.line==null?'?':x.line)}</b></span>${cdIn(x)}</span>${chev}${wkc(x.wFrom)}</span></button><button type="button" class="mgo ${ex?'op':''}" data-more="${x.ride}" aria-label="${t('More')}">${ic('chev',16)}</button>
  <div class="gx ${ex?'o':''}"><div><div class="bdt"><span><bdi dir="ltr">${hhmm(x.dep)} → ${hhmm(x.arr)}</bdi> · ⏱ ${hm(x.total)}</span><span>${esc(x.depStop.name)}${x.late?` · <b class="neg">${t('Late')}</b>`:''}</span><button type="button" class="pill" data-mg="${x.ride}">🗺️ ${t('Map')}</button></div></div></div></div>`}
 document.addEventListener('click',e=>{const b=e.target.closest('[data-moreb]');if(!b)return;const g=b.nextElementSibling;if(g){g.classList.toggle('o');b.classList.toggle('op');setTimeout(fitRows,60)}});
 function tripBlock(r,p,chosenRide){if(!r)return `<div class="empty" style="padding:14px 0">${t('Finding buses…')}</div>`;
