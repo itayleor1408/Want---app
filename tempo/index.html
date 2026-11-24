@@ -1162,12 +1162,17 @@ async function liveNear(p){const n=new Date(),dl=.035,dn=.045;
  BD.vlMatched=Object.keys(by).length;return by}
 const TRIPC={},hhmm=d=>ft(d.getHours()*60+d.getMinutes());
 async function findTrips(o,d,arriveBy){const key=[o.lat,o.lon,d.lat,d.lon,arriveBy?+arriveBy:0].join(',');const c=TRIPC[key];if(c&&Date.now()-c.t<6e4)return c.v;
- const stops=await stopsNear([o,d]),near=p=>{const all=nearest(stops,p,80);let n=all.filter(x=>x.d<=1000).slice(0,28);if(n.length<3)n=all.filter(x=>x.d<=1800).slice(0,10);return n},os=near(o),dsx=near(d);
+ const stops=await stopsNear([o,d]),near=(p,r)=>{const all=nearest(stops,p,120);let n=all.filter(x=>x.d<=r).slice(0,32);if(n.length<12)n=all.slice(0,12).filter(x=>x.d<=2200);return n},os=near(o,1100),dsx=near(d,1500);
  if(!os.length||!dsx.length)return (TRIPC[key]={t:Date.now(),v:{opts:[],why:'nostop'}}).v;
  const now=new Date(),fut=arriveBy&&arriveBy.getTime()>now.getTime()+30*6e4,from=fut?new Date(Math.max(now.getTime(),arriveBy.getTime()-150*6e4)):now,to=fut?arriveBy:new Date(now.getTime()+120*6e4);
  const q1=(st,a,b)=>api('/gtfs_ride_stops/list',{gtfs_stop_ids:st.id,arrival_time_from:isoTz(a),arrival_time_to:isoTz(b),order_by:'arrival_time asc',limit:400}).catch(()=>api('/gtfs_ride_stops/list',{gtfs_stop_ids:st.id,arrival_time_from:isoTz(a),arrival_time_to:isoTz(b),order_by:'arrival_time asc',limit:400})).catch(()=>[]);
- const q=async(ss,a,b)=>{const out=[];for(let i=0;i<ss.length;i+=7){const ch=ss.slice(i,i+7);let got=[];try{got=await api('/gtfs_ride_stops/list',{gtfs_stop_ids:ch.map(x=>x.id).join(','),arrival_time_from:isoTz(a),arrival_time_to:isoTz(b),order_by:'arrival_time asc',limit:400*ch.length})}catch(e){got=[]}
-  if(!Array.isArray(got)||!got.length)got=(await Promise.all(ch.map(st=>q1(st,a,b)))).flat();out.push(...got)}return out};
+ const FULL=90;/* the service may cap an answer; a full-looking answer is split in halves until each part is small, so no line is crowded out by a busy one */
+ const qb=async(ch,a,b)=>{let got=null;try{got=await api('/gtfs_ride_stops/list',{gtfs_stop_ids:ch.map(x=>x.id).join(','),arrival_time_from:isoTz(a),arrival_time_to:isoTz(b),order_by:'arrival_time asc',limit:1000})}catch(e){got=null}
+  if(!Array.isArray(got)){if(ch.length>1){const m=Math.ceil(ch.length/2);return (await Promise.all([qb(ch.slice(0,m),a,b),qb(ch.slice(m),a,b)])).flat()}return q1(ch[0],a,b)}
+  if(got.length>=FULL&&ch.length>1){const m=Math.ceil(ch.length/2);return (await Promise.all([qb(ch.slice(0,m),a,b),qb(ch.slice(m),a,b)])).flat()}
+  if(got.length>=FULL&&ch.length==1){/* one very busy stop: also ask for the second half of the window so later buses are not cut off */const mid=new Date((+a+ +b)/2);const [x,y]=await Promise.all([q1(ch[0],a,mid),q1(ch[0],mid,b)]);return x.concat(y)}
+  return got};
+ const q=async(ss,a,b)=>{const out=[];for(let i=0;i<ss.length;i+=6)out.push(...await qb(ss.slice(i,i+6),a,b));return out};
  const [A,B,live]=await Promise.all([q(os,from,to),q(dsx,from,new Date(to.getTime()+60*6e4)),liveNear(o).catch(()=>({}))]);
  if(!A.length&&!B.length){delete TRIPC[key];return{opts:[],why:'err'}}
  const nearBuses=(()=>{const m={};A.forEach(r=>{const st=os.find(x=>x.id==r.gtfs_stop_id);if(!st)return;const ln=String(pick(r,'gtfs_route','route_short_name')||'?'),at=new Date(r.arrival_time),w=est(o,st).w;if(at.getTime()<now0()+(w-1)*6e4)return;if(!m[ln]||at<m[ln].at)m[ln]={line:ln,at,stop:st,w}});return Object.values(m).sort((a,b)=>a.at-b.at).slice(0,4)})();
@@ -1181,7 +1186,8 @@ async function findTrips(o,d,arriveBy){const key=[o.lat,o.lon,d.lat,d.lon,arrive
    const e=per[id]=per[id]||{};if(!e.b||x.score<e.b.score)e.b=x;if(!e.w||x.walk<e.w.walk||(x.walk==e.w.walk&&x.total<e.w.total))e.w=x}});
  let opts=[];Object.values(per).forEach(e=>{opts.push(e.b);if(e.w!==e.b&&(e.w.depStop.id!=e.b.depStop.id||e.w.arrStop.id!=e.b.arrStop.id)&&e.w.walk<e.b.walk-3&&e.w.total<=e.b.total+12)opts.push(e.w)});
  opts.sort((a,b)=>a.dep-b.dep);
- let rec=null;if(arriveBy){const ok=opts.filter(x=>x.reach<=arriveBy);rec=ok.reduce((m,x)=>!m||x.score<m.score-.01||(Math.abs(x.score-m.score)<=.01&&x.leave>m.leave)?x:m,null);opts=ok.length?ok.slice(0,9).concat(opts.filter(x=>x.reach>arriveBy).slice(0,2)):opts.slice(0,5);if(rec&&!opts.includes(rec))opts.splice(Math.min(opts.length,9),0,rec)}else{rec=opts.reduce((m,x)=>!m||x.reach<m.reach?x:m,null);opts=opts.slice(0,8);if(rec&&!opts.includes(rec))opts.unshift(rec)}if(rec)rec.rec=1;
+ let rec=null;if(arriveBy){const ok=opts.filter(x=>x.reach<=arriveBy);rec=ok.reduce((m,x)=>!m||x.score<m.score-.01||(Math.abs(x.score-m.score)<=.01&&x.leave>m.leave)?x:m,null);opts=ok.length?ok.concat(opts.filter(x=>x.reach>arriveBy).slice(0,3)):opts.slice(0,8)}else{rec=opts.reduce((m,x)=>!m||x.reach<m.reach?x:m,null)}if(rec)rec.rec=1;
+ {const cnt={},keep=[];opts.slice().sort((a,b)=>a.dep-b.dep).forEach(x=>{const k=String(x.line);cnt[k]=(cnt[k]||0)+1;if(cnt[k]<=3||x===rec)keep.push(x)});opts=keep.slice(0,16)}
  opts.forEach(x=>x.late=!!(arriveBy&&x.reach>arriveBy));
  return (TRIPC[key]={t:Date.now(),v:{opts,why:opts.length?'':'nodirect',near:opts.length?[]:nearBuses}}).v}
 const now0=()=>Date.now();

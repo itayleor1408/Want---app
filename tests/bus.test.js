@@ -88,8 +88,36 @@ async function liveMin(b) {
   ok('simple rows: no JS errors', !p.errs.length, p.errs.join('|')); await c.close();
 }
 
+
+// A busy line must not hide another one: the service caps its answers; a bus 3 that stops further away must still be offered
+async function everyLine(b) {
+  const c = await b.newContext({ viewport: { width: 390, height: 844 } }); const p = await c.newPage(); p.errs = []; p.on('pageerror', e => p.errs.push(e.message));
+  await p.addInitScript(() => {
+    const t = new Date('2026-11-24T07:39').getTime(), R = Date; class D extends R { constructor(...a) { a.length ? super(...a) : super(t) } static now() { return t } } window.Date = D;
+    localStorage.setItem('tempo.v1', JSON.stringify({ items: [], places: [], set: { lang: 'en', onboarded: true, city: 'x' } }));
+    const home = { lat: 33.0, lon: 35.1 }, dest = { lat: 33.02, lon: 35.1 };
+    const stops = [{ id: 1, name: 'Stop A (bus 5)', lat: home.lat - 0.0025, lon: home.lon }, { id: 2, name: 'Stop B (bus 3)', lat: home.lat + 0.0075, lon: home.lon }, { id: 3, name: 'Dest 5', lat: dest.lat + 0.0006, lon: dest.lon }, { id: 4, name: 'Dest 3', lat: dest.lat - 0.0095, lon: dest.lon }].map(s => Object.assign({ code: 'c' }, s));
+    const iso = m => new Date(t + m * 60000).toISOString(), rs = (ride, stop, m, seq, line) => ({ gtfs_ride_id: ride, gtfs_stop_id: stop, arrival_time: iso(m), stop_sequence: seq, gtfs_route__route_short_name: line, gtfs_route__route_long_name: 'A<->B', gtfs_ride_stop__shape_dist_traveled: 0 });
+    window.CAP = 100; window.__reqs = 0;
+    window.fetch = async u => { u = String(u); const j = x => new Response(JSON.stringify(x));
+      if (u.includes('nominatim')) return j({ address: { city: 'x' } }); if (u.includes('/gtfs_stops/list')) return j(stops); if (u.includes('/siri_vehicle_locations')) return j([]);
+      if (u.includes('/gtfs_ride_stops/list')) { window.__reqs++; const ids = decodeURIComponent((u.match(/gtfs_stop_ids=([^&]*)/) || [])[1] || '').split(',').map(Number), from = new Date(decodeURIComponent((u.match(/arrival_time_from=([^&]*)/) || [])[1])).getTime(), to = new Date(decodeURIComponent((u.match(/arrival_time_to=([^&]*)/) || [])[1])).getTime();
+        let out = [];
+        for (let i = 0; i < 200; i++) { const m = 5 + i * 0.6; if (ids.includes(1)) out.push(rs('F' + i, 1, m, 1, '5')); if (ids.includes(3)) out.push(rs('F' + i, 3, m + 6, 9, '5')) }   // a very busy line 5
+        for (let i = 0; i < 4; i++) { const m = 12 + i * 20; if (ids.includes(2)) out.push(rs('T' + i, 2, m, 1, '3')); if (ids.includes(4)) out.push(rs('T' + i, 4, m + 14, 9, '3')) }
+        out = out.filter(r => { const a = new Date(r.arrival_time).getTime(); return a >= from && a <= to }).sort((x, y) => new Date(x.arrival_time) - new Date(y.arrival_time)).slice(0, window.CAP);   // the service's cap: only the earliest rows
+        return j(out) }
+      return j([]) };
+  });
+  await p.goto(URL); await p.waitForTimeout(700);
+  const r = await p.evaluate(async () => { const x = await findTrips({ lat: 33.0, lon: 35.1 }, { lat: 33.02, lon: 35.1 }, null); const by = {}; x.opts.forEach(o => by[o.line] = (by[o.line] || 0) + 1); const t3 = x.opts.filter(o => o.line == '3'); return { by, n: x.opts.length, t3: t3.map(o => [o.depStop.name, o.arrStop.name]), reqs: window.__reqs } });
+  ok('with a very busy bus 5 and a capped answer, bus 3 (from a stop further away) is still offered', (r.by['3'] || 0) >= 1 && (r.by['5'] || 0) >= 1, JSON.stringify(r));
+  ok('every line gets a place in the list (up to 3 of each), not only the busiest', (r.by['5'] || 0) <= 3 && (r.by['3'] || 0) >= 2, JSON.stringify(r.by));
+  ok('bus 3 is boarded at its own stop and left at its own stop', r.t3.length > 0 && r.t3.every(x => x[0] === 'Stop B (bus 3)' && x[1] === 'Dest 3'), JSON.stringify(r.t3));
+  ok('every line: no JS errors', !p.errs.length, p.errs.join('|')); await c.close();
+}
 module.exports = async b => {
-  await ranking(b); await soonest(b); await liveMin(b);
+  await everyLine(b); await ranking(b); await soonest(b); await liveMin(b);
   const c = await b.newContext({ viewport: { width: 390, height: 844 } }); const p = await c.newPage(); p.errs = []; p.on('pageerror', e => p.errs.push(e.message));
   await p.addInitScript(() => {
     const t = new Date('2026-11-24T06:38').getTime(), R = Date; class D extends R { constructor(...a) { a.length ? super(...a) : super(t) } static now() { return t } } window.Date = D;
