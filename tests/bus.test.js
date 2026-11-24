@@ -175,8 +175,34 @@ async function mapLines(b) {
   ok('the map shows the route stops and the destination', await p.evaluate(() => window.__markers.length >= 3));
   ok('map lines: no JS errors', !p.errs.length, p.errs.join('|')); await c.close();
 }
+
+// Long waits read as hours; and for a task at a set time only the buses around that time are listed
+async function aroundTime(b) {
+  const c = await b.newContext({ viewport: { width: 390, height: 844 } }); const p = await c.newPage(); p.errs = []; p.on('pageerror', e => p.errs.push(e.message));
+  await p.addInitScript(() => {
+    const t = new Date('2026-11-24T09:24').getTime(), R = Date; class D extends R { constructor(...a) { a.length ? super(...a) : super(t) } static now() { return t } } window.Date = D;
+    localStorage.setItem('tempo.v1', JSON.stringify({ items: [], places: [], set: { lang: 'en', onboarded: true, city: 'x' } }));
+    const stops = [{ id: 1, name: 'A', lat: 32.9985, lon: 35.1 }, { id: 2, name: 'B', lat: 33.02, lon: 35.1 }].map(s => Object.assign({ code: 'c' }, s));
+    const iso = m => new Date(t + m * 60000).toISOString(), rs = (ride, stop, m, seq) => ({ gtfs_ride_id: ride, gtfs_stop_id: stop, arrival_time: iso(m), stop_sequence: seq, gtfs_route__route_short_name: '3', gtfs_route__route_long_name: 'A<->B', gtfs_ride_stop__shape_dist_traveled: 0 });
+    window.fetch = async u => { u = String(u); const j = x => new Response(JSON.stringify(x));
+      if (u.includes('nominatim')) return j({ address: { city: 'x' } }); if (u.includes('/gtfs_stops/list')) return j(stops); if (u.includes('/siri_vehicle_locations')) return j([]);
+      if (u.includes('/gtfs_ride_stops/list')) { const ids = decodeURIComponent((u.match(/gtfs_stop_ids=([^&]*)/) || [])[1] || '').split(',').map(Number), from = new Date(decodeURIComponent((u.match(/arrival_time_from=([^&]*)/) || [])[1])).getTime(), to = new Date(decodeURIComponent((u.match(/arrival_time_to=([^&]*)/) || [])[1])).getTime(), out = [];
+        for (let i = 0; i < 40; i++) { const m = 5 + i * 15; if (ids.includes(1)) out.push(rs('R' + i, 1, m, 1)); if (ids.includes(2)) out.push(rs('R' + i, 2, m + 20, 9)) }
+        return j(out.filter(r => { const a = new Date(r.arrival_time).getTime(); return a >= from && a <= to })) }
+      return j([]) };
+  });
+  await p.goto(URL); await p.waitForTimeout(700);
+  const r = await p.evaluate(async () => { const by = new Date(Date.now() + 400 * 60000); const x = await findTrips({ lat: 33.0, lon: 35.1 }, { lat: 33.02, lon: 35.1 }, by); const gaps = x.opts.map(o => Math.round((+by - +o.reach) / 60000)); return { n: x.opts.length, gaps, rec: x.opts.find(o => o.rec) && Math.round((+by - +x.opts.find(o => o.rec).reach) / 60000) } });
+  ok('for a task 6h40 away, only buses arriving around that time are listed (within 90 min before it, a couple after)', r.n >= 1 && r.gaps.every(g => g <= 90 && g >= -30), JSON.stringify(r));
+  ok('the recommended bus is one of them (it arrives close to the task time)', r.rec != null && r.rec >= 0 && r.rec <= 90, JSON.stringify(r));
+  const h = await p.evaluate(() => { openSh('<div id="x">' + tripBlock({ opts: [{ ride: 'a', line: '3', dep: new Date(Date.now() + 403 * 6e4), arr: new Date(Date.now() + 430 * 6e4), depStop: { name: 'Herzl', lat: 1, lon: 1 }, arrStop: { name: 'x' }, wTo: 3, wFrom: 4, total: 33, walk: 7, sig: 'sched', live: false, leave: new Date(Date.now() + 400 * 6e4), reach: new Date(Date.now() + 437 * 6e4), rec: 1, nx: [new Date(Date.now() + 403 * 6e4), new Date(Date.now() + 423 * 6e4)] }] }, null, null) + '</div>'); return { top: document.querySelector('.tpcd .cdn b').textContent, unit: getComputedStyle(document.querySelector('.tpcd .cu')).display, rowNums: [...document.querySelectorAll('.lvs [data-cd] b')].map(e => e.textContent) } });
+  ok('400 minutes reads as 6h 40m at the top, with no "min" next to it', /6h\s?40m?/.test(h.top) && h.unit === 'none', JSON.stringify(h));
+  ok('the hours stay on one line at the top', await p.evaluate(() => { const b = document.querySelector('.tpcd .cdn b'); return b.getBoundingClientRect().height < 40 }));
+  ok('long waits in the rows read as hours too, and the trailing "min" is dropped', h.rowNums.every(x => /h/.test(x)), JSON.stringify(h.rowNums));
+  ok('around-time: no JS errors', !p.errs.length, p.errs.join('|')); await c.close();
+}
 module.exports = async b => {
-  await mapLines(b); await look(b); await everyLine(b); await ranking(b); await soonest(b); await liveMin(b);
+  await aroundTime(b); await mapLines(b); await look(b); await everyLine(b); await ranking(b); await soonest(b); await liveMin(b);
   const c = await b.newContext({ viewport: { width: 390, height: 844 } }); const p = await c.newPage(); p.errs = []; p.on('pageerror', e => p.errs.push(e.message));
   await p.addInitScript(() => {
     const t = new Date('2026-11-24T06:38').getTime(), R = Date; class D extends R { constructor(...a) { a.length ? super(...a) : super(t) } static now() { return t } } window.Date = D;
