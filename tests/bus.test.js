@@ -30,7 +30,7 @@ async function ranking(b) {
   ok('it recommends the bus 3 using the close stop on both ends (not the far ones)', r.rec && r.rec[0] === '3' && r.rec[1] === 'Near' && r.rec[2] === 'Dest near', JSON.stringify(r));
   ok('its door-to-door time is counted (about 36 minutes) with little walking', r.rec && Math.abs(r.rec[3] - 36) <= 2 && r.rec[4] <= 8, JSON.stringify(r.rec));
   ok('other buses are offered too (bus 5)', r.n >= 2);
-  ok('every option shows its total time', r.hasTotal && r.html);
+  ok('the recommended option shows its total time', r.hasTotal && r.html);
   ok('ranking: no JS errors', !p.errs.length, p.errs.join('|')); await c.close();
 }
 
@@ -70,6 +70,11 @@ async function liveMin(b) {
   ok('the minutes count down by themselves (two minutes pass: 7 and 18)', r.after.join() === '7 min,18 min', r.after.join());
   ok('a bus tracked live is marked LIVE (green), the scheduled one says "Leave in"', r.live === 1 && r.lbl.some(x => /LIVE/.test(x)) && r.lbl.some(x => /Leave in/.test(x)), r.lbl.join('|'));
   ok('there is no "Walk to the stop" link any more', !r.walkLink);
+  const mg = await p.evaluate(() => { const a = document.querySelectorAll('.mgo'); const rec = document.querySelector('.rec .mgo'), row = document.querySelector('.rec'); const rb = rec.getBoundingClientRect(), rr = row.getBoundingClientRect(); return { n: a.length, atEnd: rr.right - rb.right < 30 } });
+  ok('every bus line has an arrow at its end', mg.n === 2 && mg.atEnd, JSON.stringify(mg));
+  await p.evaluate(() => document.querySelector('.rec .mgo').click()); await p.waitForTimeout(500);
+  ok('tapping the arrow opens the map for that stop (and does not pick the bus)', await p.evaluate(() => !!document.getElementById('wm') && /3/.test(document.querySelector('#wm .mptop b').innerText)));
+  await p.evaluate(() => { const m = document.getElementById('wm'); m && m.remove() });
   ok('a bus that has left shows "Now"', await p.evaluate(() => { document.querySelectorAll('[data-cd]').forEach(e => e.dataset.cd = String(Date.now() - 1000)); cdTick(); return [...document.querySelectorAll('[data-cd] b')].every(e => e.textContent === 'Now') }));
   ok('live minutes: no JS errors', !p.errs.length, p.errs.join('|')); await c.close();
 }
