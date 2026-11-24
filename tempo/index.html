@@ -1164,7 +1164,7 @@ async function findTrips(o,d,arriveBy){const key=[o.lat,o.lon,d.lat,d.lon,arrive
    const e=per[id]=per[id]||{};if(!e.b||x.score<e.b.score)e.b=x;if(!e.w||x.walk<e.w.walk||(x.walk==e.w.walk&&x.total<e.w.total))e.w=x}});
  let opts=[];Object.values(per).forEach(e=>{opts.push(e.b);if(e.w!==e.b&&(e.w.depStop.id!=e.b.depStop.id||e.w.arrStop.id!=e.b.arrStop.id)&&e.w.walk<e.b.walk-3&&e.w.total<=e.b.total+12)opts.push(e.w)});
  opts.sort((a,b)=>a.dep-b.dep);
- let rec=null;if(arriveBy){const ok=opts.filter(x=>x.reach<=arriveBy);rec=ok.reduce((m,x)=>!m||x.score<m.score-.01||(Math.abs(x.score-m.score)<=.01&&x.leave>m.leave)?x:m,null);opts=ok.length?ok.slice(-8).concat(opts.filter(x=>x.reach>arriveBy).slice(0,2)):opts.slice(0,5)}else{rec=opts.reduce((m,x)=>!m||x.reach<m.reach?x:m,null);opts=opts.slice(0,8);if(rec&&!opts.includes(rec))opts.unshift(rec)}if(rec)rec.rec=1;
+ let rec=null;if(arriveBy){const ok=opts.filter(x=>x.reach<=arriveBy);rec=ok.reduce((m,x)=>!m||x.score<m.score-.01||(Math.abs(x.score-m.score)<=.01&&x.leave>m.leave)?x:m,null);opts=ok.length?ok.slice(0,9).concat(opts.filter(x=>x.reach>arriveBy).slice(0,2)):opts.slice(0,5);if(rec&&!opts.includes(rec))opts.splice(Math.min(opts.length,9),0,rec)}else{rec=opts.reduce((m,x)=>!m||x.reach<m.reach?x:m,null);opts=opts.slice(0,8);if(rec&&!opts.includes(rec))opts.unshift(rec)}if(rec)rec.rec=1;
  opts.forEach(x=>x.late=!!(arriveBy&&x.reach>arriveBy));
  return (TRIPC[key]={t:Date.now(),v:{opts,why:opts.length?'':'nodirect',near:opts.length?[]:nearBuses}}).v}
 const now0=()=>Date.now();

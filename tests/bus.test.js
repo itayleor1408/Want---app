@@ -33,8 +33,29 @@ async function ranking(b) {
   ok('every option shows its total time', r.hasTotal && r.html);
   ok('ranking: no JS errors', !p.errs.length, p.errs.join('|')); await c.close();
 }
+
+// Many buses reach you in time: the list starts with the NEXT ones (soonest first), not the last ones before the deadline
+async function soonest(b) {
+  const c = await b.newContext({ viewport: { width: 390, height: 844 } }); const p = await c.newPage(); p.errs = []; p.on('pageerror', e => p.errs.push(e.message));
+  await p.addInitScript(() => {
+    const t = new Date('2026-11-24T06:38').getTime(), R = Date; class D extends R { constructor(...a) { a.length ? super(...a) : super(t) } static now() { return t } } window.Date = D;
+    localStorage.setItem('tempo.v1', JSON.stringify({ items: [], places: [], set: { lang: 'en', onboarded: true, city: 'x' } }));
+    const stops = [{ id: 1, name: 'Home stop', lat: 32.9985, lon: 35.1 }, { id: 2, name: 'Dest stop', lat: 33.02, lon: 35.1 }].map(s => Object.assign({ code: 'c' }, s));
+    const iso = m => new Date(t + m * 60000).toISOString(), rs = (ride, stop, m, seq) => ({ gtfs_ride_id: ride, gtfs_stop_id: stop, arrival_time: iso(m), stop_sequence: seq, gtfs_route__route_short_name: '3', gtfs_route__route_long_name: 'A<->B', gtfs_ride_stop__shape_dist_traveled: 0 });
+    window.fetch = async u => { u = String(u); const j = x => new Response(JSON.stringify(x));
+      if (u.includes('nominatim')) return j({ address: { city: 'x' } }); if (u.includes('/gtfs_stops/list')) return j(stops); if (u.includes('/siri_vehicle_locations')) return j([]);
+      if (u.includes('/gtfs_ride_stops/list')) { const ids = decodeURIComponent((u.match(/gtfs_stop_ids=([^&]*)/) || [])[1] || '').split(',').map(Number), out = [];
+        for (let i = 0; i < 14; i++) { if (ids.includes(1)) out.push(rs('R' + i, 1, 15 + i * 5, 1)); if (ids.includes(2)) out.push(rs('R' + i, 2, 40 + i * 5, 5)) } return j(out) }
+      return j([]) };
+  });
+  await p.goto(URL); await p.waitForTimeout(700);
+  const r = await p.evaluate(async () => { const x = await findTrips({ lat: 33.0, lon: 35.1 }, { lat: 33.02, lon: 35.1 }, new Date(new Date().getTime() + 120 * 60000)); const d = x.opts.map(o => Math.round((o.dep - new Date()) / 60000)); return { n: x.opts.length, first: d[0], sorted: d.every((v, i) => !i || v >= d[i - 1]), hasRec: x.opts.some(o => o.rec), lastShown: d[d.length - 1] } });
+  ok('the list starts with the next bus you can catch (about 15 minutes from now), not the latest ones', r.first <= 20, JSON.stringify(r));
+  ok('buses are listed in time order, with a recommended one among them', r.sorted && r.hasRec, JSON.stringify(r));
+  ok('soonest: no JS errors', !p.errs.length, p.errs.join('|')); await c.close();
+}
 module.exports = async b => {
-  await ranking(b);
+  await ranking(b); await soonest(b);
   const c = await b.newContext({ viewport: { width: 390, height: 844 } }); const p = await c.newPage(); p.errs = []; p.on('pageerror', e => p.errs.push(e.message));
   await p.addInitScript(() => {
     const t = new Date('2026-11-24T06:38').getTime(), R = Date; class D extends R { constructor(...a) { a.length ? super(...a) : super(t) } static now() { return t } } window.Date = D;
