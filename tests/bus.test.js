@@ -30,7 +30,7 @@ async function ranking(b) {
   ok('it recommends the bus 3 using the close stop on both ends (not the far ones)', r.rec && r.rec[0] === '3' && r.rec[1] === 'Near' && r.rec[2] === 'Dest near', JSON.stringify(r));
   ok('its door-to-door time is counted (about 36 minutes) with little walking', r.rec && Math.abs(r.rec[3] - 36) <= 2 && r.rec[4] <= 8, JSON.stringify(r.rec));
   ok('other buses are offered too (bus 5)', r.n >= 2);
-  ok('the recommended option shows its total time', r.hasTotal && r.html);
+  ok('every option carries its total time (shown in the details)', r.hasTotal);
   ok('ranking: no JS errors', !p.errs.length, p.errs.join('|')); await c.close();
 }
 
@@ -55,29 +55,36 @@ async function soonest(b) {
   ok('soonest: no JS errors', !p.errs.length, p.errs.join('|')); await c.close();
 }
 
-// Live minutes: a countdown that ticks by itself, LIVE marking, and no "Walk to the stop" link
+// Simple rows: line + walk + minutes (signal-coloured); details on demand; the top of the window shows the chosen bus
 async function liveMin(b) {
   const c = await b.newContext({ viewport: { width: 390, height: 800 } }); const p = await c.newPage(); p.errs = []; p.on('pageerror', e => p.errs.push(e.message));
   await p.addInitScript(() => { localStorage.setItem('tempo.v1', JSON.stringify({ items: [], places: [], set: { lang: 'en', onboarded: true } })) });
   await p.goto(URL); await p.waitForTimeout(600);
-  const r = await p.evaluate(() => { const n = Date.now(), mk = (ride, line, dm, live, rec) => ({ ride, line, dep: new Date(n + (dm + 3) * 6e4), arr: new Date(n + (dm + 30) * 6e4), depStop: { name: 'Herzl', lat: 1, lon: 1 }, arrStop: { name: 'x' }, wTo: 3, wFrom: 3, total: 33, walk: 6, live, leave: new Date(n + dm * 6e4), reach: new Date(n + (dm + 33) * 6e4), rec });
-    openSh('<div id="x">' + tripBlock({ opts: [mk('a', '3', 9, true, 1), mk('b', '5', 20, false)] }, null, null) + '</div>');
-    const g = () => [...document.querySelectorAll('[data-cd] b')].map(e => e.textContent);
-    const before = g(), live = document.querySelectorAll('.cd.lv').length, lbl = [...document.querySelectorAll('.cd small')].map(e => e.textContent.trim());
-    document.querySelectorAll('[data-cd]').forEach(e => e.dataset.cd = String(+e.dataset.cd - 120000)); cdTick();
-    return { before, after: g(), live, lbl, walkLink: !!document.querySelector('.wstop') || /Walk to the stop/.test(document.body.innerText) } });
-  ok('each bus shows minutes until you must leave', r.before.join() === '9 min,20 min', r.before.join());
-  ok('the minutes count down by themselves (two minutes pass: 7 and 18)', r.after.join() === '7 min,18 min', r.after.join());
-  ok('a bus tracked live is marked LIVE (green), the scheduled one says "Leave in"', r.live === 1 && r.lbl.some(x => /LIVE/.test(x)) && r.lbl.some(x => /Leave in/.test(x)), r.lbl.join('|'));
-  ok('there is no "Walk to the stop" link any more', !r.walkLink);
-  const mg = await p.evaluate(() => { const a = document.querySelectorAll('.mgo'); const rec = document.querySelector('.rec .mgo'), row = document.querySelector('.rec'); const rb = rec.getBoundingClientRect(), rr = row.getBoundingClientRect(); return { n: a.length, atEnd: rr.right - rb.right < 30 } });
-  ok('every bus line has an arrow at its end', mg.n === 2 && mg.atEnd, JSON.stringify(mg));
-  await p.evaluate(() => document.querySelector('.rec .mgo').click()); await p.waitForTimeout(500);
-  ok('tapping the arrow opens the map for that stop (and does not pick the bus)', await p.evaluate(() => !!document.getElementById('wm') && /3/.test(document.querySelector('#wm .mptop b').innerText)));
+  const r = await p.evaluate(() => { const n = Date.now(), mk = (ride, line, dm, sig, rec, wTo = 3, wFrom = 4) => ({ ride, line, dep: new Date(n + (dm + wTo) * 6e4), arr: new Date(n + (dm + 30) * 6e4), depStop: { name: 'Herzl', lat: 1, lon: 1 }, arrStop: { name: 'x' }, wTo, wFrom, total: 33, walk: wTo + wFrom, live: sig == 'live' || sig == 'weak', sig, leave: new Date(n + dm * 6e4), reach: new Date(n + (dm + 33) * 6e4), rec });
+    window.__T = { opts: [mk('a', '3', 9, 'live', 1), mk('b', '5', 20, 'sched', 0, 8), mk('c', '21', 30, 'weak'), mk('d', '7', 40, 'lost')] };
+    openSh('<div id="x">' + tripBlock(window.__T, null, null) + '</div>');
+    const g = () => [...document.querySelectorAll('.brw [data-cd] b')].map(e => e.textContent), col = k => getComputedStyle(document.querySelector('.brw .cd.' + k + ' b')).color;
+    const row = document.querySelector('.brw .brs').innerText.replace(/\n+/g, ' | ');
+    const out = { rows: document.querySelectorAll('.brw').length, row, mins: g(), top: document.querySelector('.tph').innerText.replace(/\n+/g, ' | '), colors: { lv: col('lv'), wk: col('wk'), ls: col('ls'), sc: col('sc') }, visibleTimes: [...document.querySelectorAll('.brw')].some(w => /→/.test(w.querySelector('.brs').innerText)), detailsHidden: getComputedStyle(document.querySelector('.brw .gx')).opacity };
+    document.querySelectorAll('[data-cd]').forEach(e => e.dataset.cd = String(+e.dataset.cd - 120000)); cdTick(); out.after = g();
+    return out });
+  ok('each row is only: line, walk to the stop, and minutes (no times, no stop name)', /★ 🚶 3 min/.test(r.row) && !r.visibleTimes && !/Herzl/.test(r.row), r.row);
+  ok('minutes count down by themselves (two minutes pass)', r.after[0] === '7 min' && r.after[1] === '18 min', r.after.join());
+  ok('green = live, orange = weak signal, red = signal lost, grey = timetable', r.colors.lv === 'rgb(19, 160, 104)' && r.colors.wk === 'rgb(232, 137, 12)' && r.colors.ls === 'rgb(236, 74, 62)' && r.colors.sc !== r.colors.lv && r.colors.sc !== r.colors.ls && r.colors.sc !== r.colors.wk, JSON.stringify(r.colors));
+  ok('the top shows the chosen bus: minutes (live), walk before, the line, walk after', /LIVE/.test(r.top) && /9 min/.test(r.top) && /3 min/.test(r.top) && /4 min/.test(r.top) && /3/.test(r.top), r.top);
+  ok('details (times, stop, total) are hidden until asked', r.detailsHidden === '0');
+  await p.evaluate(() => document.querySelector('[data-more="a"]').click()); await p.waitForTimeout(500);
+  ok('the small arrow opens the details: times, total time, stop name', await p.evaluate(() => { const d = document.querySelector('.brw .gx.o .bdt'); return !!d && /→/.test(d.innerText) && /Herzl/.test(d.innerText) && getComputedStyle(d.closest('.gx')).opacity === '1' }));
+  await p.evaluate(() => { document.querySelector('[data-mg="a"]').click() }); await p.waitForTimeout(500);
+  ok('the Map button inside opens the map for that stop', await p.evaluate(() => !!document.getElementById('wm') && /3/.test(document.querySelector('#wm .mptop b').innerText)));
   await p.evaluate(() => { const m = document.getElementById('wm'); m && m.remove() });
+  const sel = await p.evaluate(() => { const T = window.__T; closeSh(true); openSh('<div id="x">' + tripBlock(T, null, 'b') + '</div>'); return { top: document.querySelector('.tph').innerText.replace(/\n+/g, ' | '), ch: document.querySelector('.brw.ch .ln').textContent, w: document.querySelector('.tpw').innerText.replace(/\n+/g, ' ') } });
+  ok('choosing another bus changes the top: its own walk (8 min) and minutes, shown as timetable', /8 min/.test(sel.top) && /Scheduled/.test(sel.top) && sel.ch === '5', JSON.stringify(sel));
+  ok('there is no "Walk to the stop" link', await p.evaluate(() => !document.querySelector('.wstop') && !/Walk to the stop/.test(document.body.innerText)));
   ok('a bus that has left shows "Now"', await p.evaluate(() => { document.querySelectorAll('[data-cd]').forEach(e => e.dataset.cd = String(Date.now() - 1000)); cdTick(); return [...document.querySelectorAll('[data-cd] b')].every(e => e.textContent === 'Now') }));
-  ok('live minutes: no JS errors', !p.errs.length, p.errs.join('|')); await c.close();
+  ok('simple rows: no JS errors', !p.errs.length, p.errs.join('|')); await c.close();
 }
+
 module.exports = async b => {
   await ranking(b); await soonest(b); await liveMin(b);
   const c = await b.newContext({ viewport: { width: 390, height: 844 } }); const p = await c.newPage(); p.errs = []; p.on('pageerror', e => p.errs.push(e.message));
