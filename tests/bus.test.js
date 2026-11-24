@@ -72,6 +72,7 @@ async function liveMin(b) {
   ok('minutes count down by themselves (two minutes pass)', r.after[0] === '7 min' && r.after[1] === '18 min', r.after.join());
   ok('green = live, orange = weak signal, red = signal lost, grey = timetable', r.colors.lv === 'rgb(19, 160, 104)' && r.colors.wk === 'rgb(232, 137, 12)' && r.colors.ls === 'rgb(236, 74, 62)' && r.colors.sc !== r.colors.lv && r.colors.sc !== r.colors.ls && r.colors.sc !== r.colors.wk, JSON.stringify(r.colors));
   ok('the top shows the chosen bus: minutes (live), walk before, the line, walk after', /LIVE/.test(r.top) && /9 min/.test(r.top) && /3 min/.test(r.top) && /4 min/.test(r.top) && /3/.test(r.top), r.top);
+  ok('the top also shows when you arrive (the door-to-door arrival time)', await p.evaluate(() => { const a = document.querySelector('.tph .arv'); const x = window.__T.opts[0], d = x.reach, hh = String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0'); return !!a && /Arrive/.test(a.innerText) && a.innerText.includes(hh) }));
   ok('details (times, stop, total) are hidden until asked', r.detailsHidden === '0');
   await p.evaluate(() => document.querySelector('[data-more="a"]').click()); await p.waitForTimeout(500);
   ok('the small arrow opens the details: times, total time, stop name', await p.evaluate(() => { const d = document.querySelector('.brw .gx.o .bdt'); return !!d && /→/.test(d.innerText) && /Herzl/.test(d.innerText) && getComputedStyle(d.closest('.gx')).opacity === '1' }));
