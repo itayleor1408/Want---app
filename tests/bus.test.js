@@ -2,7 +2,39 @@
 // and when no bus goes straight there, the buses from nearby stops are listed instead of just "No direct bus found".
 const { ok } = require('./lib');
 const path = require('path'), URL = 'file://' + path.join(__dirname, '..', 'tempo', 'index.html');
+
+// Ranking: the best way to ride one bus is chosen by door-to-door time (walking counts extra), using any boarding and alighting stop
+async function ranking(b) {
+  const c = await b.newContext({ viewport: { width: 390, height: 844 } }); const p = await c.newPage(); p.errs = []; p.on('pageerror', e => p.errs.push(e.message));
+  await p.addInitScript(() => {
+    const t = new Date('2026-11-24T06:38').getTime(), R = Date; class D extends R { constructor(...a) { a.length ? super(...a) : super(t) } static now() { return t } } window.Date = D;
+    localStorage.setItem('tempo.v1', JSON.stringify({ items: [], places: [], set: { lang: 'en', onboarded: true, city: 'x' } }));
+    const home = { lat: 33.0, lon: 35.1 }, dest = { lat: 33.02, lon: 35.1 };
+    const stops = [{ id: 1, name: 'Far', lat: home.lat - 0.0055, lon: home.lon }, { id: 2, name: 'Near', lat: home.lat - 0.0018, lon: home.lon }, { id: 3, name: 'Dest near', lat: dest.lat + 0.0006, lon: dest.lon }, { id: 4, name: 'Dest far', lat: dest.lat + 0.006, lon: dest.lon }].map(s => Object.assign({ code: 'c' }, s));
+    const iso = m => new Date(t + m * 60000).toISOString();
+    const rs = (ride, stop, m, seq, line) => ({ gtfs_ride_id: ride, gtfs_stop_id: stop, arrival_time: iso(m), stop_sequence: seq, gtfs_route__route_short_name: line, gtfs_route__route_long_name: 'A<->B', gtfs_ride_stop__shape_dist_traveled: 0 });
+    window.fetch = async u => { u = String(u); const j = x => new Response(JSON.stringify(x));
+      if (u.includes('nominatim')) return j({ address: { city: 'x' } });
+      if (u.includes('/gtfs_stops/list')) return j(stops);
+      if (u.includes('/siri_vehicle_locations')) return j([]);
+      if (u.includes('/gtfs_ride_stops/list')) { const ids = decodeURIComponent((u.match(/gtfs_stop_ids=([^&]*)/) || [])[1] || '').split(',').map(Number), out = [];
+        if (ids.includes(1)) out.push(rs('R1', 1, 20, 1, '3'), rs('R2', 1, 30, 1, '5'));
+        if (ids.includes(2)) out.push(rs('R1', 2, 24, 2, '3'));
+        if (ids.includes(4)) out.push(rs('R1', 4, 50, 9, '3'));
+        if (ids.includes(3)) out.push(rs('R1', 3, 55, 10, '3'), rs('R2', 3, 62, 6, '5'));
+        return j(out) }
+      return j([]) };
+  });
+  await p.goto(URL); await p.waitForTimeout(700);
+  const r = await p.evaluate(async () => { const x = await findTrips({ lat: 33.0, lon: 35.1 }, { lat: 33.02, lon: 35.1 }, new Date(new Date().getTime() + 90 * 60000)); const rec = x.opts.find(o => o.rec), l3 = x.opts.filter(o => o.line == '3'); return { n: x.opts.length, rec: rec && [rec.line, rec.depStop.name, rec.arrStop.name, rec.total, rec.walk], l3: l3.length, hasTotal: x.opts.every(o => o.total > 0), html: tripBlock(x, null, null).includes('⏱') } });
+  ok('it recommends the bus 3 using the close stop on both ends (not the far ones)', r.rec && r.rec[0] === '3' && r.rec[1] === 'Near' && r.rec[2] === 'Dest near', JSON.stringify(r));
+  ok('its door-to-door time is counted (about 36 minutes) with little walking', r.rec && Math.abs(r.rec[3] - 36) <= 2 && r.rec[4] <= 8, JSON.stringify(r.rec));
+  ok('other buses are offered too (bus 5)', r.n >= 2);
+  ok('every option shows its total time', r.hasTotal && r.html);
+  ok('ranking: no JS errors', !p.errs.length, p.errs.join('|')); await c.close();
+}
 module.exports = async b => {
+  await ranking(b);
   const c = await b.newContext({ viewport: { width: 390, height: 844 } }); const p = await c.newPage(); p.errs = []; p.on('pageerror', e => p.errs.push(e.message));
   await p.addInitScript(() => {
     const t = new Date('2026-11-24T06:38').getTime(), R = Date; class D extends R { constructor(...a) { a.length ? super(...a) : super(t) } static now() { return t } } window.Date = D;
