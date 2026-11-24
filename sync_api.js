@@ -167,7 +167,7 @@ async function syncCore(req, env, path, pfx, root) {
   }
   if (req.method !== 'POST') return JS({ error: 'post_only' }, 405);
   const b = await readBody(req);
-  if (path === '/api/wish') { // "Add to Brim." in Safari's Share menu: the product as read from the live page on the phone
+  if (path === '/api/wish') { // "Add to Penny." in Safari's Share menu: the product as read from the live page on the phone
     let p = b.page;
     if (typeof p === 'string') { try { p = JSON.parse(p); } catch (e) { p = null; } }
     p = p && typeof p === 'object' ? p : {};
@@ -187,7 +187,7 @@ async function syncCore(req, env, path, pfx, root) {
     const box = await kvGet(env, 'wishbox', []);
     box.push(Object.assign({ id: 'wi_' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6), url, ts: Date.now() }, d));
     await kvPut(env, 'wishbox', box.slice(-50));
-    return JS({ ok: true, msg: 'Sent to Brim.: ' + d.title.slice(0, 50) + (d.price ? '' : ' (add the price in the app)') + '. Open Brim. to save it.' });
+    return JS({ ok: true, msg: 'Sent to Penny.: ' + d.title.slice(0, 50) + (d.price ? '' : ' (add the price in the app)') + '. Open Penny. to save it.' });
   }
   if (path === '/api/ingest') { // Apple Pay automation or quick add from a Shortcut
     const amt = agorot(b.amount), title = String(b.merchant || b.title || '').trim().slice(0, 60);

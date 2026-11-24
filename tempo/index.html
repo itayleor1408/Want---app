@@ -22,7 +22,7 @@
 .dy small{font-size:11px;font-weight:700;color:var(--s);text-transform:uppercase}.dy b{font-size:19px;font-weight:800;letter-spacing:-.02em}
 .dy .dots{display:flex;gap:3px;height:5px}.dy .dots i{width:5px;height:5px;border-radius:50%;background:var(--a)}
 .dy.td b{color:var(--a)}.dy.on{background:var(--t);color:var(--bg)}.dy.on small,.dy.on b{color:var(--bg)}.dy.on .dots i{background:var(--bg)}
-.lay{width:30px;height:30px;border-radius:10px;background:var(--fl);display:grid;place-items:center;color:var(--s2);flex:none;transition:transform .25s var(--spring)}.lay:active{transform:scale(.88)}
+.lbs{display:flex;gap:8px;align-items:center}.lay.lgw{color:var(--r);background:color-mix(in srgb,var(--r) 14%,var(--fl))}.lay{width:30px;height:30px;border-radius:10px;background:var(--fl);display:grid;place-items:center;color:var(--s2);flex:none;transition:transform .25s var(--spring)}.lay:active{transform:scale(.88)}
 .cal{margin:12px 0 6px}.calall{display:flex;gap:6px;overflow-x:auto;margin:0 0 10px;padding:2px 0;scrollbar-width:none}.calall::-webkit-scrollbar{display:none}
 .cch{display:inline-flex;align-items:center;gap:6px;padding:7px 11px;border-radius:12px;color:#fff;font-weight:700;font-size:13px;white-space:nowrap;flex:none}.cch.dn{opacity:.5;text-decoration:line-through}
 .calg{position:relative;margin-inline-start:42px;margin-top:8px;margin-bottom:10px}
@@ -95,6 +95,10 @@ input:disabled{opacity:.4}
 .cps2 .dot{width:26px;height:26px;border-radius:50%;box-shadow:inset 0 0 0 2px rgba(255,255,255,.35)}
 .ctile{width:54px;height:54px;border-radius:18px;background:var(--fl);display:grid;place-items:center;flex:none;transition:transform .25s var(--spring),box-shadow .2s}.ctile span{width:30px;height:30px;border-radius:50%}.ctile.on{box-shadow:inset 0 0 0 2.5px var(--t)}.ctile:active{transform:scale(.92)}
 .cn{display:flex;align-items:center;gap:6px;width:100%;padding:8px 0 8px 92px;border-top:1px solid var(--hr);color:var(--s2);font-size:13.5px;font-weight:700;text-align:start}:root[dir=rtl] .cn{padding:8px 92px 8px 0}.card>.cn:first-child{border-top:0}.cn+.li{border-top:0}
+.cnw{position:relative}.cnw.bad .cnt{box-shadow:inset 0 0 0 1.5px var(--r)}.lgi{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;color:var(--r);background:var(--sheet);box-shadow:0 1px 4px rgba(0,0,0,.15);flex:none}.lgi:active{transform:scale(.9)}
+.lgx{display:flex;flex-direction:column;gap:8px;margin:0 0 12px}.lgl{background:var(--fl);border-radius:14px;padding:11px 14px;font-weight:600;font-size:14.5px;line-height:1.4}.lgl.ok{background:color-mix(in srgb,var(--a) 14%,var(--fl))}
+.lgfix{background:var(--t);color:var(--bg);padding:0 22px;height:52px;border-radius:26px;font-size:16px;font-weight:800}
+.cleg{background:repeating-linear-gradient(135deg,var(--fl2) 0 6px,var(--fl) 6px 12px);color:var(--t);box-shadow:inset 0 0 0 1px var(--hr);flex-direction:row;align-items:center;gap:4px;padding:2px 7px;cursor:pointer}.cleg .cet{font-size:12px;font-weight:700;min-width:0}.cleg.bad{box-shadow:inset 0 0 0 2px var(--r)}.cleg .lgi{position:absolute;inset-inline-end:3px;top:50%;margin-top:-12px;width:24px;height:24px}
 .cnt{background:var(--fl);border-radius:12px;padding:6px 11px}.cn>svg{color:var(--s)}.cn:active .cnt{background:var(--fl2)}
 .dbtn.dim>span{color:var(--s)}
 .bempty{text-align:center;padding:26px 20px 22px}.bempty b{display:block;font-size:19px;font-weight:800;letter-spacing:-.02em;margin:8px 0 6px}.bempty p{margin:0 0 18px;line-height:1.45}.bei{font-size:44px}
@@ -293,7 +297,7 @@ repair:pp('M14.5 6.5a4 4 0 00-5.5 5L3 17.500 6.500 21 12.500 15a4 4 0 005-5.500l
 });
 const ic=(n,s=24)=>`<svg class="${n=='left'||n=='right'?'fl':''}" width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">${P[n]||PICO[n]||PICO.pin}</svg>`;
 /* ---------- i18n ---------- */
-const HE={'Did you finish?':'סיימת?','Yes':'כן','Not yet':'עוד לא','Calendar view':'תצוגת יומן','List view':'תצוגת רשימה','Today':'היום','Week':'שבוע','Later':'אחר כך','New':'חדש','Edit':'עריכה','Settings':'הגדרות','Next up':'הבא','Now':'עכשיו','Free':'פנוי','All clear':'הכול בוצע','left':'נשארו','Done':'בוצעו','Left':'נותרו','Missed':'הוחמצו','Nothing planned. Tap + to add.':'אין תוכניות. לחצו + להוספה.','Nothing here. Tap + to add.':'אין כלום. לחצו + להוספה.','Title':'כותרת','What\'s the plan? e.g. Gym tomorrow 18:30 1h':'מה התוכנית? למשל: חדר כושר מחר 18:30 שעה','Date':'תאריך','Time':'שעה','Duration':'משך','Remind me':'תזכורת','Repeat':'חזרה','Off':'כבוי','At time':'בזמן','before':'לפני','Never':'לא','Daily':'יומי','Weekly':'שבועי','Save':'שמירה','Delete':'מחיקה','Deleted':'נמחק','Undo':'ביטול','General':'כללי','Language':'שפה','Theme':'עיצוב','Light':'בהיר','System':'מערכת','Dark':'כהה','Week starts':'השבוע מתחיל','Sun':'א׳','Mon':'ב׳','Reminders':'תזכורות','Notifications':'התראות','Default reminder':'תזכורת ברירת מחדל','Send a test':'שלח בדיקה','Data':'נתונים','Export backup':'ייצוא גיבוי','Import backup':'ייבוא גיבוי','Erase everything':'מחיקת הכול','Erase all your plans?':'למחוק את כל התוכניות?','Imported':'יובא','Test from Tempo':'בדיקה מ-Tempo','It works.':'זה עובד.','Starting now':'מתחיל עכשיו','Starts in':'מתחיל בעוד','min':'דק׳','in':'בעוד','Allowed':'מותר','Blocked in browser settings':'חסום בהגדרות הדפדפן','Needs Add to Home Screen first':'צריך קודם להוסיף למסך הבית','Quick add':'הוספה מהירה','Whole day':'כל היום','Tap to add a time':'ללא שעה','Notifications are not supported here.':'ההתראות לא נתמכות כאן.',
+const HE={'Getting to {0} takes about {1}, but there is only {2} after {3} ends.':'להגיע ל{0} לוקח בערך {1}, אבל יש רק {2} אחרי ש{3} נגמר.','The trip to {0} is set to {1}, but it usually takes about {2}.':'הנסיעה ל{0} מוגדרת ל־{1}, אבל בדרך כלל היא לוקחת בערך {2}.','The trip to {0} is set to {1}, much more than the usual {2}.':'הנסיעה ל{0} מוגדרת ל־{1}, הרבה יותר מהרגיל ({2}).','Set the trip to {0} to about {1}':'להגדיר את הנסיעה ל{0} לבערך {1}','Move {0} from {1} to {2}':'להזיז את {0} מ־{1} ל־{2}',"This doesn't add up":'זה לא מסתדר','What I will do':'מה אעשה','Fix it for me':'תתקן בשבילי','Fixed':'תוקן',"I can't move a repeating task or push one past midnight. Change that one yourself.":'אי אפשר להזיז משימה שחוזרת או לדחוף משימה אחרי חצות. את זו תשנה בעצמך.','Did you finish?':'סיימת?','Yes':'כן','Not yet':'עוד לא','Calendar view':'תצוגת יומן','List view':'תצוגת רשימה','Today':'היום','Week':'שבוע','Later':'אחר כך','New':'חדש','Edit':'עריכה','Settings':'הגדרות','Next up':'הבא','Now':'עכשיו','Free':'פנוי','All clear':'הכול בוצע','left':'נשארו','Done':'בוצעו','Left':'נותרו','Missed':'הוחמצו','Nothing planned. Tap + to add.':'אין תוכניות. לחצו + להוספה.','Nothing here. Tap + to add.':'אין כלום. לחצו + להוספה.','Title':'כותרת','What\'s the plan? e.g. Gym tomorrow 18:30 1h':'מה התוכנית? למשל: חדר כושר מחר 18:30 שעה','Date':'תאריך','Time':'שעה','Duration':'משך','Remind me':'תזכורת','Repeat':'חזרה','Off':'כבוי','At time':'בזמן','before':'לפני','Never':'לא','Daily':'יומי','Weekly':'שבועי','Save':'שמירה','Delete':'מחיקה','Deleted':'נמחק','Undo':'ביטול','General':'כללי','Language':'שפה','Theme':'עיצוב','Light':'בהיר','System':'מערכת','Dark':'כהה','Week starts':'השבוע מתחיל','Sun':'א׳','Mon':'ב׳','Reminders':'תזכורות','Notifications':'התראות','Default reminder':'תזכורת ברירת מחדל','Send a test':'שלח בדיקה','Data':'נתונים','Export backup':'ייצוא גיבוי','Import backup':'ייבוא גיבוי','Erase everything':'מחיקת הכול','Erase all your plans?':'למחוק את כל התוכניות?','Imported':'יובא','Test from Tempo':'בדיקה מ-Tempo','It works.':'זה עובד.','Starting now':'מתחיל עכשיו','Starts in':'מתחיל בעוד','min':'דק׳','in':'בעוד','Allowed':'מותר','Blocked in browser settings':'חסום בהגדרות הדפדפן','Needs Add to Home Screen first':'צריך קודם להוסיף למסך הבית','Quick add':'הוספה מהירה','Whole day':'כל היום','Tap to add a time':'ללא שעה','Notifications are not supported here.':'ההתראות לא נתמכות כאן.',
 'Free today':'פנוי היום','Day is done':'היום הסתיים','Biggest gap':'החלון הגדול','Fully booked':'היום תפוס','Fit in':'תכניס','Placed':'הוכנס','No room in the next 2 weeks':'אין מקום בשבועיים הקרובים','Travel':'זמן נסיעה','None':'בלי','Leave by':'לצאת עד','Leave now':'צא עכשיו','Leave in':'צא בעוד','Heavy day':'יום עמוס','Packed':'עמוס','booked':'תפוסות','without a break':'בלי הפסקה','Lighten it':'הקל על היום','Moved':'הועבר','Move':'להעביר','to':'אל','Your day':'היום שלך','Day starts':'היום מתחיל','Day ends':'היום נגמר','info.day':'זמן פנוי נספר רק בין השעות האלה.',
 'My places':'המקומות שלי','Places':'מקומות','Add place':'הוספת מקום','Name':'שם','Address':'כתובת','Search':'חיפוש','Use my location':'המיקום שלי עכשיו','Where':'איפה','No places yet':'עדיין אין מקומות','Add places in Settings':'אפשר להוסיף מקומות בהגדרות','Go':'יוצאים','Searching…':'מחפש…','No results':'לא נמצאו תוצאות','Home':'בית','Work':'עבודה','Gym':'חדר כושר','Bus station':'תחנת אוטובוס','Other':'אחר','Current location':'המיקום הנוכחי','Bus':'אוטובוס','Walk':'הליכה','Drive':'נסיעה','from':'מ','Estimate from straight-line distance. Open a map app for live buses.':'הערכה לפי מרחק באוויר. לאוטובוסים בזמן אמת פותחים אפליקציית מפות.','Location unavailable':'המיקום לא זמין','Choose a result first':'בחרו קודם תוצאה','info.places':'שמרו בית, עבודה, חדר כושר ותחנות. אפשר לשייך מקום לכל אירוע ולקבל הערכת זמן נסיעה.',
 'Plan':'תוכנית','Set a weekly focus':'קבעו מיקוד לשבוע','Weekly focus':'מיקוד שבועי','What matters most this week?':'מה הכי חשוב השבוע?','Hours this week':'שעות השבוע','planned':'מתוכננות','to find':'עוד לתכנן','Add all':'הוסיפו הכול','Focus':'פוקוס','More':'עוד','Area':'תחום','Health':'בריאות','Study':'לימודים','Social':'חברים','Live in Moovit':'בזמן אמת ב-Moovit','Check bus data':'בדיקת נתוני אוטובוסים','Checking…':'בודק…','Connected':'מחובר','Added':'נוסף',
@@ -451,11 +455,43 @@ function placePopup(done){const P2={name:'',emoji:'',home:false,q:'',res:[],sel:
    if(d.pv){if(!P2.sel)return;const pl={id:uid(),name:P2.name.trim(),emoji:P2.emoji||'📍',addr:P2.sel.addr,lat:P2.sel.lat,lon:P2.sel.lon,home:P2.home&&!S.places.some(x=>x.home)};S.places.push(pl);S.plUse[pl.id]=Date.now();save();closePop();if(done)done(pl)}};
   draw();setTimeout(()=>{const n=$('#ppn');if(n)n.focus()},420)})}
 /* "how to get there" line between two tasks at different places */
-function legHtml(it,ds,prevId){const p=placeOf(it.pl),o=prevId?placeOf(prevId):null,st=tm(it.time);let mode=it.mode,min=it.trav;if((!min||!mode)&&o){const a=autoTrav(o,p);mode=mode||a.mode;min=min||a.min}
+/* ---------- do the times make sense? ----------
+   Each task at a place has a trip before it. A trip is flagged when it is too short or too long for the distance, or when there is
+   not enough time between the previous task and this one. "Fix it for me" resets such trips to a realistic estimate and, where the
+   trip no longer fits, moves the task later (never a repeating one, never past midnight). */
+const expMin=(o,p,mode)=>{const e=est(o,p);return mode=='drive'?e.d:mode=='bus'?Math.round(e.d*1.5+8):e.w};
+const showLeg=(it,ds)=>!isDone(it,ds)&&ds>=today()&&!(ds==today()&&tm(it.time)<nowMin());
+function legPlan(ds){const out=[];let prev=(S.places.find(p=>p.home)||{}).id,prevEnd=null,prevIt=null;
+ occ(ds).forEach(it=>{if(!it.time)return;const st=tm(it.time),pz=it.pl&&placeOf(it.pl);if(!pz)return;
+  if(prev&&prev!=it.pl&&placeOf(prev)&&showLeg(it,ds)){const o=placeOf(prev),lg=travFor(it,ds);
+   if(lg&&lg.min>0&&isFinite(o.lat)&&isFinite(pz.lat)){const exp=expMin(o,pz,lg.mode),issues=[];
+    if(it.trav&&lg.min<Math.max(2,exp*.4))issues.push({k:'short',exp});else if(it.trav&&lg.min>exp*2.5+10)issues.push({k:'long',exp});
+    if(prevEnd!=null&&st-lg.min<prevEnd)issues.push({k:'tight',have:Math.max(0,st-prevEnd),need:lg.min,prevEnd,prev:prevIt});
+    out.push({it,o,p:pz,st,min:lg.min,mode:lg.mode,exp,issues})}}
+  prev=it.pl;prevEnd=st+(it.dur||0);prevIt=it});return out}
+const legIssues=ds=>{const m={};legPlan(ds).forEach(e=>{if(e.issues.length)m[e.it.id]=e});return m};
+function fixDay(ds,apply){const acts=[];let prev=(S.places.find(p=>p.home)||{}).id,prevEnd=null,left=0;
+ occ(ds).forEach(it=>{if(!it.time)return;let st=tm(it.time);const pz=it.pl&&placeOf(it.pl);if(!pz)return;
+  if(prev&&prev!=it.pl&&placeOf(prev)&&showLeg(it,ds)){const o=placeOf(prev),lg=travFor(it,ds);
+   if(lg&&lg.min>0&&isFinite(o.lat)&&isFinite(pz.lat)){let min=lg.min;const exp=expMin(o,pz,lg.mode),bad=it.trav&&(min<Math.max(2,exp*.4)||min>exp*2.5+10);
+    if(bad){const a=autoTrav(o,pz);acts.push({it,k:'trav',from:min,to:a.min,mode:a.mode});if(apply){it.trav=a.min;it.mode=a.mode;it.busLine=null;it.ride=null}min=a.min}
+    if(prevEnd!=null&&st-min<prevEnd){const ns=up5(prevEnd+min);if((!it.rep||it.rep=='none')&&ns+(it.dur||0)<=1440){acts.push({it,k:'move',from:it.time,to:ft(ns)});if(apply)it.time=ft(ns);st=ns}else left++}}}
+  prev=it.pl;prevEnd=st+(it.dur||0)});return{acts,left}}
+const fmt=(k,...a)=>t(k).replace(/\{(\d)\}/g,(_,i)=>a[i]);
+function legIssue(ds){const all=Object.values(legIssues(ds));if(!all.length){closeSh();return}
+ const one=e=>e.issues.map(x=>x.k=='tight'?fmt('Getting to {0} takes about {1}, but there is only {2} after {3} ends.',esc(e.p.name),hm(x.need),hm(x.have),esc(x.prev?x.prev.title:'')):x.k=='short'?fmt('The trip to {0} is set to {1}, but it usually takes about {2}.',esc(e.p.name),hm(e.min),hm(x.exp)):fmt('The trip to {0} is set to {1}, much more than the usual {2}.',esc(e.p.name),hm(e.min),hm(x.exp)));
+ const lines=all.flatMap(one);
+ const fx=fixDay(ds,false),todo=fx.acts.map(a=>a.k=='trav'?`${MODE[a.mode||'walk'][0]} ${fmt('Set the trip to {0} to about {1}',esc(a.it.title),hm(a.to))}`:`⏰ ${fmt('Move {0} from {1} to {2}',esc(a.it.title),a.from,a.to)}`);
+ openSh(`<div class="shd">${t("This doesn't add up")}</div><div class="lgx">${lines.map(l=>`<div class="lgl">${l}</div>`).join('')}</div>
+ ${todo.length?`<div class="lb">${t('What I will do')}</div><div class="lgx">${todo.map(l=>`<div class="lgl ok">${l}</div>`).join('')}</div>`:''}${fx.left?`<div class="sub" style="text-align:center;margin:6px 8px">${t("I can't move a repeating task or push one past midnight. Change that one yourself.")}</div>`:''}
+ <div class="trio" style="margin-top:14px"><button class="ib" aria-label="edit" id="lgE">${ic('edit')}</button>${todo.length?`<button class="pill lgfix" id="lgF">${ic('check',18)} ${t('Fix it for me')}</button>`:''}</div>`,s=>{
+  s.onclick=ev=>{const b=ev.target.closest('button');if(!b)return;if(b.id=='lgE'){closeSh();goSheet(all[0].it.id,ds);return}
+   if(b.id=='lgF'){const snap=JSON.stringify(S.items);fixDay(ds,true);save();closeSh();render(0,true);pushSync&&pushSync(true);toast(`✓ ${t('Fixed')}`,()=>{S.items=JSON.parse(snap);save();render(0,true)})}}})}
+function legHtml(it,ds,prevId,iss){const p=placeOf(it.pl),o=prevId?placeOf(prevId):null,st=tm(it.time);let mode=it.mode,min=it.trav;if((!min||!mode)&&o){const a=autoTrav(o,p);mode=mode||a.mode;min=min||a.min}
  const m=MODE[mode||'walk'],txt=min?`${m[0]} ${t('Leave')} <bdi dir="ltr">${ft(st-min)}</bdi> · ${mode=='bus'&&it.busLine?t('Bus')+' '+esc(it.busLine):t(m[1])+' '+hm(min)}`:`🧭 ${t('Getting there')}`;
- return `<button class="cn" type="button" onclick="goSheet('${it.id}','${ds}')"><span class="cnt">${txt}</span>${ic('right',14)}</button>`}
-function dayList(arr,ds){if(!arr.length)return list(arr,ds);const hm0=(S.places.find(p=>p.home)||{}).id;let prev=hm0;const out=[],fut=ds>=today();
- arr.forEach(it=>{const dn=isDone(it,ds);if(fut&&it.time&&it.pl&&!dn&&it.pl!=prev&&placeOf(it.pl)&&!(ds==today()&&tm(it.time)<nowMin()))out.push(legHtml(it,ds,prev&&placeOf(prev)?prev:null));out.push(row(it,ds));if(it.time&&it.pl)prev=it.pl});return out.join('')}
+ return `<div class="cnw ${iss?'bad':''}"><button class="cn" type="button" onclick="goSheet('${it.id}','${ds}')"><span class="cnt">${txt}</span>${ic('right',14)}</button></div>`}
+function dayList(arr,ds){if(!arr.length)return list(arr,ds);const LI=legIssues(ds),hm0=(S.places.find(p=>p.home)||{}).id;let prev=hm0;const out=[],fut=ds>=today();
+ arr.forEach(it=>{const dn=isDone(it,ds);if(fut&&it.time&&it.pl&&!dn&&it.pl!=prev&&placeOf(it.pl)&&!(ds==today()&&tm(it.time)<nowMin()))out.push(legHtml(it,ds,prev&&placeOf(prev)?prev:null,LI[it.id]));out.push(row(it,ds));if(it.time&&it.pl)prev=it.pl});return out.join('')}
 
 function placesSheet(){openSh(`<div class="shd">${t('My places')}</div><div id="pl"></div>`,pdraw)}
 function pSync(){if(!PF)return;const n=$('#pn'),q=$('#pq');if(n)PF.name=n.value;if(q)PF.q=q.value}
@@ -563,13 +599,16 @@ function setLay(){S.set.lay=S.set.lay=='cal'?'list':'cal';save();navigator.vibra
 function calScroll(){requestAnimationFrame(()=>{const m=document.querySelector('.calnow')||document.querySelector('.cev');if(!m)return;const y=m.getBoundingClientRect().top;if(y>innerHeight*.55)scrollTo({top:scrollY+y-innerHeight*.4,behavior:'auto'})})}
 function calView(ds){const all=occ(ds),timed=all.filter(i=>i.time),loose=all.filter(i=>!i.time);
  let a=Math.floor((S.set.ds==null?8:S.set.ds)),b=Math.ceil((S.set.de==null?22:S.set.de));a*=60;b*=60;
- const ev=timed.map(i=>{const s0=tm(i.time);return{it:i,s:s0,e:s0+Math.max(i.dur||30,15)}}).sort((x,y)=>x.s-y.s||y.e-x.e);
+ const ev=timed.map(i=>{const s0=tm(i.time);return{it:i,s:s0,e:s0+Math.max(i.dur||30,15)}});
+ legPlan(ds).forEach(g=>{ev.push({leg:g,it:g.it,s:g.st-g.min,e:g.st})});ev.sort((x,y)=>x.s-y.s||y.e-x.e);
  ev.forEach(x=>{a=Math.min(a,Math.floor(x.s/60)*60);b=Math.max(b,Math.ceil(x.e/60)*60)});b=Math.min(b,24*60);
  let cl=[],ce=0;const groups=[];ev.forEach(x=>{if(cl.length&&x.s>=ce){groups.push(cl);cl=[];ce=0}cl.push(x);ce=Math.max(ce,x.e)});if(cl.length)groups.push(cl);
  groups.forEach(g=>{const cols=[];g.forEach(x=>{let k=0;while(cols[k]!=null&&cols[k]>x.s)k++;cols[k]=x.e;x.col=k});g.forEach(x=>x.n=cols.length)});
  const colOf=it=>{const ar=areaOf(it.area);return ar?ar[3]:CAL_NEUTRAL};
  const lines=[];for(let m=a;m<=b;m+=60)lines.push(`<div class="hln" style="top:${(m-a)*CAL_PPM}px"><span><bdi dir="ltr">${z(Math.floor(m/60)%24)}:00</bdi></span></div>`);
- const blocks=ev.map(x=>{const it=x.it,dn=isDone(it,ds),h=Math.max((x.e-x.s)*CAL_PPM-2,22),w=100/x.n,tall=h>=46,ar=areaOf(it.area);
+ const blocks=ev.map(x=>{if(x.leg){const g=x.leg,h=Math.max((x.e-x.s)*CAL_PPM-2,20),w=100/x.n,m=MODE[g.mode||'walk'],bad=g.issues.length,txt=`${m[0]} ${g.mode=='bus'&&g.it.busLine?t('Bus')+' '+esc(g.it.busLine):t(m[1])} · ${hm(g.min)}`;
+   return `<div class="cev cleg ${bad?'bad':''}" style="top:${(x.s-a)*CAL_PPM}px;height:${h}px;inset-inline-start:calc(${x.col*w}% + 1px);width:calc(${w}% - 3px)" onclick="goSheet('${g.it.id}','${ds}')"><span class="cet">${txt}</span></div>`}
+  const it=x.it,dn=isDone(it,ds),h=Math.max((x.e-x.s)*CAL_PPM-2,22),w=100/x.n,tall=h>=46,ar=areaOf(it.area);
   return `<button class="cev ${dn?'dn':''}" data-tid="${it.id}" style="top:${(x.s-a)*CAL_PPM}px;height:${h}px;inset-inline-start:calc(${x.col*w}% + 1px);width:calc(${w}% - 3px);background:${colOf(it)}" onclick="detail('${it.id}','${ds}')"><b><span class="cei">${iconOf(it)}</span><span class="cet">${esc(it.title)}</span></b>${tall?`<span class="ctm"><bdi dir="ltr">${it.time}–${ft(x.e)}</bdi>${ar?' · '+esc(ar[2]):''}</span>`:''}</button>`}).join('');
  const now=ds==today()&&nowMin()>=a&&nowMin()<=b?`<div class="calnow" style="top:${(nowMin()-a)*CAL_PPM}px"></div>`:'';
  const chips=loose.length?`<div class="calall">${loose.map(it=>`<button class="cch ${isDone(it,ds)?'dn':''}" style="background:${colOf(it)}" onclick="detail('${it.id}','${ds}')"><span class="cei">${iconOf(it)}</span>${esc(it.title)}</button>`).join('')}</div>`:'';
@@ -598,7 +637,7 @@ function view(){
   return `<div class="hd"><h1>${fmtD(sel,{month:'long'})}</h1><div class="wn"><button class="ib" onclick="shift(-1)" aria-label="prev">${ic('left',20)}</button><button class="pill" onclick="sel=today();render(0,true)">${sel==td?t('Today'):fmtD(sel,{weekday:'short',day:'numeric'})}</button><button class="ib" onclick="shift(1)" aria-label="next">${ic('right',20)}</button></div></div>
   <div class="strip">${days.map(d=>{const a=stats(d);return `<button class="dy ${d==sel?'on':''} ${d==td?'td':''}" onclick="const n=dayDiff(sel,'${d}');if(n)shift(n)"><small>${fmtD(d,{weekday:'short'})}</small><b>${pd(d).getDate()}</b><span class="ld" style="--w:${Math.min(100,Math.round(a.load*100))}%"></span></button>`}).join('')}</div>
   
-  <div class="dayv ${slideDir?(slideDir>0?'sl-n':'sl-p'):''}"><div class="sec" style="margin-top:14px"><span>${fmtD(sel,{weekday:'long',day:'numeric',month:'short'})}</span><button class="lay" aria-label="${t(S.set.lay=='cal'?'List view':'Calendar view')}" onclick="setLay()">${ic(S.set.lay=='cal'?'llist':'lcal',17)}</button></div>${S.set.lay=='cal'?calView(sel):`<div class="card" id="wk">${dayList(occ(sel),sel)}</div>`}</div>
+  <div class="dayv ${slideDir?(slideDir>0?'sl-n':'sl-p'):''}"><div class="sec" style="margin-top:14px"><span>${fmtD(sel,{weekday:'long',day:'numeric',month:'short'})}</span><span class="lbs">${Object.keys(legIssues(sel)).length?`<button class="lay lgw" aria-label="${t("This doesn't add up")}" onclick="legIssue('${sel}')">${ic('info',17)}</button>`:''}<button class="lay" aria-label="${t(S.set.lay=='cal'?'List view':'Calendar view')}" onclick="setLay()">${ic(S.set.lay=='cal'?'llist':'lcal',17)}</button></span></div>${S.set.lay=='cal'?calView(sel):`<div class="card" id="wk">${dayList(occ(sel),sel)}</div>`}</div>
   <button class="sec sbtn" onclick="showSome=!showSome;render(0,true)"><span>${t('Someday')}${Lo?` <span class="cnt2">${Lo}</span>`:''}</span><span class="cv ${showSome?'up':''}">${ic('chev',16)}</span></button>
   <div class="gx ${showSome?'o':''}"><div><div class="card">${list(L,null,{later:1,n:8})}</div><div class="alt" style="margin:-4px 0 10px"><button class="pill" onclick="edit(null,null,{someday:1})">+ ${t('Add for someday')}</button></div></div></div>`}
  tab=1;return view()}
@@ -1062,15 +1101,17 @@ document.addEventListener('visibilitychange',()=>{if(!document.hidden)finPending
 function alertsAhead(){const out=[],td=today();for(const ds of [addD(td,-1),td,addD(td,1),addD(td,2)])for(const it of occ(ds)){if(!it.time||it.rem<0||it.rem==null||isDone(it,ds))continue;
   const tr=travFor(it,ds),tv=tr?tr.min:0,at=pd(ds).getTime()+(tm(it.time)-tv-it.rem)*6e4;
   out.push({at,tag:it.id+ds,title:`${iconTxt(it)}${it.title}`,body:tv?(it.rem?`${t('Leave by')} ${ft(tm(it.time)-tv)} · ${it.time}`:`${t('Leave now')} · ${it.time}`):(it.rem?`${t('Starts in')} ${it.rem} ${t('min')} · ${it.time}`:`${t('Starting now')} · ${it.time}`)})}return out.concat(S.set.finAsk===false?[]:finAlerts()).sort((a,b)=>a.at-b.at)}
-function due(){if(!S.set.notif)return;const now=Date.now(),td=today();
+function finCheck(){const now=Date.now(),td=today();
+ const finOpen=()=>$('#ts').classList.contains('o')&&$('#tn').style.display!='none';
+ if(S.set.finAsk!==false&&!finOpen())for(const a of finAlerts()){const k=a.tag,rk='finre'+a.fin.id+a.fin.ds;
+  if(now>=a.at&&now-a.at<4*36e5&&!S.fired[k]){S.fired[k]=now;save();if(document.hidden){if(S.set.notif)notify(a.title,a.body,k,{fin:a.fin})}else{finAsk(a);break}}
+  else if(S.fired[rk]&&now-S.fired[rk]>=15*6e4&&!S.fired[rk+'x']){S.fired[rk+'x']=now;save();if(document.hidden){if(S.set.notif)notify(a.title,a.body,k+'b',{fin:a.fin})}else{finAsk(a);break}}}
+}
+function due(){finCheck();if(!S.set.notif)return;const now=Date.now(),td=today();
  if(wkAskOpen()&&nowMin()>=S.set.ds*60&&!S.fired['wk'+td]){S.fired['wk'+td]=now;save();notify('👋 '+t('A new week started'),t('Do you have a focus this week?'),'wk'+td)}
  for(const ds of [addD(td,-1),td,addD(td,1)])for(const it of occ(ds)){if(!it.time||it.rem<0||it.rem==null||isDone(it,ds))continue;
   const tr=travFor(it,ds),tv=tr?tr.min:0,at=pd(ds).getTime()+(tm(it.time)-tv-it.rem)*6e4,key=it.id+ds;
   if(now>=at&&now-at<15*6e4&&!S.fired[key]){S.fired[key]=now;save();notify(`${iconTxt(it)}${it.title}`,tv?(it.rem?`${t('Leave by')} ${ft(tm(it.time)-tv)} · ${it.time}`:`${t('Leave now')} · ${it.time}`):(it.rem?`${t('Starts in')} ${it.rem} ${t('min')} · ${it.time}`:`${t('Starting now')} · ${it.time}`),key)}}
- const finOpen=()=>$('#ts').classList.contains('o')&&$('#tn').style.display!='none';
- if(S.set.finAsk!==false&&!finOpen())for(const a of finAlerts()){const k=a.tag,rk='finre'+a.fin.id+a.fin.ds;
-  if(now>=a.at&&now-a.at<4*36e5&&!S.fired[k]){S.fired[k]=now;save();if(document.hidden)notify(a.title,a.body,k,{fin:a.fin});else{finAsk(a);break}}
-  else if(S.fired[rk]&&now-S.fired[rk]>=15*6e4&&!S.fired[rk+'x']){S.fired[rk+'x']=now;save();if(document.hidden)notify(a.title,a.body,k+'b',{fin:a.fin});else{finAsk(a);break}}}
  for(const k in S.fired)if(now-S.fired[k]>2*864e5)delete S.fired[k]}
 /* ---------- buses: nearest stops + live estimates (open Stride API) ---------- */
 const API='https://open-bus-stride-api.hasadna.org.il';

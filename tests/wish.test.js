@@ -14,6 +14,10 @@ module.exports = async b => {
   // the server reads a product link
   const r = await p.evaluate(async () => (await (await fetch('/api/product?u=' + encodeURIComponent('https://www.shop.com/lamp'))).json()));
   ok('product link reader returns title and price', /Desk Lamp/.test(r.title) && String(r.price) === '40', JSON.stringify(r));
+  for (const u of ['http://127.0.0.1/x', 'http://localhost:8080/', 'http://10.0.0.5/', 'http://[::1]/', 'https://shop.com:8443/x']) {
+    const bad = await p.evaluate(async u => (await (await fetch('/api/product?u=' + encodeURIComponent(u))).json()).error, u);
+    ok('the link reader refuses ' + u, bad === 'bad_url', String(bad));
+  }
   // a product shared from Safari waits for the app
   await p.evaluate(async () => { await fetch('/api/wish', { method: 'POST', headers: Object.assign({ 'content-type': 'application/json' }, AUTH()), body: JSON.stringify({ page: { title: 'Shared chair', price: '₪99', url: 'https://www.shop.com/chair' } }) }) });
   await p.evaluate(() => syncNow(true)); await p.waitForTimeout(1500);

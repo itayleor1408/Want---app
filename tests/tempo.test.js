@@ -30,6 +30,51 @@ async function newTask(b) {
   ok('later steps always show the buttons', await p.evaluate(() => document.getElementById('trw').getBoundingClientRect().height >= 50));
   ok('new task: no JS errors', !p.errs.length, p.errs.join('|')); await p.context().close();
 }
+
+async function trips(b, lang) {
+  const places = [{ id: 'h', name: 'Home', home: true, lat: 33.006, lon: 35.098 }, { id: 'o', name: 'Office', lat: 33.0, lon: 35.1 }, { id: 'g', name: 'Gym place', lat: 33.1, lon: 35.2 }, { id: 'f', name: 'Far away', lat: 32.0, lon: 34.8 }];
+  const mk = items => open(b, lang, items).then(async p => { await p.evaluate(pl => { S.places = pl; S.set.travel = 'car'; S.set.lay = 'list'; save() }, places); return p });
+  const a = item('a', 'Standup', '14:00', 30, 'work'); a.pl = 'o';
+  const g = item('g', 'Gym', '14:40', 60, 'health'); g.pl = 'g'; g.trav = 30; g.mode = 'bus';
+  const p = await mk([a, g]); await p.evaluate(() => go(1)); await p.waitForTimeout(700);
+  const L = await p.evaluate(() => { const m = legIssues('2026-11-23'); return { n: Object.keys(m).length, k: m.g && m.g.issues.map(x => x.k) } });
+  ok(`${lang}: not enough time between two tasks at different places is flagged`, L.n === 1 && L.k.includes('tight'), JSON.stringify(L));
+  ok(`${lang}: the red mark sits next to the layout button, the same size`, await p.evaluate(() => { const r = document.querySelector('.lay.lgw'), l = document.querySelector('.lbs .lay:not(.lgw)'); if (!r || !l) return false; const a = r.getBoundingClientRect(), b = l.getBoundingClientRect(); return Math.round(a.width) === Math.round(b.width) && Math.round(a.height) === Math.round(b.height) && Math.abs(a.top - b.top) < 1 && Math.min(Math.abs(a.right - b.left), Math.abs(b.right - a.left)) < 14 && getComputedStyle(r).color === 'rgb(236, 74, 62)' }));
+  ok(`${lang}: the trip itself is outlined in red in the list`, await p.evaluate(() => !!document.querySelector('.cnw.bad')));
+  await p.evaluate(() => setLay()); await p.waitForTimeout(600);
+  const c = await p.evaluate(() => ({ legs: document.querySelectorAll('.cleg').length, bad: !!document.querySelector('.cleg.bad') && !!document.querySelector('.lay.lgw'), txt: document.querySelector('.cleg.bad') && document.querySelector('.cleg.bad').innerText, h: Math.round(document.querySelector('.cleg.bad').getBoundingClientRect().height) }));
+  ok(`${lang}: the calendar layout shows the trips as blocks (a bad one outlined red) and keeps the red mark`, c.legs === 2 && c.bad && /30|30m|ד׳/.test(c.txt), JSON.stringify(c));
+  await p.evaluate(() => document.querySelector('.lay.lgw').click()); await p.waitForTimeout(700);
+  const sh = await p.evaluate(() => document.getElementById('sh').innerText);
+  ok(`${lang}: tapping the red mark explains the problem and offers "Fix it for me"`, (lang == 'en' ? /doesn't add up/.test(sh) && /only/.test(sh) && /Fix it for me/.test(sh) : /לא מסתדר/.test(sh) && /תתקן בשבילי/.test(sh)), sh.replace(/\n/g, ' | ').slice(0, 200));
+  await p.evaluate(() => document.getElementById('lgF').click()); await p.waitForTimeout(700);
+  const f = await p.evaluate(() => { const m = legIssues('2026-11-23'), g = S.items.find(i => i.id == 'g'); return { left: Object.keys(m).length, time: g.time, trav: g.trav } });
+  ok(`${lang}: Fix it for me moves the task so the trip fits (no issues left)`, f.left === 0 && tmv(f.time) >= 14 * 60 + 30 + f.trav, JSON.stringify(f));
+  ok(`${lang}: …and Undo puts everything back`, await (async () => { await p.evaluate(() => document.getElementById('tu').click()); await p.waitForTimeout(300); return p.evaluate(() => { const g = S.items.find(i => i.id == 'g'); return g.time === '14:40' && g.trav === 30 }) })());
+  ok(`${lang}: trips: no JS errors`, !p.errs.length, p.errs.join('|')); await p.context().close();
+}
+const tmv = s => { const [h, m] = s.split(':').map(Number); return h * 60 + m };
+async function tripsMore(b) {
+  const places = [{ id: 'h', name: 'Home', home: true, lat: 33.006, lon: 35.098 }, { id: 'o', name: 'Office', lat: 33.0, lon: 35.1 }, { id: 'f', name: 'Far away', lat: 32.0, lon: 34.8 }];
+  const a = item('a', 'Standup', '14:00', 30, 'work'); a.pl = 'o';
+  const f = item('f', 'Far meeting', '15:00', 60, 'work'); f.pl = 'f'; f.trav = 2; f.mode = 'drive';
+  const p = await open(b, 'en', [a, f]); await p.evaluate(pl => { S.places = pl; S.set.travel = 'car'; save() }, places);
+  const r = await p.evaluate(() => { const m = legIssues('2026-11-23'); return m.f && m.f.issues.map(x => x.k) });
+  ok('a trip set far too short for the distance is flagged', r && r.includes('short'), JSON.stringify(r));
+  await p.evaluate(() => fixDay('2026-11-23', true)); 
+  const after = await p.evaluate(() => { const f = S.items.find(i => i.id == 'f'); return { trav: f.trav, issues: Object.keys(legIssues('2026-11-23')).length } });
+  ok('fixing it sets a realistic trip length', after.trav > 20, JSON.stringify(after));
+  // a repeating task is never moved
+  const r2 = item('r', 'Weekly', '14:40', 60, 'health'); r2.pl = 'f'; r2.rep = 'days'; r2.days = [1]; r2.trav = 60;
+  const q = await open(b, 'en', [Object.assign({}, a), r2]); await q.evaluate(pl => { S.places = pl; S.set.travel = 'car'; save() }, places);
+  const out = await q.evaluate(() => { const fx = fixDay('2026-11-23', true); return { moved: fx.acts.filter(a => a.k == 'move').length, left: fx.left, time: S.items.find(i => i.id == 'r').time } });
+  ok('a repeating task is not moved, and Tempo says so', out.moved === 0 && out.left >= 1 && out.time === '14:40', JSON.stringify(out));
+  // nothing wrong -> no ⓘ
+  const g2 = item('g', 'Gym', '17:00', 60, 'health'); g2.pl = 'o'; const ok1 = await open(b, 'en', [a, g2]);
+  ok('a sensible day shows no red mark', await ok1.evaluate(pl => { S.places = pl; S.set.travel = 'car'; go(1); return Object.keys(legIssues('2026-11-23')).length === 0 && !document.querySelector('.lay.lgw') }, places));
+  ok('trips (more): no JS errors', !p.errs.length && !q.errs.length && !ok1.errs.length, [...p.errs, ...q.errs, ...ok1.errs].join('|'));
+  await p.context().close(); await q.context().close(); await ok1.context().close();
+}
 async function finish(b) {
   const mk = items => open(b, 'en', items);
   const p = await mk([item('a', 'Report', '09:00', 30, 'work'), item('s', 'Gym', '09:00', 30, 'health'), item('n', 'Next', '09:30', 30, 'work')]);
@@ -48,9 +93,9 @@ async function finish(b) {
   await p.context().close();
   const p2 = await mk([item('a', 'Report', '09:00', 30, 'work')]); const pp = p; 
   // the prompt
-  await p2.waitForTimeout(600); await p2.evaluate(() => { S.set.notif = true; due() }); await p2.waitForTimeout(400);
+  await p2.waitForTimeout(600); await p2.evaluate(() => { S.set.notif = false; S.fired = {}; document.getElementById('ts').classList.remove('o'); document.getElementById('tn').style.display = 'none'; due() }); await p2.waitForTimeout(400);
   const q = await p2.evaluate(() => ({ txt: document.getElementById('tt').innerText, yes: document.getElementById('tu').innerText, no: document.getElementById('tn').innerText, shown: document.getElementById('ts').classList.contains('o') }));
-  ok('after the end time, Tempo asks "Did you finish?" with Yes and Not yet', q.shown && /Did you finish/.test(q.txt) && /Report/.test(q.txt) && q.yes === 'Yes' && q.no === 'Not yet', JSON.stringify(q));
+  ok('after the end time, Tempo asks "Did you finish?" with Yes and Not yet (even with notifications off)', q.shown && /Did you finish/.test(q.txt) && /Report/.test(q.txt) && q.yes === 'Yes' && q.no === 'Not yet', JSON.stringify(q));
   await p2.evaluate(() => document.getElementById('tn').click()); await p2.waitForTimeout(300);
   ok('Not yet leaves it undone and remembers to ask again', await p2.evaluate(() => { const a = S.items.find(i => i.id == 'a'); return !a.done || !a.done['2026-11-23'] }) && await p2.evaluate(() => Object.keys(S.fired).some(k => k.startsWith('finre'))));
   const asked1 = await p2.evaluate(() => Object.keys(S.fired).filter(k => k.startsWith('fin')).length);
@@ -77,7 +122,7 @@ async function finish(b) {
   ok('finish checks: no JS errors', !p2.errs.length, p2.errs.join('|')); await p2.context().close();
 }
 module.exports = async b => {
-  await newTask(b); await finish(b);
+  await newTask(b); await finish(b); await trips(b, 'en'); await trips(b, 'he'); await tripsMore(b);
   const p = await open(b, 'en'); await p.evaluate(() => go(1)); await p.waitForTimeout(700);
   ok('a small layout button sits at the top of Schedule', await p.evaluate(() => !!document.querySelector('.sec .lay')));
   ok('the default layout is the list', await p.evaluate(() => !document.querySelector('.cal') && !!document.getElementById('wk')));

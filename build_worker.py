@@ -79,7 +79,8 @@ const UAS=[UA,'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHT
 const BAD_TITLE=/denied|captcha|robot|blocked|forbidden|attention required|just a moment|page not found|error page|^amazon\\.com$/i;
 async function productData(u){{
   let target;try{{target=new URL(u)}}catch(e){{return{{error:'bad_url'}}}}
-  if(!/^https?:$/.test(target.protocol))return{{error:'bad_url'}};
+  if(!/^https?:$/.test(target.protocol))return{{error:'bad_url'}}
+  if(/^(localhost|.*\\.local|.*\\.internal)$/i.test(target.hostname)||/^[\\d.]+$/.test(target.hostname)||target.hostname.includes(':')||target.port&&!['80','443'].includes(target.port))return{{error:'bad_url'}};
   const out={{title:'',image:'',price:'',currency:'',store:'',brand:''}};let finalUrl=target.href;
   const merge=d=>{{if(!d)return;if(d.title&&BAD_TITLE.test(d.title))d.title='';for(const k in out)if(!out[k]&&d[k])out[k]=d[k];if(d.price&&!out.currency&&d.currency)out.currency=d.currency}};
   const done=()=>out.title&&out.price&&out.image;
