@@ -1181,7 +1181,7 @@ async function stopsBox(p){if(!p||!isFinite(p.lat))return[];const key='tempo.box
 async function stopsNear(ps){const box=(await Promise.all(ps.map(stopsBox))).flat();const cs=[...new Set((await Promise.all(ps.map(cityOf))).concat([S.set.city]).filter(Boolean))];let all=[];for(const c of cs){let st=await stopsFor(c).catch(()=>[]);if(!st.length&&normC(c)!=c)st=await stopsFor(normC(c)).catch(()=>[]);all=all.concat(st)}const seen={};return all.concat(box).filter(x=>seen[x.id]?0:(seen[x.id]=1))}
 const nearest=(stops,p,n)=>stops.map(s=>({...s,d:hav(p,s)*1000})).sort((a,b)=>a.d-b.d).slice(0,n);
 const destOf=(long,dir)=>{if(!long)return '';const parts=String(long).split('<->');let d=parts.length>1?(String(dir)=='2'?parts[0]:parts[1]):parts[0];return d.replace(/[-\d#]+$/,'').trim()};
-async function schedFor(stop){const n=new Date(),j=await api('/gtfs_ride_stops/list',{gtfs_stop_ids:stop.id,arrival_time_from:isoTz(new Date(n.getTime()-6*6e4)),arrival_time_to:isoTz(new Date(n.getTime()+100*6e4)),order_by:'arrival_time asc',limit:80});
+async function schedFor(stop,around){const n=new Date(),c=around&&+around>+n+30*6e4?+around:0,j=await api('/gtfs_ride_stops/list',{gtfs_stop_ids:stop.id,arrival_time_from:isoTz(new Date(c?c-55*6e4:n.getTime()-6*6e4)),arrival_time_to:isoTz(new Date(c?c+10*6e4:n.getTime()+100*6e4)),order_by:'arrival_time asc',limit:80});
  if(!BD.rs)BD.rs=j[0];
  return j.map(r=>({ride:String(r.gtfs_ride_id),at:new Date(r.arrival_time),line:pick(r,'gtfs_route','route_short_name'),dest:destOf(pick(r,'gtfs_route','route_long_name'),pick(r,'gtfs_route','route_direction')),dist:+pick(r,'gtfs_ride_stop','shape_dist_traveled')}))}
 async function liveNear(p){const n=new Date(),dl=.035,dn=.045;
@@ -1261,22 +1261,24 @@ function tripBlock(r,p,chosenRide){if(!r)return `<div class="empty" style="paddi
  const why=r.why=='nostop'?t('No bus stop near one of the places'):r.why=='noorigin'?t('Location unavailable. Pick a saved place.'):r.why=='err'?t("Couldn't load buses"):t('No direct bus found');
  const nb=(r.near||[]).length?`<div class="card bs" style="margin:0">${r.near.map(x=>`<div class="li"><span class="ln">${esc(x.line)}</span><span class="gt"><b><bdi dir="ltr">${hhmm(x.at)}</bdi></b><span class="sub">🚶 ${x.w} ${t('min')} · <bdi>${esc(x.stop.name)}</bdi></span></span></div>`).join('')}</div>`:'';
  return nb||`<div class="empty" style="padding:12px 0 6px">${why}</div>`}
-function buildRows(sched,live,stop){const now=Date.now(),rows=[];
+function buildRows(sched,live,stop,around){const now=Date.now(),rows=[];
  for(const s of sched){const v=live[s.ride];let min=null,lv=false;
   if(v){const age=(now-v.rec)/6e4;if(age<=8){let rem=s.dist-v.dj;if(!isFinite(rem)||rem>60000||rem<-60000)rem=hav({lat:v.lat,lon:v.lon},stop)*1000*1.3;
    if(rem>=-80){min=Math.max(0,rem/6.1/60-age);lv=true}else continue}}
   if(min==null){min=(s.at-now)/6e4;if(min<-1)continue}
   rows.push({line:s.line,dest:s.dest,min,live:lv,at:new Date(now+min*6e4)})}
+ if(around&&+around>now+30*6e4){const c=+around-25*6e4;return rows.sort((a,b)=>Math.abs(+a.at-c)-Math.abs(+b.at-c)).slice(0,4).sort((a,b)=>a.min-b.min)}
  return rows.sort((a,b)=>a.min-b.min).slice(0,4)}
 function nextTrip(){const n=nowMin();for(const ds of [today(),addD(today(),1)]){const it=occ(ds).find(i=>i.time&&i.pl&&placeOf(i.pl)&&!isDone(i,ds)&&(ds>today()||tm(i.time)>n));if(it)return{it,ds,p:placeOf(it.pl),o:originFor(it.pl,ds,it.time)}}return null}
 async function busLoad(silent){if(!S.places.length){busDraw();return}if(BUS.loading)return;BUS.loading=true;if(!silent){BUS.res=null;BUS.err=null;BUS.trip=null;busDraw()}
  const nt=nextTrip();
  const tripP=(async()=>{if(!nt)return null;let o=nt.o;if(!o){try{const g=BUS.loc||await getLoc();BUS.loc=g;o={...g,name:t('Here')}}catch(e){o=null}}
   if(!o)return{nt,opts:[],why:'noorigin'};const arriveBy=new Date(pd(nt.ds).getTime()+tm(nt.it.time)*6e4);try{return{nt,o,...await findTrips(o,nt.p,arriveBy)}}catch(e){return{nt,o,opts:[],why:'err'}}})();
+ const aroundT=nt?new Date(pd(nt.ds).getTime()+tm(nt.it.time)*6e4):null;
  const nearP=(async()=>{try{let p;if(BUS.from=='here'){try{p=await getLoc();BUS.loc=p}catch(e){const h=S.places.find(x=>x.home)||S.places[0];BUS.from=h.id;p={lat:h.lat,lon:h.lon}}}else{const pl=placeOf(BUS.from)||S.places[0];p={lat:pl.lat,lon:pl.lon}}
   const stops=await stopsFor(S.set.city);if(!stops.length)throw new Error('no stops in '+S.set.city);const near=nearest(stops,p,1);
-  const [live,sc]=await Promise.all([liveNear(p).catch(e=>{BD.vlErr=e.message;return {}}),schedFor(near[0]).catch(e=>{BD.rsErr=e.message;return []})]);
-  BUS.res=[{stop:near[0],walk:est(p,near[0]).w,rows:buildRows(sc,live,near[0])}];BUS.far=near[0].d;BUS.err=null}catch(e){BUS.err=e.message||'error';BD.err=BUS.err}})();
+  const [live,sc]=await Promise.all([liveNear(p).catch(e=>{BD.vlErr=e.message;return {}}),schedFor(near[0],aroundT).catch(e=>{BD.rsErr=e.message;return []})]);
+  BUS.res=[{stop:near[0],walk:est(p,near[0]).w,rows:buildRows(sc,live,near[0],aroundT)}];BUS.far=near[0].d;BUS.err=null}catch(e){BUS.err=e.message||'error';BD.err=BUS.err}})();
  BUS.trip=await tripP;await nearP;BUS.t=Date.now();
  BUS.loading=false;busDraw()}
 const busFrom=id=>{BUS.from=id;if(id!='here')S.plUse[id]=Date.now();save();busLoad()};
