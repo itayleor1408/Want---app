@@ -65,7 +65,7 @@ async function liveMin(b) {
     openSh('<div id="x">' + tripBlock(window.__T, null, null) + '</div>');
     const g = () => [...document.querySelectorAll('.brw .lvs [data-cd] b')].map(e => e.textContent), col = k => getComputedStyle(document.querySelector(k == 'lv' ? '.brw .lnums.lv b' : '.brw .lnums:not(.lv) b')).color;
     const row = document.querySelector('.brw .brs').innerText.replace(/\n+/g, ' | ');
-    const out = { document_text: document.body.innerText, rows: document.querySelectorAll('.brw').length, row, mins: g(), top: document.querySelector('.tph').innerText.replace(/\n+/g, ' | '), colors: { lv: col('lv'), wk: col('wk'), ls: col('ls'), sc: col('sc') }, visibleTimes: [...document.querySelectorAll('.brw')].some(w => /→/.test(w.querySelector('.brs').innerText)), detailsHidden: getComputedStyle(document.querySelector('.brw .gx')).opacity, chain: !!document.querySelector('.brw .stp .bpill svg') && document.querySelectorAll('.brw .stp .wlk').length === 8 && document.querySelectorAll('.brw .tlb .lbn').length === 4, shortWalk: (document.querySelectorAll('.brw')[2].querySelectorAll('.wlk')[1].querySelector('b') || { textContent: '' }).textContent, longWalk: document.querySelectorAll('.brw')[0].querySelectorAll('.wlk')[1].querySelector('b').textContent };
+    const out = { document_text: document.body.innerText, rows: document.querySelectorAll('.brw').length, row, mins: g(), top: document.querySelector('.tph').innerText.replace(/\n+/g, ' | '), colors: { lv: col('lv'), wk: col('wk'), ls: col('ls'), sc: col('sc') }, visibleTimes: [...document.querySelectorAll('.brw')].some(w => /→/.test(w.querySelector('.brs').innerText)), chain: !!document.querySelector('.brw .stp .bpill svg') && document.querySelectorAll('.brw .stp .wlk').length === 8 && document.querySelectorAll('.brw .tlb .lbn').length === 4, shortWalk: (document.querySelectorAll('.brw')[2].querySelectorAll('.wlk')[1].querySelector('b') || { textContent: '' }).textContent, longWalk: document.querySelectorAll('.brw')[0].querySelectorAll('.wlk')[1].querySelector('b').textContent };
     document.querySelectorAll('[data-cd]').forEach(e => e.dataset.cd = String(+e.dataset.cd - 120000)); cdTick(); out.after = g();
     return out });
   ok('each row is Moovit-like: total minutes + leave/arrive times on the side, the step chain, and "Leaves in … min from stop"', /🚶[\s|]*3/.test(r.row) && /Leaves in/.test(r.row) && /Herzl/.test(r.row) && /↓/.test(r.row) && r.chain, r.row);
@@ -73,7 +73,7 @@ async function liveMin(b) {
   ok('minutes count down by themselves (two minutes pass)', r.after.length >= 2 && Number(r.after[0]) === Number(r.mins[0]) - 2, r.after.join());
   ok('only a live bus is highlighted (green); weak, lost and timetable buses are plain, with no extra labels', r.colors.lv !== r.colors.sc && r.colors.wk === r.colors.sc && r.colors.ls === r.colors.sc && !/Weak signal|No signal|Scheduled/.test(r.document_text), JSON.stringify(r.colors));
   ok('the top shows the chosen bus: minutes (live), walk before, the line, walk after', /LIVE/.test(r.top) && /9/.test(r.top) && !/\bmin\b/.test(r.top) && /3/.test(r.top) && /4/.test(r.top), r.top);
-  ok('the top says when to leave the house and when you arrive: Leave 05:23 → Arrive 06:28', await p.evaluate(() => { const a = document.querySelector('.tph .arv'), x = window.__T.opts[0], f = d => String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0'); return !!a && /Leave/.test(a.innerText) && /Arrive/.test(a.innerText) && a.innerText.includes(f(x.leave)) && a.innerText.includes(f(x.reach)) }));
+  ok('the top says when to leave the house and when you arrive: Leave 05:23 → Arrive 06:28', await p.evaluate(() => { const a = document.querySelector('.tph .arv'), x = window.__T.opts[0], f = d => String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0'); return !!a && /leave/i.test(a.innerText) && /arrive/i.test(a.innerText) && a.innerText.includes(f(x.leave)) && a.innerText.includes(f(x.reach)) }));
   const tl = await p.evaluate(async () => { const tr = () => getComputedStyle(document.querySelector('.tlt')).transform, sh = () => { const r = document.querySelector('.tlb').getBoundingClientRect(), a = document.querySelector('.tls:first-child').getBoundingClientRect(); return a.left >= r.left - 1 && a.right <= r.right + 1 };
     document.documentElement.dataset.tl = '0'; await new Promise(r => setTimeout(r, 700)); const first = { times: sh(), t: tr() }; setTl(1, true); await new Promise(r => setTimeout(r, 700)); const second = { t: tr(), total: (() => { const r = document.querySelector('.tlb').getBoundingClientRect(), a = document.querySelector('.tls:last-child').getBoundingClientRect(); return a.left >= r.left - 1 && a.right <= r.right + 1 })() };
     const all = [...document.querySelectorAll('.tlt')].map(e => getComputedStyle(e).transform); return { first, second, all: new Set(all).size, n: all.length } });
@@ -86,12 +86,11 @@ async function liveMin(b) {
   ok('swiping back returns to leave ↓ arrive', await p.evaluate(() => document.documentElement.dataset.tl === '0'));
   ok('rows are compact: the side card does not make a bus line tall (under 90px)', await p.evaluate(() => [...document.querySelectorAll('.brw')].every(w => w.querySelector('.brs').getBoundingClientRect().height < 90)));
   ok('every row has leave ↓ arrive on its side card, without the words Leave/Arrive', await p.evaluate(() => { const f = d => String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0'); return [...document.querySelectorAll('.brw')].every((w, i) => { const x = window.__T.opts[i], l = w.querySelector('.brs .tls'); return l && l.innerText.includes(f(x.leave)) && l.innerText.includes(f(x.reach)) && !/Leave|Arrive/.test(l.innerText) }) }));
-  ok('details (times, stop, total) are hidden until asked', r.detailsHidden === '0');
-  await p.evaluate(() => document.querySelector('[data-more="a"]').click()); await p.waitForTimeout(500);
-  ok('the small arrow opens the details: times, total time, stop name', await p.evaluate(() => { const d = document.querySelector('.brw .gx.o .bdt'); return !!d && /→/.test(d.innerText) && /Herzl/.test(d.innerText) && getComputedStyle(d.closest('.gx')).opacity === '1' }));
+  ok('every bus line ends with a map icon (no expand arrow, no extra info panel)', await p.evaluate(() => document.querySelectorAll('.brw .mgo svg').length === 4 && !document.querySelector('.brw .gx') && !document.querySelector('[data-more]')));
   await p.evaluate(() => { document.querySelector('[data-mg="a"]').click() }); await p.waitForTimeout(500);
-  ok('the Map button inside opens the map for that stop', await p.evaluate(() => !!document.getElementById('wm') && /3/.test(document.querySelector('#wm .mptop b').innerText)));
+  ok('the map icon opens the map for that bus (line 3)', await p.evaluate(() => !!document.getElementById('wm') && /3/.test(document.querySelector('#wm .mptop b').innerText)));
   await p.evaluate(() => { const m = document.getElementById('wm'); m && m.remove() });
+
   const sel = await p.evaluate(() => { const T = window.__T; closeSh(true); openSh('<div id="x">' + tripBlock(T, null, 'b') + '</div>'); return { top: document.querySelector('.tph').innerText.replace(/\n+/g, ' | '), ch: document.querySelector('.brw.ch .bl b').textContent, w: document.querySelector('.tpw').innerText.replace(/\n+/g, ' ') } });
   ok('choosing another bus changes the top: its own walk (8), minutes and leave time (no LIVE label)', /8/.test(sel.top) && /Leave in/.test(sel.top) && !/LIVE/.test(sel.top) && /06:14|\d\d:\d\d/.test(sel.top) && sel.ch === '5', JSON.stringify(sel));
   ok('there is no "Walk to the stop" link', await p.evaluate(() => !document.querySelector('.wstop') && !/Walk to the stop/.test(document.body.innerText)));
@@ -142,11 +141,41 @@ async function look(b) {
   ok('the recommended bus is the selected one by default (one row highlighted, shown at the top)', r.selCount === 1 && r.sel === '3' && r.topRec.includes('3'), JSON.stringify([r.sel, r.selCount, r.topRec]));
   ok('the bus chip is not black any more', r.bp !== 'rgb(17, 17, 19)' && r.bp !== 'rgb(0, 0, 0)' && r.bp !== 'rgb(242, 242, 245)', r.bp);
   ok('a line that is too long fades at the border and scrolls in a loop', r.mq.some(m => m.cls && /mqs|mqr/.test(m.anim) && /gradient/.test(m.mask) && parseInt(m.d) > 3), JSON.stringify(r.mq));
-  ok('a line that fits stays still (no animation)', await p.evaluate(() => { const w = document.querySelector('.tph .arv .mqw'); return !!w && !w.classList.contains('mq') }));
+  ok('a line that fits stays still (no animation)', await p.evaluate(() => { const w = document.querySelector('.tph .tpt'); return !!w && !w.closest('.mq') }));
   ok('look: no JS errors', !p.errs.length, p.errs.join('|')); await c.close();
 }
+
+// The map: the walk to the stop is a dashed line, the bus's own way a solid line in another colour
+async function mapLines(b) {
+  const c = await b.newContext({ viewport: { width: 390, height: 800 } }); const p = await c.newPage(); p.errs = []; p.on('pageerror', e => p.errs.push(e.message));
+  await p.addInitScript(() => {
+    localStorage.setItem('tempo.v1', JSON.stringify({ items: [], places: [], set: { lang: 'en', onboarded: true } }));
+    window.__lines = []; window.__markers = [];
+    const chain = o => o;
+    window.L = { map: () => ({ setView() { return this }, on() {}, fitBounds(b) { window.__fit = b }, invalidateSize() {}, remove() {}, panTo() {}, attributionControl: { setPrefix() {} } }), tileLayer: () => ({ addTo() {} }), marker: ll => ({ addTo() { window.__markers.push(ll); return this }, setLatLng() {}, getLatLng() { return ll } }), polyline: (pts, o) => { const l = { pts, o, addTo() { window.__lines.push(l); return l }, setLatLngs(p2) { l.pts = p2 } }; return l }, divIcon: o => o };
+    window.loadLeaflet = async () => {};
+    const j = x => new Response(JSON.stringify(x));
+    const real = window.fetch;
+    window.fetch = async u => { u = String(u);
+      if (u.includes('gtfs_ride_stops/list') && u.includes('gtfs_ride_ids')) return j([1, 2, 3, 4].map(i => ({ gtfs_ride_id: 'R', stop_sequence: i, gtfs_stop__lat: 33.0 + i * 0.002, gtfs_stop__lon: 35.1 + i * 0.001 })));
+      if (u.includes('routed-car')) return j({ routes: [{ geometry: { coordinates: [[35.101, 33.002], [35.1015, 33.004], [35.102, 33.006], [35.103, 33.008]] } }] });
+      if (u.includes('routed-foot')) return j({ routes: [{ duration: 300, distance: 400, geometry: { coordinates: [[35.09, 32.99], [35.095, 32.995], [35.1, 33.0]] } }] });
+      return j([]) };
+  });
+  await p.goto(URL); await p.waitForTimeout(500);
+  await p.evaluate(() => { const n = Date.now(); const x = { ride: 'R', line: '3', dep: new Date(n + 9e5), arr: new Date(n + 18e5), depStop: { name: 'Herzl', lat: 33.002, lon: 35.101 }, arrStop: { name: 'End', lat: 33.008, lon: 35.104 }, depSeq: 1, arrSeq: 4, o: { lat: 32.99, lon: 35.09 }, d: { lat: 33.01, lon: 35.105 }, wTo: 3, wFrom: 4, total: 33, walk: 7, sig: 'sched', live: false, leave: new Date(n + 6e5), reach: new Date(n + 2e6), rec: 1 }; walkMap(33.002, 35.101, 'Herzl', '07:10', '3', x) });
+  await p.waitForTimeout(900);
+  const r = await p.evaluate(() => ({ lines: window.__lines.map(l => ({ n: l.pts.length, dash: l.o.dashArray || '', color: l.o.color })), legend: !!document.querySelector('.mlg .ld') && !!document.querySelector('.mlg .ls') }));
+  const bus = r.lines.filter(l => !l.dash), walk = r.lines.filter(l => l.dash);
+  ok('the bus route is a solid line', bus.length === 1 && bus[0].n >= 2, JSON.stringify(r.lines));
+  ok('the walk to the stop and the walk after the bus are dashed lines', walk.length >= 2, JSON.stringify(r.lines));
+  ok('the bus line has a different colour from the walking lines', bus.length === 1 && walk.every(w => w.color !== bus[0].color), JSON.stringify(r.lines));
+  ok('a small legend explains dashed = walk and solid = bus', r.legend);
+  ok('the map shows the route stops and the destination', await p.evaluate(() => window.__markers.length >= 3));
+  ok('map lines: no JS errors', !p.errs.length, p.errs.join('|')); await c.close();
+}
 module.exports = async b => {
-  await look(b); await everyLine(b); await ranking(b); await soonest(b); await liveMin(b);
+  await mapLines(b); await look(b); await everyLine(b); await ranking(b); await soonest(b); await liveMin(b);
   const c = await b.newContext({ viewport: { width: 390, height: 844 } }); const p = await c.newPage(); p.errs = []; p.on('pageerror', e => p.errs.push(e.message));
   await p.addInitScript(() => {
     const t = new Date('2026-11-24T06:38').getTime(), R = Date; class D extends R { constructor(...a) { a.length ? super(...a) : super(t) } static now() { return t } } window.Date = D;
