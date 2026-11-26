@@ -222,7 +222,7 @@ module.exports = async b => {
       u = String(u); window.__log.push(u.replace(/^https?:\/\/[^/]+/, '').slice(0, 90));
       const j = x => new Response(JSON.stringify(x), { headers: { 'content-type': 'application/json' } });
       if (u.includes('nominatim')) return j({ address: { city: 'נהריה' } });
-      if (u.includes('/gtfs_stops/list')) { if (u.includes('lat__greater_or_equal')) return j([...stops, useful, destStop]); return j(window.__cityOnly === false ? [] : [...stops, destStop]) }
+      if (u.includes('/gtfs_stops/list')) { if (!u.includes('city=')) return j([...stops, useful, destStop]); return j(window.__cityOnly === false ? [] : [...stops, destStop]) }
       if (u.includes('/siri_vehicle_locations')) return j([]);
       if (u.includes('/gtfs_ride_stops/list')) {
         const ids = decodeURIComponent((u.match(/gtfs_stop_ids=([^&]*)/) || [])[1] || '').split(',').map(Number), out = [];
@@ -239,7 +239,7 @@ module.exports = async b => {
   ok('a bus from a stop ~8 minutes away is found even with 12 closer stops that have no useful bus', r.n === 1 && r.line === '3' && r.stop === 'Real stop', JSON.stringify(r));
   ok('the walk to that stop is counted (about 8 minutes)', r.w >= 6 && r.w <= 11, String(r.w));
   const log = await p.evaluate(() => window.__log);
-  ok('stops were also searched by position, not only by municipality', log.some(l => /gtfs_stops\/list.*lat__greater_or_equal/.test(l)));
+  ok('the service-date catalog includes stops outside the selected municipality', log.some(l => /gtfs_stops\/list.*date_from/.test(l) && !l.includes('city=')));
   ok('bus times are asked for in batches, not one request per stop', log.filter(l => /gtfs_ride_stops\/list/.test(l)).length <= 8, String(log.filter(l => /gtfs_ride_stops/.test(l)).length));
   // no direct bus -> nearby buses are listed
   const r2 = await p.evaluate(async () => { const o = { lat: 33.0, lon: 35.1 }, d = { lat: 33.05, lon: 35.1 }; const x = await findTrips(o, d, null); const html = tripBlock(x, null, null); return { why: x.why, near: (x.near || []).map(n => n.line + '@' + n.stop.name), html: !/No direct bus|Buses from nearby|change/.test(html) && /class="ln"/.test(html) } });

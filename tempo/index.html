@@ -235,6 +235,7 @@ a.lnk{display:block;text-align:center;color:var(--s2);text-decoration:none;font-
 .tr{display:flex;align-items:center;gap:12px;padding:12px 0;border-top:1px solid var(--hr);text-decoration:none;color:inherit}.tr:first-child{border-top:0}.tr .sub{display:block}.lv{display:block;color:var(--a);font-weight:700}.tr>svg{color:var(--s)}
 .gos{display:flex;gap:6px;flex:none}a.btn{text-decoration:none;margin-bottom:10px}a.btn.s{background:var(--fl);color:var(--t)}
 .fit{padding:6px 11px;font-size:13px;color:var(--a);background:color-mix(in srgb,var(--a) 14%,transparent);flex:none}
+.review-head{position:relative;padding-inline:32px}.review-head .xs{position:absolute;inset-inline-end:0;inset-block-start:0}.trip-late{color:var(--r);font-size:11px}.review-task{width:100%;text-align:start}.review-note{white-space:pre-wrap;overflow-wrap:anywhere;padding:12px 14px}
 </style></head><body><div id="app"></div>
 <div class="fabs"><button class="ib p" id="fab" aria-label="Add" style="background:var(--t);color:var(--bg)"></button></div>
 <nav id="nav"></nav><div id="tp"></div><div id="ts"><span id="tt"></span><button id="tn" style="display:none"></button><button id="tu"></button></div>
@@ -337,6 +338,14 @@ const HE={'Leaves in':'יוצא בעוד','Arrive':'מגיעים','Weak signal':
 'Where?':'איפה?','Cloud backup':'גיבוי בענן','Last backup':'גיבוי אחרון','Waiting for the first backup':'ממתין לגיבוי הראשון','Off':'כבוי','Back up now':'גיבוי עכשיו','Recovery key':'מפתח שחזור','Restore from cloud':'שחזור מהענן','Keep it somewhere safe. With it you can bring your plans back on a new phone.':'שמרו אותו במקום בטוח. בעזרתו תוכלו להחזיר את התוכניות בטלפון חדש.','Copy key':'העתקת המפתח','Copied':'הועתק','Paste your recovery key. This replaces what is on this phone.':'הדביקו את מפתח השחזור. זה יחליף את מה שיש בטלפון הזה.','Paste the key first':'קודם הדביקו את המפתח','That key is not valid':'המפתח לא תקין','No backup found for this key':'לא נמצא גיבוי למפתח הזה','Restored':'שוחזר','Couldn\'t reach the backup server':'אין חיבור לשרת הגיבוי','Turning on…':'מפעיל…','Backing up…':'מגבה…','Backed up':'גובה','I have a recovery key':'יש לי מפתח שחזור','Turn off cloud backup? Your saved backup stays on the server, and your recovery key still works.':'לכבות את הגיבוי בענן? הגיבוי השמור נשאר בשרת, ומפתח השחזור עדיין עובד.','info.cloud':'שומר עותק של התוכניות בשרת של Penny, אוטומטית כל כמה דקות. רק מי שיש לו את מפתח השחזור יכול לקרוא אותו.','Edit place':'עריכת מקום','Location':'מיקום','Task name':'שם המשימה','Delete category':'מחיקת קטגוריה','Cancel':'ביטול','task keeps its plan but loses this category.':'משימה תישאר, בלי הקטגוריה הזו.','tasks keep their plan but lose this category.':'משימות יישארו, בלי הקטגוריה הזו.','No tasks use it.':'אף משימה לא משתמשת בה.','Finding you…':'מאתר אתכם…','Open in Google Maps':'פתיחה ב-Google Maps','You\'re at the stop':'הגעתם לתחנה','Walk to the stop':'הליכה לתחנה','You left':'יצאתם מ','Mark as done?':'לסמן כבוצע?','Saved':'נשמר','Hold a category to edit it':'לחיצה ארוכה על קטגוריה לעריכה','Choose on map':'בחירה במפה','On the map':'במפה','I\'m here':'אני כאן','My location':'המיקום שלי','Move the map to the place':'הזיזו את המפה אל המקום','Finding the address…':'מחפש כתובת…','Use this spot':'בחירת המקום הזה','Pinned spot':'נקודה במפה','The map couldn\'t load':'המפה לא נטענה','Or search: street and number':'או חיפוש: רחוב ומספר','Recommended':'מומלץ','Your bus':'האוטובוס שלך','Other buses':'אוטובוסים נוספים','arrive by':'להגיע עד','arrive':'הגעה','Directions':'הוראות הגעה','Open in Waze':'פתיחה ב-Waze','Your choice is saved for this task.':'הבחירה נשמרת למשימה הזו.','to':'אל','A new week started':'התחיל שבוע חדש','Do you have a focus this week?':'יש לכם מיקוד לשבוע הזה?','On what?':'על מה?','How many hours this week?':'כמה שעות השבוע?','No':'לא','Back':'חזרה','Close':'סגירה','Task':'משימה','Day':'יום','Place':'מקום','Reminder & travel':'תזכורת ונסיעה','Finish later':'להמשיך אחר כך','Let\'s build your week':'בואו נבנה את השבוע שלכם','A few quick questions, one at a time. You can change everything later.':'כמה שאלות קצרות, אחת בכל פעם. אפשר לשנות הכול אחר כך.','Start':'מתחילים','Skip setup':'דלגו על ההגדרה','Skip':'דלגו','What should we call you?':'איך לקרוא לכם?','Your name':'השם שלכם','Where\'s home?':'איפה הבית?','Used for travel times and the buses you need.':'משמש לזמני נסיעה ולאוטובוסים שתצטרכו.','What fills most of your week?':'מה ממלא את רוב השבוע שלכם?','Army service':'שירות צבאי','Something else':'משהו אחר','Nothing fixed':'שום דבר קבוע','What is it?':'מה זה?','Write what it is first':'קודם כתבו מה זה','Where is it?':'איפה זה?','Which days?':'באילו ימים?','What hours?':'באילו שעות?','From':'מ-','To':'עד','Anything else you do regularly?':'עוד משהו שאתם עושים באופן קבוע?','Anything else?':'עוד משהו?','Gym, classes, family dinner…':'חדר כושר, שיעורים, ארוחה משפחתית…','Gym':'חדר כושר','Sport':'ספורט','Class':'שיעור','Family':'משפחה','Hobby':'תחביב','Add':'הוספה','That\'s it':'זהו','How do you usually get around?':'איך אתם בדרך כלל מתניידים?','Car':'רכב','When does your day start and end?':'מתי היום שלכם מתחיל ונגמר?','Free time is counted between these hours.':'הזמן הפנוי נספר בין השעות האלה.','Wake up':'קמים','Wind down':'מסיימים','Remind you before things start?':'להזכיר לכם לפני שדברים מתחילים?','A short alert, with the time to leave if there is travel.':'התראה קצרה, עם שעת יציאה אם יש נסיעה.','Yes, remind me':'כן, תזכירו לי','Not now':'לא עכשיו','Track your hours each week?':'לעקוב אחרי השעות שלכם בכל שבוע?','For example':'למשל','a week':'בשבוע','Yes':'כן','No thanks':'לא תודה','Here\'s your week':'הנה השבוע שלכם','You can change anything later.':'אפשר לשנות הכול אחר כך.','Nothing fixed yet. Add things as they come.':'עוד אין דברים קבועים. הוסיפו כשמגיע.','Looks good':'נראה טוב','Change something':'לשנות משהו','Your week is ready':'השבוע שלכם מוכן','I\'m there now':'אני שם עכשיו','Or search an address':'או חפשו כתובת','Chosen place':'מקום שנבחר','Schedule':'לוח זמנים','Which day?':'באיזה יום?','What time?':'באיזו שעה?','Repeat?':'לחזור?','How long?':'כמה זמן?','Save now':'שמירה עכשיו','Auto':'אוטומטי','Set a time to get reminders.':'קבעו שעה כדי לקבל תזכורות.','Next':'הבא','ends':'מסתיים','leave':'צאו','task left':'משימה נשארה','tasks left':'משימות נשארו','All done':'הכול בוצע','Nothing planned':'אין תוכניות','free':'פנוי','biggest gap':'החלון הגדול','missed':'הוחמצו','done':'בוצעו','Add for someday':'הוסיפו למתישהו','Things without a date land here.':'דברים בלי תאריך יופיעו כאן.','Categories':'קטגוריות','Tap one to edit it':'הקישו כדי לערוך','My routine':'השגרה שלי','Redo the setup':'לעשות את ההגדרה מחדש','Answer a few questions to rebuild your week':'כמה שאלות כדי לבנות מחדש את השבוע','How you get around':'איך מתניידים','Set a goal of hours for one category':'יעד שעות לקטגוריה אחת','Bus city':'עיר לאוטובוסים','Look':'מראה','Backup':'גיבוי','Repeat':'חזרה','Repeats':'חוזר','On these days':'בימים האלה','Pick the days':'בחרו ימים','Pick at least one day':'בחרו לפחות יום אחד','Every day':'כל יום','Sun–Thu':'א׳–ה׳','Mon–Fri':'ב׳–ו׳','Weekends':'סופ״ש','More icons':'עוד סמלים','Type any emoji':'הקלידו כל אימוג׳י','Use your emoji keyboard':'ממקלדת האימוג׳י','task':'משימה','Version':'גרסה','local':'מקומית','Your plan':'התוכנית שלך','New place':'מקום חדש','Type':'סוג','e.g. Gym':'למשל: חדר כושר','Street, city':'רחוב, עיר','Getting there':'איך מגיעים','Direct buses':'אוטובוסים ישירים','Finding buses…':'מחפש אוטובוסים…','No direct bus found':'לא נמצא אוטובוס ישיר','No bus stop near one of the places':'אין תחנה ליד אחד המקומות','Late':'מאחר','Open Moovit':'פתיחה ב-Moovit','Next trip':'הנסיעה הבאה','Nearest stop':'התחנה הקרובה','Show only the buses you need':'רק האוטובוסים שאתם צריכים','Add a place':'הוסיפו מקום','Add a place to a task to see the bus you need for it.':'הוסיפו מקום למשימה כדי לראות את האוטובוס שצריך אליה.','info.busEmpty':'הוסיפו את המקומות שאתם הולכים אליהם (בית, עבודה, חדר כושר), ו-Tempo יראה רק את האוטובוס הבא לכל אחד.',
 'info.notif':'התזכורות מגיעות גם כש-Tempo סגורה. באייפון צריך להוסיף את Tempo למסך הבית. רק זמני התזכורות נשלחים לשרת; הטקסט נשאר בטלפון.','info.rem':'כמה זמן לפני כל אירוע חדש להתריע.','info.quick':'אפשר לכתוב בשפה חופשית: "פגישה מחר 14:00 שעה" והאפליקציה תמלא לבד.','info.data':'הכול נשמר רק בטלפון הזה. מומלץ לייצא גיבוי מדי פעם.'};
 const EN={'info.cloud':'Keeps a copy of your plans on Penny\'s server, automatically every few minutes. Only someone with your recovery key can read it.','Missed':'Missed','info.busEmpty':'Add the places you go to (home, work, the gym) and Tempo will show only the next bus to each one.','info.places':'Save home, work, the gym and bus stops. Attach a place to any event to get a travel estimate.','info.day':'Free time is only counted between these hours.','info.notif':'Reminders arrive even when Tempo is closed. On iPhone, Tempo must be added to the Home Screen. Only the reminder times go to the server; the words stay on your phone.','info.rem':'How long before a new event to alert you.','info.quick':'Type naturally: "Dentist tomorrow 14:00 1h" and Tempo fills in the rest.','info.data':'Everything is stored only on this phone. Export a backup now and then.'};
+Object.assign(HE,{
+ 'Plan next week':'תכנון השבוע הבא','Day note':'הערה ליום','Review day':'סימון היום כנבדק',
+ 'Day reviewed':'היום נבדק','No tasks planned':'אין משימות מתוכננות','For this day':'ליום הזה',
+ 'Late arrival':'הגעה באיחור','Add a task':'הוספת משימה','Arrives after the task starts':'הגעה אחרי תחילת המשימה',
+ 'Task details':'פרטי המשימה','Location in Tempo':'מיקום ב־Tempo','Use location while Tempo is open':'שימוש במיקום כש־Tempo פתוחה',
+ 'Location unavailable. Check your device settings.':'המיקום לא זמין. כדאי לבדוק את הגדרות המכשיר.',
+ 'Marked done':'סומן כבוצע'
+});
 let S;const lang=()=>S.set.lang,t=k=>lang()=='he'?(HE[k]||k):(EN[k]||k);
 const loc=()=>lang()=='he'?'he-IL':'en-GB';
 /* ---------- state ---------- */
@@ -373,40 +382,66 @@ const PLI={'🏠':'home','💼':'brief','💪':'gym','🚌':'bus','📍':'pin'};
 const placeOf=id=>S.places.find(p=>p.id==id);
 const hav=(a,b)=>{const R=6371,r=x=>x*Math.PI/180,dl=r(b.lat-a.lat),dn=r(b.lon-a.lon),h=Math.sin(dl/2)**2+Math.cos(r(a.lat))*Math.cos(r(b.lat))*Math.sin(dn/2)**2;return 2*R*Math.asin(Math.sqrt(h))};
 function est(a,b){const d=hav(a,b);return{km:d,w:Math.max(1,Math.round(d*1.3/5*60)),d:Math.max(3,Math.round(d*1.4/(d<8?30:55)*60+3))}}
+const taskAt=(ds,min)=>{const date=pd(ds);date.setHours(0,min,0,0);return date};
+function journeyContext(it,ds){
+ const previous=occ(ds).filter(x=>x.id!==it.id&&x.time&&x.pl&&placeOf(x.pl)&&tm(x.time)<tm(it.time)).pop();
+ const origin=originFor(it.pl,ds,it.time),dest=placeOf(it.pl);
+ return {origin,after:previous?+taskAt(ds,tm(previous.time)+(previous.dur||0)):0,
+  key:JSON.stringify([it.time,it.pl,dest?.lat,dest?.lon,origin?.id,origin?.lat,origin?.lon,previous?.id,previous?.time,previous?.dur])};
+}
+function busPlan(it,ds){
+ const plan=it.busPlans?.[ds];
+ return plan&&it.time&&plan.key===journeyContext(it,ds).key?plan:null;
+}
 function originFor(pid,ds,time){const dest=placeOf(pid);if(!dest)return null;let prev=null;
  if(ds&&time){const st=tm(time);occ(ds).forEach(i=>{if(i.pl&&i.time&&tm(i.time)<st&&placeOf(i.pl))prev=i.pl})}
  const oid=prev||(S.places.find(p=>p.home)||{}).id;return !oid||oid==pid?null:placeOf(oid)}
 function goSheet(id,ds){const it=S.items.find(i=>i.id==id),p=it&&placeOf(it.pl);if(!p)return;const o=originFor(p.id,ds,it.time),e=o&&est(o,p),ll=p.lat+','+p.lon;
- const st=tm(it.time),cur=travFor(it,ds)||{mode:'walk',min:e?e.w:0};let mode=cur.mode,R=null;
+ const context=journeyContext(it,ds),st=tm(it.time),cur=travFor(it,ds)||{mode:'walk',min:e?e.w:0};let mode=cur.mode,R=null,loadId=0;
+ const selected=()=>busPlan(it,ds);
  const mins={walk:e?e.w:null,drive:e?e.d:null};
- const setT=(m,min,line,ride)=>{it.mode=m;it.trav=min;it.busLine=line||null;it.ride=ride||null;save();render(0,true)};
+ const setT=(m,min,x,manual=false)=>{
+  if(!it.busPlans)it.busPlans={};
+  if(x)it.busPlans[ds]={key:context.key,ride:x.ride,line:x.line,leave:+x.leave,total:x.total,late:x.late,manual};
+  else it.busPlans={};
+  for(const date of Object.keys(it.busPlans))if(date<addD(today(),-1))delete it.busPlans[date];
+  if(it.mode!==m||!x){it.mode=m;it.trav=min;it.busLine=null;it.ride=null}
+  save();render(0,true);
+ };
  let drawKey='';
- const draw=s=>{const b=$('#gbody'),key=mode+'|'+(it.ride||''),was=b&&b.firstElementChild&&key!=drawKey&&drawKey!=='',h0=b?b.offsetHeight:0;drawKey=key;draw0(s);
+ const draw=s=>{const b=$('#gbody'),key=mode+'|'+(selected()?.ride||''),was=b&&b.firstElementChild&&key!=drawKey&&drawKey!=='',h0=b?b.offsetHeight:0;drawKey=key;draw0(s);
   if(!was||!b||!b.animate||matchMedia('(prefers-reduced-motion:reduce)').matches)return;
   Promise.resolve().then(()=>{const h1=b.offsetHeight,c=b.firstElementChild;if(!c)return;b.style.overflow='hidden';
    const e='cubic-bezier(.22,1,.36,1)',a1=b.animate([{height:h0+'px'},{height:h1+'px'}],{duration:480,easing:e});
    c.animate([{opacity:0,transform:'translateY(14px) scale(.985)',filter:'blur(3px)'},{opacity:1,transform:'none',filter:'blur(0)'}],{duration:460,easing:e});
    a1.onfinish=a1.oncancel=()=>{b.style.overflow=''}})};
  const draw0=s=>{const body=$('#gbody');if(!body)return;
-  $('#gmode').innerHTML=[['walk','🚶','Walk'],['bus','🚌','Bus'],['drive','🚗','Car']].map(([k,em,l])=>`<button type="button" class="mtile ${mode==k?'on':''}" data-gm="${k}"><i>${em}</i><b>${t(l)}</b><small>${k=='bus'?(it.mode=='bus'&&it.trav?hm(it.trav):'—'):mins[k]!=null?'≈ '+hm(mins[k]):''}</small></button>`).join('');
-  if(mode=='bus'){body.innerHTML=`<div id="gbus">${tripBlock(R,p,it.ride)}</div>`;return}
+  $('#gmode').innerHTML=[['walk','🚶','Walk'],['bus','🚌','Bus'],['drive','🚗','Car']].map(([k,em,l])=>`<button type="button" class="mtile ${mode==k?'on':''}" data-gm="${k}"><i>${em}</i><b>${t(l)}</b><small>${k=='bus'?(selected()?hm(selected().total):'—'):mins[k]!=null?'≈ '+hm(mins[k]):''}</small></button>`).join('');
+  if(mode=='bus'){body.innerHTML=`<div id="gbus">${tripBlock(R,p,selected()?.ride)}${R?.why==='noorigin'?`<button class="btn s" id="trip-loc">${t('Use my location')}</button>`:''}</div>`;return}
   const m=mins[mode]||0,lv=st-m,href=mode=='walk'?`https://www.google.com/maps/dir/?api=1&destination=${ll}&travelmode=walking`:`https://waze.com/ul?ll=${ll}&navigate=yes`;
   body.innerHTML=`<div class="rec ch" style="cursor:default"><span class="rrow"><span class="ln" style="background:var(--fl);color:var(--t);font-size:20px">${mode=='walk'?'🚶':'🚗'}</span><span class="gt"><b>${t('Leave')} <bdi dir="ltr">${ft(lv)}</bdi></b><span class="sub">≈ ${hm(m)} · ${t('arrive')} <bdi dir="ltr">${it.time}</bdi></span></span></span></div><a class="lnk" target="_blank" rel="noopener" href="${href}">${mode=='walk'?t('Directions'):t('Open in Waze')} ›</a>`};
  openSh(`<div class="shd">${plIc(p)} ${esc(p.name)}</div><div class="sub" style="text-align:center;margin:-8px 0 14px">${o?fromTxt(o.name)+' · ':''}${t('arrive by')} <bdi dir="ltr">${it.time}</bdi></div>
  <div class="mtiles" id="gmode"></div><div id="gbody"></div><div class="sub" style="text-align:center;margin-top:12px">${t('Your choice is saved for this task.')}</div>`,s=>{
   draw(s);
-  const load=async()=>{let o2=o;if(!o2){try{const g=await getLoc();o2={...g,name:t('Here')}}catch(e){}}if(!o2){R={opts:[],why:'noorigin'};draw(s);return}
-   const arriveBy=new Date(pd(ds).getTime()+st*6e4);try{R=await findTrips(o2,p,arriveBy)}catch(e){R={opts:[],why:'err'}}
-   if(mode=='bus'&&R.opts&&R.opts.length&&!it.ride){const rec=R.opts.find(x=>x.rec)||R.opts[0];setT('bus',Math.max(1,Math.round((pd(ds).getTime()+st*6e4-rec.leave.getTime())/6e4)),rec.line,rec.ride)}
+  const load=async(enable=false)=>{const request=++loadId;let o2=o;if(!o2){try{const g=await getLoc(enable);o2={...g,name:t('Here')}}catch(e){}}if(!o2){if(s===$('#sh')&&mode==='bus'&&request===loadId){R={opts:[],why:'noorigin'};draw(s)}return}
+   const arriveBy=taskAt(ds,st);
+   let result;try{result=await findTrips(o2,p,arriveBy,context.after,(selected()?.manual?selected().ride:undefined))}catch(e){result={opts:[],why:'err'}}
+   if(s!==$('#sh')||mode!=='bus'||request!==loadId)return;
+   R=result;
+   const old=selected(),chosen=R.opts.find(x=>old?.manual&&x.ride===old.ride)||R.opts.find(x=>x.rec)||R.opts[0];
+   if(chosen){const manual=!!(old?.manual&&old.ride===chosen.ride);
+    if(!old||old.ride!==chosen.ride||old.leave!==+chosen.leave||old.total!==chosen.total||old.late!==chosen.late)setT('bus',0,chosen,manual);
+   }else if(old&&R.why!=='err'){delete it.busPlans[ds];save();render(0,true)}
    const keep=$('#obus')&&$('#obus').classList.contains('o');draw(s);if(keep&&$('#obus')){$('#obus').classList.add('o');const m=$('[data-moreb]');m&&m.classList.add('op')}};
   if(mode=='bus')load();
   /* while the sheet is open, fetch fresh bus positions every minute so the live minutes stay true */
-  const rf=setInterval(()=>{if(!$('#gbody')){clearInterval(rf);return}if(mode=='bus'&&R&&!document.hidden)load()},62000);
+  const rf=setInterval(()=>{if(s!==$('#sh')){clearInterval(rf);return}if(mode=='bus'&&R&&!document.hidden)load()},62000);
   s.onclick=e=>{const b=e.target.closest('button');if(!b)return;const d=b.dataset;
-   if(d.gm){mode=d.gm;if(mode=='bus'){it.ride=null;if(R)R=null;draw(s);load()}else{setT(mode,mins[mode]||0);draw(s)}return}
+   if(b.id==='trip-loc'){b.disabled=true;load(true);return}
+   if(d.gm){mode=d.gm;if(mode=='bus'){R=null;draw(s);load()}else{setT(mode,mins[mode]||0);draw(s)}return}
    if(d.moreb)return;
-   if(d.ride&&R){const x=R.opts.find(y=>y.ride==d.ride);if(!x)return;setT('bus',Math.max(1,Math.round((pd(ds).getTime()+st*6e4-x.leave.getTime())/6e4)),x.line,x.ride);const keep=$('#obus')&&$('#obus').classList.contains('o');draw(s);if(keep){$('#obus').classList.add('o');$('[data-moreb]').classList.add('op')}toast(`🚌 ${x.line} · ${t('Leave')} ${hhmm(x.leave)}`)}}})}
-function travFor(it,ds){if(it.trav)return{min:it.trav,mode:it.mode||'walk'};if(!it.pl||!it.time)return null;const p=placeOf(it.pl),o=originFor(it.pl,ds,it.time);return p&&o?autoTrav(o,p):null}
+   if(d.ride&&R){const x=R.opts.find(y=>y.ride==d.ride);if(!x)return;++loadId;setT('bus',0,x,true);const keep=$('#obus')&&$('#obus').classList.contains('o');draw(s);if(keep){$('#obus').classList.add('o');$('[data-moreb]').classList.add('op')}}}})}
+function travFor(it,ds){const bus=busPlan(it,ds);if(bus){const leave=new Date(bus.leave);return{min:tm(it.time)-(dayDiff(ds,dk(leave))*1440+leave.getHours()*60+leave.getMinutes()),mode:'bus',bus}}if(it.trav)return{min:it.trav,mode:it.mode||'walk'};if(!it.pl||!it.time)return null;const p=placeOf(it.pl),o=originFor(it.pl,ds,it.time);return p&&o?autoTrav(o,p):null}
 const fromTxt=n=>lang()=='he'?'מ'+esc(n):t('from')+' '+esc(n);
 const APP_VER='2.1',APP_BUILD='__BUILD__';
 let PF=null;
@@ -431,7 +466,7 @@ async function mapPick(start,done){const st=start||geoBias();const o=document.cr
  document.body.append(o);requestAnimationFrame(()=>o.classList.add('o'));let cur=null,tmr=null,map=null;
  const close=()=>{o.classList.remove('o');setTimeout(()=>{if(map)map.remove();o.remove()},300)};
  const look=async()=>{const c=map.getCenter();cur={lat:c.lat,lon:c.lng};$('#mpt').textContent=t('Finding the address…');$('#mps').textContent='';const a=await geoRev(c.lat,c.lng);if(!cur||Math.abs(cur.lat-c.lat)>1e-7)return;cur={...cur,...a};$('#mpt').textContent=a.t1||a.addr;$('#mps').textContent=a.t2||''};
- o.onclick=async e=>{const b=e.target.closest('button');if(!b)return;if(b.dataset.mpx)close();else if(b.dataset.mpme){try{const g=await getLoc();map.setView([g.lat,g.lon],17)}catch(x){toast(t('Location unavailable'))}}else if(b.id=='mpu'&&cur){close();done({addr:cur.addr||t('Pinned spot'),t1:cur.t1,t2:cur.t2,lat:cur.lat,lon:cur.lon})}};
+ o.onclick=async e=>{const b=e.target.closest('button');if(!b)return;if(b.dataset.mpx)close();else if(b.dataset.mpme){try{const g=await getLoc(true);map.setView([g.lat,g.lon],17)}catch(x){toast(t('Location unavailable'))}}else if(b.id=='mpu'&&cur){close();done({addr:cur.addr||t('Pinned spot'),t1:cur.t1,t2:cur.t2,lat:cur.lat,lon:cur.lon})}};
  try{await loadLeaflet()}catch(e){$('#mpt').textContent=t("The map couldn't load");$('#mpu').classList.add('dis');return}
  map=L.map('mpm',{zoomControl:false,attributionControl:true}).setView([st.lat,st.lon],16);map.attributionControl.setPrefix(false);
  L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'© OpenStreetMap'}).addTo(map);
@@ -495,7 +530,7 @@ function placePopup(done){const P2={name:'',emoji:'',home:false,q:'',res:[],sel:
   s.onclick=async e=>{const b=e.target.closest('button');if(!b)return;const d=b.dataset;
    if(d.ty){const[n,em]=d.ty.split('|');P2.emoji=em;P2.home=n=='Home';const inp=$('#ppn');if(!inp.value.trim()||TY.some(x=>t(x[0])==inp.value.trim()))inp.value=t(n);P2.name=inp.value;draw();return}
    if(d.px){closePop();return}if(d.pn){next();return}if(d.pb){P2.step=0;draw();return}if(d.ps){search();return}
-   if(d.pl){P2.msg=t('Searching…');draw();try{const p=await getLoc();const a=await geoRev(p.lat,p.lon);P2.sel={...a,lat:p.lat,lon:p.lon};P2.res=[];P2.msg=''}catch(err){P2.msg=t('Location unavailable')}draw();return}
+   if(d.pl){P2.msg=t('Searching…');draw();try{const p=await getLoc(true);const a=await geoRev(p.lat,p.lon);P2.sel={...a,lat:p.lat,lon:p.lon};P2.res=[];P2.msg=''}catch(err){P2.msg=t('Location unavailable')}draw();return}
    if(d.pmap){mapPick(null,p=>{P2.sel=p;P2.res=[];P2.msg='';draw()});return}
    if(d.pclr){P2.sel=null;draw();return}
    if(d.pr!==undefined){P2.sel=P2.res[+d.pr];draw();return}
@@ -512,15 +547,15 @@ function legPlan(ds){const out=[];let prev=(S.places.find(p=>p.home)||{}).id,pre
  occ(ds).forEach(it=>{if(!it.time)return;const st=tm(it.time),pz=it.pl&&placeOf(it.pl);if(!pz)return;
   if(prev&&prev!=it.pl&&placeOf(prev)&&showLeg(it,ds)){const o=placeOf(prev),lg=travFor(it,ds);
    if(lg&&lg.min>0&&isFinite(o.lat)&&isFinite(pz.lat)){const exp=expMin(o,pz,lg.mode),issues=[];
-    if(it.trav&&lg.min<Math.max(2,exp*.4))issues.push({k:'short',exp});else if(it.trav&&lg.min>exp*2.5+10)issues.push({k:'long',exp});
+    if(!lg.bus&&it.trav&&lg.min<Math.max(2,exp*.4))issues.push({k:'short',exp});else if(!lg.bus&&it.trav&&lg.min>exp*2.5+10)issues.push({k:'long',exp});
     if(prevEnd!=null&&st-lg.min<prevEnd)issues.push({k:'tight',have:Math.max(0,st-prevEnd),need:lg.min,prevEnd,prev:prevIt});
-    out.push({it,o,p:pz,st,min:lg.min,mode:lg.mode,exp,issues})}}
+    out.push({it,o,p:pz,st,min:lg.min,mode:lg.mode,bus:lg.bus,exp,issues})}}
   prev=it.pl;prevEnd=st+(it.dur||0);prevIt=it});return out}
 const legIssues=ds=>{const m={};legPlan(ds).forEach(e=>{if(e.issues.length)m[e.it.id]=e});return m};
 function fixDay(ds,apply){const acts=[];let prev=(S.places.find(p=>p.home)||{}).id,prevEnd=null,left=0;
  occ(ds).forEach(it=>{if(!it.time)return;let st=tm(it.time);const pz=it.pl&&placeOf(it.pl);if(!pz)return;
   if(prev&&prev!=it.pl&&placeOf(prev)&&showLeg(it,ds)){const o=placeOf(prev),lg=travFor(it,ds);
-   if(lg&&lg.min>0&&isFinite(o.lat)&&isFinite(pz.lat)){let min=lg.min;const exp=expMin(o,pz,lg.mode),bad=it.trav&&(min<Math.max(2,exp*.4)||min>exp*2.5+10);
+   if(lg&&lg.min>0&&isFinite(o.lat)&&isFinite(pz.lat)){let min=lg.min;const exp=expMin(o,pz,lg.mode),bad=!lg.bus&&it.trav&&(min<Math.max(2,exp*.4)||min>exp*2.5+10);
     if(bad){const a=autoTrav(o,pz);acts.push({it,k:'trav',from:min,to:a.min,mode:a.mode});if(apply){it.trav=a.min;it.mode=a.mode;it.busLine=null;it.ride=null}min=a.min}
     if(prevEnd!=null&&st-min<prevEnd){const ns=up5(prevEnd+min);if((!it.rep||it.rep=='none')&&ns+(it.dur||0)<=1440){acts.push({it,k:'move',from:it.time,to:ft(ns)});if(apply)it.time=ft(ns);st=ns}else left++}}}
   prev=it.pl;prevEnd=st+(it.dur||0)});return{acts,left}}
@@ -534,11 +569,11 @@ function legIssue(ds){const all=Object.values(legIssues(ds));if(!all.length){clo
  <div class="trio" style="margin-top:14px"><button class="ib" aria-label="edit" id="lgE">${ic('edit')}</button>${todo.length?`<button class="pill lgfix" id="lgF">${ic('check',18)} ${t('Fix it for me')}</button>`:''}</div>`,s=>{
   s.onclick=ev=>{const b=ev.target.closest('button');if(!b)return;if(b.id=='lgE'){closeSh();goSheet(all[0].it.id,ds);return}
    if(b.id=='lgF'){const snap=JSON.stringify(S.items);fixDay(ds,true);save();closeSh();render(0,true);pushSync&&pushSync(true);toast(`✓ ${t('Fixed')}`,()=>{S.items=JSON.parse(snap);save();render(0,true)})}}})}
-function legHtml(it,ds,prevId,iss){const p=placeOf(it.pl),o=prevId?placeOf(prevId):null,st=tm(it.time);let mode=it.mode,min=it.trav;if((!min||!mode)&&o){const a=autoTrav(o,p);mode=mode||a.mode;min=min||a.min}
- const m=MODE[mode||'walk'],txt=min?`${m[0]} ${t('Leave')} <bdi dir="ltr">${ft(st-min)}</bdi> · ${mode=='bus'&&it.busLine?t('Bus')+' '+esc(it.busLine):t(m[1])+' '+hm(min)}`:`🧭 ${t('Getting there')}`;
- return `<div class="cnw ${iss?'bad':''}"><button class="cn" type="button" onclick="goSheet('${it.id}','${ds}')"><span class="cnt">${txt}</span>${ic('right',14)}</button></div>`}
+function legHtml(it,ds,iss){const st=tm(it.time);const travel=travFor(it,ds),mode=travel?.mode,min=travel?.min,bus=travel?.bus;
+ const m=MODE[mode||'walk'],txt=bus||min?`${m[0]} ${t('Leave')} <bdi dir="ltr">${bus?hhmm(new Date(bus.leave)):'≈ '+ft(st-min)}</bdi> · ${bus?t('Bus')+' '+esc(bus.line??'?'):t(m[1])+' '+hm(min)}`:`🧭 ${t('Getting there')}`;
+ return `<div class="cnw ${iss?'bad':''}"><button class="cn" type="button" onclick="goSheet('${it.id}','${ds}')"><span class="cnt">${txt}</span>${bus?.late?`<span class="trip-late" title="${t('Late arrival')}" role="img" aria-label="${t('Late arrival')}">${ic('info',15)}</span>`:''}${ic('right',14)}</button></div>`}
 function dayList(arr,ds){if(!arr.length)return list(arr,ds);const LI=legIssues(ds),hm0=(S.places.find(p=>p.home)||{}).id;let prev=hm0;const out=[],fut=ds>=today();
- arr.forEach(it=>{const dn=isDone(it,ds);if(fut&&it.time&&it.pl&&!dn&&it.pl!=prev&&placeOf(it.pl)&&!(ds==today()&&tm(it.time)<nowMin()))out.push(legHtml(it,ds,prev&&placeOf(prev)?prev:null,LI[it.id]));out.push(row(it,ds));if(it.time&&it.pl)prev=it.pl});return out.join('')}
+ arr.forEach(it=>{const dn=isDone(it,ds);if(fut&&it.time&&it.pl&&!dn&&it.pl!=prev&&placeOf(it.pl)&&!(ds==today()&&tm(it.time)<nowMin()))out.push(legHtml(it,ds,LI[it.id]));out.push(row(it,ds));if(it.time&&it.pl)prev=it.pl});return out.join('')}
 
 function placesSheet(){openSh(`<div class="shd">${t('My places')}</div><div id="pl"></div>`,pdraw)}
 function pSync(){if(!PF)return;const n=$('#pn'),q=$('#pq');if(n)PF.name=n.value;if(q)PF.q=q.value}
@@ -653,7 +688,7 @@ function calView(ds){const all=occ(ds),timed=all.filter(i=>i.time),loose=all.fil
  groups.forEach(g=>{const cols=[];g.forEach(x=>{let k=0;while(cols[k]!=null&&cols[k]>x.s)k++;cols[k]=x.e;x.col=k});g.forEach(x=>x.n=cols.length)});
  const colOf=it=>{const ar=areaOf(it.area);return ar?ar[3]:CAL_NEUTRAL};
  const lines=[];for(let m=a;m<=b;m+=60)lines.push(`<div class="hln" style="top:${(m-a)*CAL_PPM}px"><span><bdi dir="ltr">${z(Math.floor(m/60)%24)}:00</bdi></span></div>`);
- const blocks=ev.map(x=>{if(x.leg){const g=x.leg,h=Math.max((x.e-x.s)*CAL_PPM-2,20),w=100/x.n,m=MODE[g.mode||'walk'],bad=g.issues.length,txt=`${m[0]} ${g.mode=='bus'&&g.it.busLine?t('Bus')+' '+esc(g.it.busLine):t(m[1])} · ${hm(g.min)}`;
+ const blocks=ev.map(x=>{if(x.leg){const g=x.leg,h=Math.max((x.e-x.s)*CAL_PPM-2,20),w=100/x.n,m=MODE[g.mode||'walk'],bad=g.issues.length,txt=`${m[0]} ${g.bus?t('Bus')+' '+esc(g.bus.line??'?'):t(m[1])} · ${hm(g.bus?.total??g.min)}`;
    return `<div class="cev cleg ${bad?'bad':''}" style="top:${(x.s-a)*CAL_PPM}px;height:${h}px;inset-inline-start:calc(${x.col*w}% + 1px);width:calc(${w}% - 3px)" onclick="goSheet('${g.it.id}','${ds}')"><span class="cet">${txt}</span></div>`}
   const it=x.it,dn=isDone(it,ds),h=Math.max((x.e-x.s)*CAL_PPM-2,22),w=100/x.n,tall=h>=46,ar=areaOf(it.area);
   return `<button class="cev ${dn?'dn':''}" data-tid="${it.id}" style="top:${(x.s-a)*CAL_PPM}px;height:${h}px;inset-inline-start:calc(${x.col*w}% + 1px);width:calc(${w}% - 3px);background:${colOf(it)}" onclick="detail('${it.id}','${ds}')"><b><span class="cei">${iconOf(it)}</span><span class="cet">${esc(it.title)}</span></b>${tall?`<span class="ctm"><bdi dir="ltr">${it.time}–${ft(x.e)}</bdi>${ar?' · '+esc(ar[2]):''}</span>`:''}</button>`}).join('');
@@ -672,6 +707,31 @@ function wkAns(v,h){const w=weekStart(today());WQ=null;
  if(v=='no'||v=='x'){S.wkAsk[w]=v;delete S.focus[w];save();render(0,true);return}
  S.wkAsk[w]='yes';S.focus[w]={area:v};S.goals[v]=h||S.goals[v]||20;S.set.focusOn=true;save();render(0,true);
  const c=S.cats.find(x=>x.id==v),a=areaOf(v);toast(`${t('Focus')} · ${c&&c.emoji?c.emoji+' ':''}${a?a[2]:''} · ${hh(S.goals[v])}`)}
+const reviewWeekStart=()=>addD(weekStart(today()),7);
+function weekReview(ds){
+ const start=reviewWeekStart(),days=Array.from({length:7},(_,i)=>addD(start,i));
+ if(!days.includes(ds))ds=days.find(d=>!S.weekReview?.[d]?.checked)||start;
+ const day=S.weekReview?.[ds]||{},tasks=occ(ds);
+ const buttons=days.map(d=>`<button class="wd ${d===ds?'on':''}" data-review-date="${d}" aria-pressed="${d===ds}" aria-label="${fmtD(d,{weekday:'long',day:'numeric',month:'long'})}">${pd(d).getDate()}${S.weekReview?.[d]?.checked?' ✓':''}</button>`).join('');
+ const rows=tasks.map(it=>`<button class="li review-task" data-review-task="${esc(it.id)}"><span class="ic" style="${areaTint(it.area)}">${iconOf(it)}</span><span class="gt"><b>${esc(it.title)}</b><span class="sub"><bdi dir="ltr">${esc(it.time||t('Whole day'))}</bdi>${it.review?.[ds]?.note?' · '+t('For this day'):''}</span></span>${ic('right',16)}</button>`).join('');
+ const write=patch=>{S.weekReview??={};S.weekReview[ds]={...S.weekReview[ds],...patch};save()};
+ openSh(`<div class="review-head"><div class="shd">${t('Plan next week')}</div><button class="xs" id="review-close" aria-label="${t('Close')}">${ic('x',19)}</button></div>
+  <div class="wdays">${buttons}</div><div class="sec"><span>${fmtD(ds,{weekday:'long',day:'numeric',month:'short'})}</span>
+  <button class="pill" id="review-add">+ ${t('Add a task')}</button></div>
+  ${rows?`<div class="card">${vlist(rows,4,57)}</div>`:`<div class="empty">${t('No tasks planned')}</div>`}
+  <label class="fld"><span>${t('Day note')}</span><textarea class="f nt" id="review-note" rows="2" maxlength="1500" dir="auto">${esc(day.note||'')}</textarea></label>
+  <button class="btn" id="review-check" aria-pressed="${!!day.checked}">${day.checked?'✓ '+t('Day reviewed'):t('Review day')}</button>`,sheet=>{
+  sheet.querySelector('#review-note').oninput=e=>write({note:e.target.value});
+  sheet.onclick=e=>{
+   const b=e.target.closest('button');if(!b)return;
+   if(b.dataset.reviewDate)weekReview(b.dataset.reviewDate);
+   if(b.dataset.reviewTask)detail(b.dataset.reviewTask,ds,true);
+   if(b.id==='review-close')closeSh();
+   if(b.id==='review-add')edit(null,ds,{afterSave:()=>weekReview(ds)});
+   if(b.id==='review-check'){write({checked:true});const next=days.slice(days.indexOf(ds)+1).find(d=>!S.weekReview[d]?.checked);if(next)weekReview(next);else weekReview(ds)}
+  };
+ });
+}
 function view(){
  if(tab==0){const td=today(),all=occ(td),dn=all.filter(i=>isDone(i,td)).length,H=heroNext(),fl=freeLine(),ms=missed();
   return `<div class="hd hd2"><div><h1>${t('Today')}</h1><div class="sub">${fmtD(td,{weekday:'long',day:'numeric',month:'long'})}</div></div><button class="ib gear" onclick="settings()" aria-label="${t('Settings')}">${ic('gear',20)}</button></div>
@@ -684,7 +744,8 @@ function view(){
   return `<div class="hd"><h1>${fmtD(sel,{month:'long'})}</h1><div class="wn"><button class="ib" onclick="shift(-1)" aria-label="prev">${ic('left',20)}</button><button class="pill" onclick="sel=today();render(0,true)">${sel==td?t('Today'):fmtD(sel,{weekday:'short',day:'numeric'})}</button><button class="ib" onclick="shift(1)" aria-label="next">${ic('right',20)}</button></div></div>
   <div class="strip">${days.map(d=>{const a=stats(d);return `<button class="dy ${d==sel?'on':''} ${d==td?'td':''}" onclick="const n=dayDiff(sel,'${d}');if(n)shift(n)"><small>${fmtD(d,{weekday:'short'})}</small><b>${pd(d).getDate()}</b><span class="ld" style="--w:${Math.min(100,Math.round(a.load*100))}%"></span></button>`}).join('')}</div>
   
-  <div class="dayv ${slideDir?(slideDir>0?'sl-n':'sl-p'):''}"><div class="sec" style="margin-top:14px"><span>${fmtD(sel,{weekday:'long',day:'numeric',month:'short'})}</span><span class="lbs">${Object.keys(legIssues(sel)).length?`<button class="lay lgw" aria-label="${t("This doesn't add up")}" onclick="legIssue('${sel}')">${ic('info',17)}</button>`:''}<button class="lay" aria-label="${t(S.set.lay=='cal'?'List view':'Calendar view')}" onclick="setLay()">${ic(S.set.lay=='cal'?'llist':'lcal',17)}</button></span></div>${S.set.lay=='cal'?calView(sel):`<div class="card" id="wk">${dayList(occ(sel),sel)}</div>`}</div>
+  <div class="alt" style="margin:12px 0"><button class="pill" type="button" onclick="weekReview()">${t('Plan next week')}</button></div>
+  <div class="dayv ${slideDir?(slideDir>0?'sl-n':'sl-p'):''}"><div class="sec" style="margin-top:14px"><span>${fmtD(sel,{weekday:'long',day:'numeric',month:'short'})}</span><span class="lbs">${Object.keys(legIssues(sel)).length?`<button class="lay lgw" aria-label="${t("This doesn't add up")}" onclick="legIssue('${sel}')">${ic('info',17)}</button>`:''}<button class="lay" aria-label="${t(S.set.lay=='cal'?'List view':'Calendar view')}" onclick="setLay()">${ic(S.set.lay=='cal'?'llist':'lcal',17)}</button></span></div>${S.weekReview?.[sel]?.note?.trim()?`<div class="card review-note" dir="auto">${esc(S.weekReview[sel].note)}</div>`:''}${S.set.lay=='cal'?calView(sel):`<div class="card" id="wk">${dayList(occ(sel),sel)}</div>`}</div>
   <button class="sec sbtn" onclick="showSome=!showSome;render(0,true)"><span>${t('Someday')}${Lo?` <span class="cnt2">${Lo}</span>`:''}</span><span class="cv ${showSome?'up':''}">${ic('chev',16)}</span></button>
   <div class="gx ${showSome?'o':''}"><div><div class="card">${list(L,null,{later:1,n:8})}</div><div class="alt" style="margin:-4px 0 10px"><button class="pill" onclick="edit(null,null,{someday:1})">+ ${t('Add for someday')}</button></div></div></div>`}
  tab=1;return view()}
@@ -861,7 +922,7 @@ function edit(id,ds,opts){const it=id?S.items.find(i=>i.id==id):null,wz=!it;opts
    const o={title,date,time,dur:F.dur,trav:F.trav,mode:F.mode||null,pl:F.pl,rem:time?F.rem:-1,rep:rp,days:rp=='days'?[...F.days].sort((a,b)=>a-b):null,area:F.area||null,emoji:'📌'};
    if(F.id)Object.assign(S.items.find(i=>i.id==F.id),o);else S.items.push(Object.assign({id:uid(),created:Date.now(),done:{}},o));
    S.durUse[F.dur]=Date.now();if(F.area)S.catUse[F.area]=Date.now();if(F.pl)S.plUse[F.pl]=Date.now();
-   if(date&&tab==1)sel=date;save();closeSh();render(0,true);due()};
+   if(date&&tab==1)sel=date;save();closeSh();render(0,true);due();opts.afterSave?.()};
   drawAll();
   if(wz)go('what');else{drawTr();sums()}
   prev();
@@ -910,26 +971,39 @@ function focusSheet(){const draw=()=>{$('#fsb').innerHTML=`<div class="card" sty
    if(d.ed){catPopup(S.cats.find(c=>c.id==d.ed),()=>{save();draw();render(0,true)});return}
    if(d.new){catPopup(null,c=>{S.cats.push(c);save();draw();render(0,true)});return}
    if(d.del){askDelCat(d.del,()=>{draw();render(0,true)})}}})}
-function detail(id,ds){const it=S.items.find(i=>i.id==id);if(!it)return;let keep=false;
- const draw=()=>{const a=it.area&&areaOf(it.area),st=it.steps||[],dn=st.filter(x=>x.d).length,pl=it.pl&&placeOf(it.pl),done=isDone(it,ds);
+function detail(id,ds,fromReview=false,viewDay=true){const it=S.items.find(i=>i.id==id);if(!it)return;let keep=false;
+ const extra=()=>ds&&it.review?.[ds];
+ const extras=()=>{it.review??={};return it.review[ds]??={}};
+ const useDay=fromReview||(viewDay&&!!extra());
+ const stepList=()=>useDay?(extra()?.steps||[]):(it.steps||[]);
+
+ const draw=()=>{const a=it.area&&areaOf(it.area),st=stepList(),dn=st.filter(x=>x.d).length,pl=it.pl&&placeOf(it.pl),done=isDone(it,ds);
   const when=it.time?`<bdi dir="ltr">${it.dur?it.time+'–'+ft(tm(it.time)+it.dur):it.time}</bdi>`:(it.date?t('Whole day'):t('Later'));
   const meta=[ds?fmtD(ds,{weekday:'long',day:'numeric',month:'short'}):'',when,pl?'📍 '+esc(pl.name):'',a?a[2]:''].filter(Boolean).join(' · ');
   $('#dt').innerHTML=`<div class="dh"><span class="ic big" style="${areaTint(it.area)}">${iconOf(it)}</span><div class="dtt">${esc(it.title)}</div><div class="sub">${meta}</div></div>
+  ${!fromReview&&extra()?`<div class="alt"><button type="button" class="pill" id="detail-view">${t(useDay?'Task details':'For this day')}</button></div>`:''}
+  ${useDay?`<div class="lb">${t('For this day')}</div>${it.note?`<div class="review-note sub" dir="auto">${esc(it.note)}</div>`:''}
+   ${(it.steps||[]).length?`<div class="card">${it.steps.map(x=>`<div class="li ${x.d?'dn':''}"><button class="ck" data-base-step="${esc(x.id)}" aria-label="${t('Steps')}" ${fromReview?'disabled':''}>${ic('check',16)}</button><span class="gt"><b>${esc(x.t)}</b></span></div>`).join('')}</div>`:''}`:''}
   <div class="lb">${t('Steps')}${st.length?` · ${dn}/${st.length}`:''}</div>${st.length?`<span class="fb" style="--w:${Math.round(dn/st.length*100)}%;margin:0 6px 10px"></span>`:''}
   <div class="card" style="margin-bottom:14px">${st.map(x=>`<div class="li ${x.d?'dn':''}" style="cursor:default"><button class="ck" data-st="${x.id}" aria-label="step">${ic('check',16)}</button><span class="gt"><b>${esc(x.t)}</b></span><button class="xs" data-sx="${x.id}" aria-label="remove">${ic('x',16)}</button></div>`).join('')}
    <div class="li" style="cursor:default"><span class="ic" style="width:28px;height:28px;font-size:15px">+</span><input class="sin" id="sn" placeholder="${t('Add a step')}" maxlength="80" enterkeyhint="done" autocomplete="off"></div></div>
-  <textarea class="f nt" id="nt" rows="1" placeholder="${t('Add a note')}">${esc(it.note||'')}</textarea>
-  <div class="trio"><button class="ib" id="de" aria-label="edit">${ic('edit')}</button>${pl&&ds==today()&&!done?`<button class="ib" id="dg" aria-label="go" style="font-size:20px">🧭</button>`:''}<button class="ib p" id="dd" aria-label="done" style="${done?'background:var(--a);color:#fff':''}">${ic('check')}</button></div>`;
+  <textarea class="f nt" id="nt" rows="1" placeholder="${t('Add a note')}">${esc((useDay?extra()?.note:it.note)||'')}</textarea>
+  <div class="trio">${fromReview?`<button class="ib" id="review-back" aria-label="${t('Back')}">${ic('left')}</button>`:`<button class="ib" id="de" aria-label="edit">${ic('edit')}</button>`}${!fromReview&&pl&&ds==today()&&!done?`<button class="ib" id="dg" aria-label="go" style="font-size:20px">🧭</button>`:''}${fromReview?'':`<button class="ib p" id="dd" aria-label="done" style="${done?'background:var(--a);color:#fff':''}">${ic('check')}</button>`}</div>`;
   const nt=$('#nt');if(nt){nt.style.height='auto';nt.style.height=Math.max(54,nt.scrollHeight)+'px'}if(keep){$('#sn').focus();keep=false}};
  openSh(`<div id="dt"></div>`,s=>{draw();const vib=()=>navigator.vibrate&&navigator.vibrate(8);
-  const svNote=()=>{const n=$('#nt');if(n&&(it.note||'')!==n.value){it.note=n.value.trim();save()}};
+  const svNote=()=>{const n=s.querySelector('#nt'),old=useDay?extra()?.note:it.note;
+   if(n&&(old||'')!==n.value){(useDay?extras():it).note=n.value.trim();save()}};
+
   s.onclick=e=>{const b=e.target.closest('button');if(!b)return;
-   if(b.dataset.st){const x=it.steps.find(y=>y.id==b.dataset.st);x.d=x.d?0:1;vib();save();const all=it.steps.every(y=>y.d);draw();render(0,true);if(x.d&&all)toast(t('All steps done')+' 🎉',()=>{if(!isDone(it,ds))toggle(it.id,ds)},t('Mark done'))}
-   else if(b.dataset.sx){it.steps=it.steps.filter(y=>y.id!=b.dataset.sx);save();draw();render(0,true)}
+   if(b.id==='review-back'){svNote();weekReview(ds);return}
+   if(b.id==='detail-view'){svNote();detail(id,ds,false,!useDay);return}
+   if(b.dataset.baseStep&&!fromReview){const x=it.steps.find(y=>y.id===b.dataset.baseStep);x.d=x.d?0:1;save();draw();return}
+   if(b.dataset.st){const x=stepList().find(y=>y.id==b.dataset.st);x.d=x.d?0:1;vib();save();const all=stepList().every(y=>y.d);draw();render(0,true);if(!fromReview&&x.d&&all)toast(t('All steps done')+' 🎉',()=>{if(!isDone(it,ds))toggle(it.id,ds)},t('Mark done'))}
+   else if(b.dataset.sx){(useDay?extras():it).steps=stepList().filter(y=>y.id!=b.dataset.sx);save();draw();render(0,true)}
    else if(b.id=='de'){svNote();closeSh(true);edit(it.id,ds)}
    else if(b.id=='dg'){svNote();closeSh(true);goSheet(it.id,ds)}
    else if(b.id=='dd'){svNote();vib();closeSh();toggle(it.id,ds)}};
-  s.addEventListener('keydown',e=>{if(e.target.id=='sn'&&e.key=='Enter'){const v=e.target.value.trim();if(!v)return;(it.steps=it.steps||[]).push({id:uid(),t:v,d:0});save();keep=true;draw();render(0,true)}});
+  s.addEventListener('keydown',e=>{if(e.target.id=='sn'&&e.key=='Enter'){const v=e.target.value.trim();if(!v)return;const target=useDay?extras():it;(target.steps??=[]).push({id:uid(),t:v,d:0});save();keep=true;draw();render(0,true)}});
   s.addEventListener('focusout',e=>{if(e.target.id=='nt')svNote()});s.addEventListener('input',e=>{if(e.target.id=='nt'){e.target.style.height='auto';e.target.style.height=Math.max(54,e.target.scrollHeight)+'px'}});
   const ov=$('#ov');const oc=ov.onclick;ov.onclick=()=>{svNote();oc()}})}
 $('#fab').onclick=()=>edit();
@@ -948,7 +1022,8 @@ function settings(){_g=0;openSh(`<div class="shd">${t('Settings')}</div>`+
  <div class="gw"><div class="gr"><span class="gt">${t('Day starts')}</span>${infoBtn}<select id="d1">${[5,6,7,8,9,10,11,12].map(h=>`<option value="${h}" ${S.set.ds==h?'selected':''}>${z(h)}:00</option>`).join('')}</select></div>${info('info.day')}</div><div class="gw"><div class="gr"><span class="gt">${t('Day ends')}</span><select id="d2">${[16,17,18,19,20,21,22,23,24].map(h=>`<option value="${h}" ${S.set.de==h?'selected':''}>${z(h%24)}:00</option>`).join('')}</select></div></div>
  <div class="gw"><div class="gr" role="button" id="cts"><span class="gt">${t('Categories')}<div class="sub">${S.cats.length}</div></span>${ic('right',18)}</div></div>
  `)+
- group('Places',`<div class="gw"><div class="gr" role="button" id="pls"><span class="gt">${t('My places')}<div class="sub">${S.places.length||''}</div></span>${infoBtn}${ic('right',18)}</div>${info('info.places')}</div>
+ group('Places',`<div class="gw"><div class="gr"><span class="gt">${t('Location in Tempo')}<div class="sub">${t('Use location while Tempo is open')}</div></span><button class="tg ${locationOpt()==='on'||(locationOpt()!=='off'&&locationPermission?.state==='granted')?'on':''}" id="geo-setting" role="switch" aria-label="${t('Location in Tempo')}"></button></div></div>
+ <div class="gw"><div class="gr" role="button" id="pls"><span class="gt">${t('My places')}<div class="sub">${S.places.length||''}</div></span>${infoBtn}${ic('right',18)}</div>${info('info.places')}</div>
  <div class="gw"><div class="gr" role="button" id="cyr"><span class="gt">${t('Bus city')}<div class="sub">${esc(S.set.city)}</div></span>${ic('right',18)}</div></div>
  <div class="gw"><div class="gr" role="button" id="bc"><span class="gt">${t('Check bus data')}<div class="sub" id="bcs"></div></span></div></div>`)+
  group('Notifications',`<div class="gw"><div class="gr" role="button" id="tn"><span class="gt">${t('Notifications')}<div class="sub" id="ns">${notifState()}</div></span>${infoBtn}<span class="tg ${S.set.notif&&typeof Notification!='undefined'&&Notification.permission=='granted'?'on':''}" id="tgn"></span></div>${info('info.notif')}</div>
@@ -959,6 +1034,12 @@ function settings(){_g=0;openSh(`<div class="shd">${t('Settings')}</div>`+
  ${S.set.cloudKey?`<div class="gw"><div class="gr" role="button" id="cbn"><span class="gt">${t('Back up now')}</span></div></div><div class="gw"><div class="gr" role="button" id="cbk"><span class="gt">${t('Recovery key')}</span>${ic('right',18)}</div></div>`:''}
  <div class="gw"><div class="gr" role="button" id="cbr"><span class="gt">${t('Restore from cloud')}</span>${ic('right',18)}</div></div>
  <div class="gw"><div class="gr" role="button" id="ex"><span class="gt">${t('Export backup')}</span>${infoBtn}</div>${info('info.data')}</div><div class="gw"><label class="gr" role="button"><span class="gt">${t('Import backup')}</span><input type="file" id="im" accept="application/json" hidden></label></div><div class="gw"><div class="gr" role="button" id="er"><span class="gt neg">${t('Erase everything')}</span></div></div>`)+`<div class="ver" id="ver">${t('Version')} ${APP_VER}${APP_BUILD.startsWith('__')?' · '+t('local'):' · <bdi dir="ltr">'+esc(APP_BUILD)+'</bdi>'}</div>`,s=>{
+  const geo=s.querySelector('#geo-setting');geo.setAttribute('aria-checked',geo.classList.contains('on'));
+  geo.onclick=async()=>{
+   if(geo.classList.contains('on')){localStorage.setItem('tempo.location','off');stopWatch();lastPos=null;visited.clear();geo.classList.remove('on')}
+   else{geo.disabled=true;try{await getLoc(true);geo.classList.add('on')}catch(e){pillMsg(t('Location unavailable. Check your device settings.'))}finally{geo.disabled=false}}
+   geo.setAttribute('aria-checked',geo.classList.contains('on'));
+  };
   const sg=(id,i,fn)=>{const el=$('#'+id);const bs=[...el.querySelectorAll('button')];bs.forEach((b,k)=>{b.classList.toggle('on',k==i);b.onclick=()=>{bs.forEach((x,j)=>x.classList.toggle('on',j==k));segPlace(el,k,true);fn(k)}});segPlace(el,i,false)};
   sg('s1',S.set.lang=='he'?1:0,k=>{S.set.lang=k?'he':'en';save();applyLang();render(0,true);setTimeout(settings,0)});
   sg('s2',S.set.theme=='light'?0:S.set.theme=='dark'?2:1,k=>{S.set.theme=['light','','dark'][k];save();applyLang()});
@@ -1077,7 +1158,7 @@ document.addEventListener('click',async e=>{if(!O)return;const b=e.target.closes
  if(d.obr!==undefined){obSetPlace(O.res[+d.obr]);return}
  if(d.obsp){const p=placeOf(d.obsp);obSetPlace({id:p.id,name:p.name,emoji:p.emoji,addr:p.addr,lat:p.lat,lon:p.lon});return}
  if(d.obclr){if(O.i=='home')O.home=null;else if(O.i=='mainPlace')O.main.pl=null;else O.cur.pl=null;obDraw();return}
- if(d.obhere){O.msg=t('Searching…');obDraw();try{const g=await getLoc();const a=await geoRev(g.lat,g.lon);obSetPlace({...a,lat:g.lat,lon:g.lon})}catch(err){O.msg=t('Location unavailable');obDraw()}return}
+ if(d.obhere){O.msg=t('Searching…');obDraw();try{const g=await getLoc(true);const a=await geoRev(g.lat,g.lon);obSetPlace({...a,lat:g.lat,lon:g.lon})}catch(err){O.msg=t('Location unavailable');obDraw()}return}
  if(d.obmap){const X=O.i=='home'?O.home:O.i=='mainPlace'?(O.main&&O.main.pl):(O.cur&&O.cur.pl);mapPick(X||null,p=>obSetPlace(p));return}
  if(d.obrem!==undefined){O.rem=d.obrem=='1';if(O.rem&&'Notification'in window&&Notification.permission=='default'){try{await Notification.requestPermission()}catch(x){}}obNext();return}
  if(d.obf!==undefined){O.focus=+d.obf||0;obNext();return}
@@ -1094,15 +1175,52 @@ function obFinish(){const now=Date.now(),T=today();
  save();obClose();tab=0;render(1);toast(t('Your week is ready'))}
 
 /* ---------- left the place of a task (works while Tempo is open) ---------- */
-let watchId=null,lastPos=null;
-function leftCheck(p){lastPos=p;S.left=S.left||{};const td=today(),n=nowMin();
- for(const it of occ(td)){if(!it.pl||!it.time||isDone(it,td))continue;const pl=placeOf(it.pl);if(!pl)continue;const st=tm(it.time),en=st+(it.dur||30),key=it.id+td,d=hav(p,pl)*1000;
-  if(n>=st-15&&n<=en+30&&d<=150){S.left[key]=S.left[key]||{in:1};continue}
-  if(S.left[key]&&S.left[key].in&&!S.left[key].asked&&d>=350&&n>=st){S.left[key].asked=1;save();leftAsk(it,td,pl);break}}}
-function leftAsk(it,ds,pl){notify(`${iconTxt(it)}${it.title}`,(lang()=='he'?'יצאתם מ'+pl.name:t('You left')+' '+pl.name)+' · '+t('Mark as done?'),'left'+it.id);
- toast(lang()=='he'?'יצאתם מ'+pl.name:`${t('You left')} ${pl.name}`,()=>{if(!isDone(it,ds))toggle(it.id,ds)},t('Mark done'))}
-function startWatch(){if(watchId!=null||!navigator.geolocation||!S.places.length||!S.items.some(i=>i.pl))return;try{watchId=navigator.geolocation.watchPosition(p=>leftCheck({lat:p.coords.latitude,lon:p.coords.longitude}),()=>{},{enableHighAccuracy:false,maximumAge:60000,timeout:20000})}catch(e){}}
-document.addEventListener('visibilitychange',()=>{if(document.hidden){if(watchId!=null){navigator.geolocation.clearWatch(watchId);watchId=null}}else startWatch()});
+let watchId=null,lastPos=null,locationPermission=null,locationRequest=null;
+const locationOpt=()=>localStorage.getItem('tempo.location');
+function stopWatch(){if(watchId==null)return;navigator.geolocation.clearWatch(watchId);watchId=null}
+function nextTimedTask(it,ds){
+ const end=tm(it.time)+(it.dur||0);
+ return occ(ds).find(x=>x.id!==it.id&&x.time&&tm(x.time)>=Math.max(tm(it.time)+1,end-5));
+}
+function samePlaceNext(it,ds){
+ const next=nextTimedTask(it,ds),a=placeOf(it.pl),b=next&&placeOf(next.pl);
+ return !!(a&&b&&(a.id===b.id||hav(a,b)<=.15));
+}
+const visited=new Map();
+function leftCheck(p){
+ lastPos=p;
+ if(!Number.isFinite(p.accuracy)||p.accuracy>100||Date.now()-p.at>30000||document.hidden)return;
+ const td=today(),now=Date.now();
+ for(const [key,until] of visited)if(now>until)visited.delete(key);
+ for(const ds of [addD(td,-1),td])for(const it of occ(ds)){
+  if(!it.time||isDone(it,ds))continue;
+  const pl=placeOf(it.pl);if(!pl)continue;
+  const start=+taskAt(ds,tm(it.time)),end=+taskAt(ds,tm(it.time)+(it.dur||30));
+  if(now<start||now>end+90*6e4)continue;
+  const key=JSON.stringify([it.id,ds,it.pl,it.time,pl.lat,pl.lon]),distance=hav(p,pl)*1000;
+  if(distance+p.accuracy<=150&&now<=end+15*6e4)visited.set(key,end+90*6e4);
+  if(distance-p.accuracy<300||!visited.has(key)||samePlaceNext(it,ds))continue;
+  if(now<end&&occ(ds).some(x=>x.id!==it.id&&x.time&&x.pl&&placeOf(x.pl)&&
+   hav(pl,placeOf(x.pl))<=.15&&+taskAt(ds,tm(x.time))>start&&+taskAt(ds,tm(x.time))<=now))continue;
+  visited.delete(key);
+  finDone(it.id,ds,true);
+  toast(t('Marked done')+' · '+it.title,()=>{if(isDone(it,ds))toggle(it.id,ds)});
+ }
+}
+function positionValue(p){return {lat:p.coords.latitude,lon:p.coords.longitude,accuracy:p.coords.accuracy,at:p.timestamp||Date.now()}}
+function startWatch(){
+ if(watchId!=null||document.hidden||!navigator.geolocation||!S.items.some(i=>i.pl&&i.time))return;
+ if(locationOpt()==='off'||locationPermission?.state==='denied')return;
+ if(locationPermission?.state!=='granted'&&locationOpt()!=='on')return;
+ watchId=navigator.geolocation.watchPosition(p=>leftCheck(positionValue(p)),e=>{if(e.code===1){stopWatch();localStorage.removeItem('tempo.location')}},{enableHighAccuracy:true,maximumAge:15000,timeout:20000});
+}
+async function initLocation(){
+ try{locationPermission=await navigator.permissions?.query({name:'geolocation'});
+  locationPermission?.addEventListener('change',()=>{if(locationPermission.state==='denied'){stopWatch();lastPos=null;visited.clear();if(locationOpt()==='on')localStorage.removeItem('tempo.location')}else startWatch()});
+ }catch(e){}
+ startWatch();
+}
+document.addEventListener('visibilitychange',()=>{if(document.hidden)stopWatch();else startWatch()});
 /* ---------- cloud: backup and reminders when Tempo is closed ---------- */
 const CLOUD='https://want.itayleor1408.workers.dev';
 let cdT=null,cbBusy=false;
@@ -1132,13 +1250,15 @@ async function notify(title,body,tag,extra){if(!(extra&&extra.fin))pillMsg(title
  if(!('Notification'in window)||Notification.permission!='granted')return;
  try{const reg=await navigator.serviceWorker.getRegistration();if(reg)return reg.showNotification(title,Object.assign({body,tag,icon:'icon-192.png',badge:'icon-192.png',renotify:true},extra&&extra.fin?{actions:[{action:'yes',title:t('Yes')},{action:'no',title:t('Not yet')}],data:{fin:extra.fin}}:{}));new Notification(title,{body,tag,icon:'icon-192.png'})}catch(e){}}
 /* ---------- "Did you finish?" ----------
-   When a timed task's end passes and it is not marked done, ask. Skipped when the next task is at a DIFFERENT place (moving there already shows you finished). */
-function needsFinAsk(it,ds){if(!it.time||isDone(it,ds))return false;const en=tm(it.time)+Math.max(it.dur||0,0);if(!it.dur)return false;
- const nx=occ(ds).filter(x=>x.id!=it.id&&x.time&&tm(x.time)>=en-5).sort((a,b)=>tm(a.time)-tm(b.time))[0];
- if(nx&&nx.pl&&it.pl&&nx.pl!=it.pl)return false;return true}
-function finAlerts(){const out=[],td=today();for(const ds of [addD(td,-1),td]){for(const it of occ(ds)){if(!needsFinAsk(it,ds))continue;
-  const at=pd(ds).getTime()+(tm(it.time)+it.dur)*6e4;out.push({at,tag:'fin'+it.id+ds,title:`${iconTxt(it)}${it.title}`,body:t('Did you finish?'),fin:{id:it.id,ds}})}}return out}
-function finDone(id,ds,yes){if(yes){const it=S.items.find(i=>i.id==id);if(it){it.done=it.done||{};it.done[ds||'x']=1;save();render(0,true)}}else{S.fired['finre'+id+ds]=Date.now();save()}}
+   Ask at the end when there is no known move to another place. */
+function needsFinAsk(it,ds){
+ if(!it.time||!it.dur||isDone(it,ds))return false;
+ const next=nextTimedTask(it,ds);
+ return !it.pl||!next?.pl||it.pl===next.pl||samePlaceNext(it,ds);
+}
+function finAlerts(){const out=[],td=today();for(const ds of [addD(td,-1),td,addD(td,1),addD(td,2)]){for(const it of occ(ds)){if(!needsFinAsk(it,ds))continue;
+  const at=+taskAt(ds,tm(it.time)+it.dur);out.push({at,tag:'fin'+it.id+ds,title:`${iconTxt(it)}${it.title}`,body:t('Did you finish?'),fin:{id:it.id,ds}})}}return out}
+function finDone(id,ds,yes){if(yes){const it=S.items.find(i=>i.id==id);if(it){it.done=it.done||{};it.done[ds||'x']=1;save();render(0,true);pushSync(true)}}else{S.fired['finre'+id+ds]=Date.now();save()}}
 function finAsk(a){const it=S.items.find(i=>i.id==a.fin.id);if(!it)return;const ts=$('#ts');ts.classList.add('fin');$('#tt').innerHTML=`<b>${esc(it.title)}</b><span>${t('Did you finish?')}</span>`;
  const y=$('#tu'),n=$('#tn');y.textContent=t('Yes');y.style.display='';n.textContent=t('Not yet');n.style.display='';
  const hide=()=>{ts.classList.remove('o');n.style.display='none';setTimeout(()=>ts.classList.remove('fin'),400)};y.onclick=()=>{finDone(a.fin.id,a.fin.ds,true);hide()};n.onclick=()=>{finDone(a.fin.id,a.fin.ds,false);hide()};
@@ -1146,40 +1266,89 @@ function finAsk(a){const it=S.items.find(i=>i.id==a.fin.id);if(!it)return;const 
 async function finPending(){try{const c=await caches.open('tempo-push'),r=await c.match('fin.json');if(!r)return;const l=await r.json();await c.delete('fin.json');let ch=false;for(const x of l){if(x.yes){finDone(x.id,x.ds,true);ch=true}else finDone(x.id,x.ds,false)}if(ch)render(0,true)}catch(e){}}
 document.addEventListener('visibilitychange',()=>{if(!document.hidden)finPending()});setTimeout(finPending,800);try{navigator.serviceWorker.addEventListener('message',e=>{if(e.data&&e.data.fin)finPending()})}catch(e){}
 function alertsAhead(){const out=[],td=today();for(const ds of [addD(td,-1),td,addD(td,1),addD(td,2)])for(const it of occ(ds)){if(!it.time||it.rem<0||it.rem==null||isDone(it,ds))continue;
-  const tr=travFor(it,ds),tv=tr?tr.min:0,at=pd(ds).getTime()+(tm(it.time)-tv-it.rem)*6e4;
+  const tr=travFor(it,ds),tv=tr?tr.min:0,at=(tr?.bus?.leave??+taskAt(ds,tm(it.time)-tv))-it.rem*6e4;
   out.push({at,tag:it.id+ds,title:`${iconTxt(it)}${it.title}`,body:tv?(it.rem?`${t('Leave by')} ${ft(tm(it.time)-tv)} · ${it.time}`:`${t('Leave now')} · ${it.time}`):(it.rem?`${t('Starts in')} ${it.rem} ${t('min')} · ${it.time}`:`${t('Starting now')} · ${it.time}`)})}return out.concat(S.set.finAsk===false?[]:finAlerts()).sort((a,b)=>a.at-b.at)}
 function finCheck(){const now=Date.now(),td=today();
  const finOpen=()=>$('#ts').classList.contains('o')&&$('#tn').style.display!='none';
  if(S.set.finAsk!==false&&!finOpen())for(const a of finAlerts()){const k=a.tag,rk='finre'+a.fin.id+a.fin.ds;
-  if(now>=a.at&&now-a.at<4*36e5&&!S.fired[k]){S.fired[k]=now;save();if(document.hidden){if(S.set.notif)notify(a.title,a.body,k,{fin:a.fin})}else{finAsk(a);break}}
+  if(now>=a.at&&now-a.at<4*36e5&&!S.fired[k]){S.fired[k]=now;save();if(document.hidden){if(S.set.notif)notify(a.title,a.body,k,{fin:a.fin})}else{if(S.set.notif)notify(a.title,a.body,k,{fin:a.fin});finAsk(a);break}}
   else if(S.fired[rk]&&now-S.fired[rk]>=15*6e4&&!S.fired[rk+'x']){S.fired[rk+'x']=now;save();if(document.hidden){if(S.set.notif)notify(a.title,a.body,k+'b',{fin:a.fin})}else{finAsk(a);break}}}
 }
 function due(){finCheck();if(!S.set.notif)return;const now=Date.now(),td=today();
  if(wkAskOpen()&&nowMin()>=S.set.ds*60&&!S.fired['wk'+td]){S.fired['wk'+td]=now;save();notify('👋 '+t('A new week started'),t('Do you have a focus this week?'),'wk'+td)}
  for(const ds of [addD(td,-1),td,addD(td,1)])for(const it of occ(ds)){if(!it.time||it.rem<0||it.rem==null||isDone(it,ds))continue;
-  const tr=travFor(it,ds),tv=tr?tr.min:0,at=pd(ds).getTime()+(tm(it.time)-tv-it.rem)*6e4,key=it.id+ds;
+  const tr=travFor(it,ds),tv=tr?tr.min:0,at=(tr?.bus?.leave??+taskAt(ds,tm(it.time)-tv))-it.rem*6e4,key=it.id+ds;
   if(now>=at&&now-at<15*6e4&&!S.fired[key]){S.fired[key]=now;save();notify(`${iconTxt(it)}${it.title}`,tv?(it.rem?`${t('Leave by')} ${ft(tm(it.time)-tv)} · ${it.time}`:`${t('Leave now')} · ${it.time}`):(it.rem?`${t('Starts in')} ${it.rem} ${t('min')} · ${it.time}`:`${t('Starting now')} · ${it.time}`),key)}}
  for(const k in S.fired)if(now-S.fired[k]>2*864e5)delete S.fired[k]}
 /* ---------- buses: nearest stops + live estimates (open Stride API) ---------- */
 const API='https://open-bus-stride-api.hasadna.org.il';
 const isoTz=d=>{const o=-d.getTimezoneOffset(),a=Math.abs(o);return `${d.getFullYear()}-${z(d.getMonth()+1)}-${z(d.getDate())}T${z(d.getHours())}:${z(d.getMinutes())}:${z(d.getSeconds())}${o>=0?'+':'-'}${z(Math.floor(a/60))}:${z(a%60)}`};
 const qs=o=>Object.entries(o).filter(([,v])=>v!=null&&v!=='').map(([k,v])=>k+'='+encodeURIComponent(v)).join('&');
-async function api(path,params){const r=await fetch(`${API}${path}?${qs(params)}`);if(!r.ok)throw new Error(path+' HTTP '+r.status);return r.json()}
+async function api(path,params){const r=await fetch(`${API}${path}?${qs(params)}`,{signal:AbortSignal.timeout(12000)});if(!r.ok)throw new Error(path+' HTTP '+r.status);return r.json()}
 const pick=(r,o,k)=>{if(!r)return undefined;const v=r[o+'__'+k];if(v!==undefined&&v!==null)return v;if(r[o]&&typeof r[o]=='object'&&r[o][k]!==undefined)return r[o][k];return r[k]};
 let BUS={from:'here',res:null,err:null,loading:false,t:0,loc:null,far:0},BD={};
-function getLoc(){return new Promise((res,rej)=>navigator.geolocation?navigator.geolocation.getCurrentPosition(p=>res({lat:p.coords.latitude,lon:p.coords.longitude}),e=>rej(new Error('location')),{enableHighAccuracy:true,timeout:8000,maximumAge:30000}):rej(new Error('location')))}
-async function stopsFor(city){const key='tempo.stops.'+city+'.'+today();try{const c=JSON.parse(localStorage.getItem(key));if(c&&c.length)return c}catch(e){}
- const j=await api('/gtfs_stops/list',{city,date_from:today(),date_to:today(),limit:6000});BD.stop=j[0];
+function getLoc(enable=false){
+ if(!navigator.geolocation||(!enable&&locationOpt()==='off')||locationPermission?.state==='denied')return Promise.reject(new Error('location'));
+ if(!enable&&locationPermission?.state!=='granted'&&locationOpt()!=='on')return Promise.reject(new Error('location'));
+ if(!enable&&lastPos&&Date.now()-lastPos.at<30000)return Promise.resolve(lastPos);
+ if(locationRequest)return locationRequest;
+ locationRequest=new Promise((resolve,reject)=>navigator.geolocation.getCurrentPosition(p=>{
+  lastPos=positionValue(p);localStorage.setItem('tempo.location','on');startWatch();resolve(lastPos);
+ },()=>reject(new Error('location')),{enableHighAccuracy:true,timeout:8000,maximumAge:30000})).finally(()=>{locationRequest=null});
+ return locationRequest;
+}
+async function stopsFor(city,date=serviceDay(new Date())){const key='tempo.stops.'+city+'.'+date;try{const c=JSON.parse(localStorage.getItem(key));if(c&&c.length)return c}catch(e){}
+ const j=await api('/gtfs_stops/list',{city,date_from:date,date_to:date,limit:6000});BD.stop=j[0];
  const out=j.map(s=>({id:s.id,code:s.code,name:s.name,lat:+s.lat,lon:+s.lon})).filter(s=>isFinite(s.lat)&&isFinite(s.lon));
- try{Object.keys(localStorage).filter(k=>k.startsWith('tempo.stops.')&&!k.endsWith('.'+today())).forEach(k=>localStorage.removeItem(k));localStorage.setItem(key,JSON.stringify(out))}catch(e){}return out}
+ try{Object.keys(localStorage).filter(k=>k.startsWith('tempo.stops.')&&k.slice(-10)<addD(today(),-1)).forEach(k=>localStorage.removeItem(k));localStorage.setItem(key,JSON.stringify(out))}catch(e){}return out}
 async function cityOf(p){if(!p||p.lat==null)return S.set.city;if(p.city)return p.city;try{const r=await fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&addressdetails=1&zoom=12&accept-language=he&lat=${p.lat}&lon=${p.lon}`),x=await r.json(),a=x.address||{},c=a.city||a.town||a.village||a.municipality||'';if(c){const pl=p.id&&placeOf(p.id);if(pl){pl.city=c;save()}p.city=c;return c}}catch(e){}return S.set.city}
-const normC=c=>String(c||'').replace(/[\u0591-\u05C7]/g,'').replace(/יי/g,'י').replace(/\s+/g,' ').trim();
-async function stopsBox(p){if(!p||!isFinite(p.lat))return[];const key='tempo.box.'+p.lat.toFixed(3)+','+p.lon.toFixed(3)+'.'+today();try{const c=JSON.parse(localStorage.getItem(key));if(c&&c.length)return c}catch(e){}
- try{const dl=.014,dn=.017,j=await api('/gtfs_stops/list',{lat__greater_or_equal:p.lat-dl,lat__lower_or_equal:p.lat+dl,lon__greater_or_equal:p.lon-dn,lon__lower_or_equal:p.lon+dn,date_from:today(),date_to:today(),limit:600});
-  const out=(Array.isArray(j)?j:[]).map(s=>({id:s.id,code:s.code,name:s.name,lat:+s.lat,lon:+s.lon})).filter(s=>isFinite(s.lat)&&isFinite(s.lon)&&hav(p,s)<=1.6);
-  if(out.length)try{localStorage.setItem(key,JSON.stringify(out))}catch(e){}return out}catch(e){return[]}}
-async function stopsNear(ps){const box=(await Promise.all(ps.map(stopsBox))).flat();const cs=[...new Set((await Promise.all(ps.map(cityOf))).concat([S.set.city]).filter(Boolean))];let all=[];for(const c of cs){let st=await stopsFor(c).catch(()=>[]);if(!st.length&&normC(c)!=c)st=await stopsFor(normC(c)).catch(()=>[]);all=all.concat(st)}const seen={};return all.concat(box).filter(x=>seen[x.id]?0:(seen[x.id]=1))}
-const nearest=(stops,p,n)=>stops.map(s=>({...s,d:hav(p,s)*1000})).sort((a,b)=>a.d-b.d).slice(0,n);
+// Stride's GTFS stops endpoint filters by service date and city, but has no geographic filter.
+const serviceDayFormat=new Intl.DateTimeFormat('sv-SE',{timeZone:'Asia/Jerusalem',year:'numeric',month:'2-digit',day:'2-digit'});
+const serviceDay=date=>serviceDayFormat.format(date);
+const stopCatalogs=new Map();
+function stopCatalog(date){
+ if(stopCatalogs.has(date))return stopCatalogs.get(date);
+ const request=(async()=>{
+  const cache=await globalThis.caches?.open('tempo-transit').catch(()=>null);
+  const key='gtfs-stops-'+date,hit=cache&&await cache.match(key);
+  if(hit)return hit.json();
+  const params={date_from:date,date_to:date},limit=10000;
+  const first=await api('/gtfs_stops/list',{...params,limit});
+  const rows=first.slice();
+  let page=first,offset=first.length;
+  while(page.length===limit){
+   const pages=await Promise.all([0,1,2].map(i=>api('/gtfs_stops/list',{...params,limit,offset:offset+i*limit})));
+   rows.push(...pages.flat());page=pages[2];offset+=3*limit;
+  }
+  const stops=rows.map(({id,code,name,lat,lon})=>({id,code,name,lat:+lat,lon:+lon}))
+   .filter(p=>Number.isFinite(p.lat)&&Number.isFinite(p.lon));
+  if(cache&&stops.length>=limit){
+   await cache.put(key,new Response(JSON.stringify(stops))).catch(()=>{});
+   const entries=await cache.keys();
+   await Promise.all(entries.filter(r=>!r.url.endsWith(key)&&!r.url.endsWith('gtfs-stops-'+serviceDay(new Date())))
+    .map(r=>cache.delete(r)));
+  }
+  return stops;
+ })();
+ if(stopCatalogs.size>=3)stopCatalogs.delete(stopCatalogs.keys().next().value);
+ stopCatalogs.set(date,request);
+ request.then(stops=>{if(!stops.length)stopCatalogs.delete(date)},()=>stopCatalogs.delete(date));
+ return request;
+}
+async function stopsNear(places,from,to){
+ const dates=[...new Set([serviceDay(from),serviceDay(to)])];
+ const catalogs=await Promise.all(dates.map(date=>stopCatalog(date).catch(()=>[])));
+ if(catalogs.some(rows=>rows.length))return catalogs.flat();
+ const cities=[...new Set((await Promise.all(places.map(cityOf))).concat(S.set.city).filter(Boolean))];
+ if(!cities.length)return [];
+ const rows=await Promise.all(dates.flatMap(date=>cities.map(city=>stopsFor(city,date).catch(()=>[]))));
+ return [...new Map(rows.flat().map(stop=>[stop.id,stop])).values()];
+}
+function nearest(stops,p,n,radius=Infinity){
+ const rows=[];
+ for(const stop of stops){const d=hav(p,stop)*1000;if(d<=radius)rows.push({...stop,d})}
+ return rows.sort((a,b)=>a.d-b.d).slice(0,n);
+}
 const destOf=(long,dir)=>{if(!long)return '';const parts=String(long).split('<->');let d=parts.length>1?(String(dir)=='2'?parts[0]:parts[1]):parts[0];return d.replace(/[-\d#]+$/,'').trim()};
 async function schedFor(stop,around){const n=new Date(),c=around&&+around>+n+30*6e4?+around:0,j=await api('/gtfs_ride_stops/list',{gtfs_stop_ids:stop.id,arrival_time_from:isoTz(new Date(c?c-55*6e4:n.getTime()-6*6e4)),arrival_time_to:isoTz(new Date(c?c+10*6e4:n.getTime()+100*6e4)),order_by:'arrival_time asc',limit:80});
  if(!BD.rs)BD.rs=j[0];
@@ -1190,38 +1359,102 @@ async function liveNear(p){const n=new Date(),dl=.035,dn=.045;
  for(const v of j){const ids=['gtfs_ride_id','route_gtfs_ride_id','journey_gtfs_ride_id'].map(k=>pick(v,'siri_ride',k)).filter(x=>x!=null).map(String);if(!ids.length)continue;
   const rec=new Date(v.recorded_at_time);ids.forEach(id=>{if(!by[id]||rec>by[id].rec)by[id]={rec,lat:+v.lat,lon:+v.lon,dj:+v.distance_from_journey_start}})}
  BD.vlMatched=Object.keys(by).length;return by}
-const TRIPC={},hhmm=d=>ft(d.getHours()*60+d.getMinutes());
-async function findTrips(o,d,arriveBy){const key=[o.lat,o.lon,d.lat,d.lon,arriveBy?+arriveBy:0].join(',');const c=TRIPC[key];if(c&&Date.now()-c.t<6e4)return c.v;
- const stops=await stopsNear([o,d]),near=(p,r)=>{const all=nearest(stops,p,120);let n=all.filter(x=>x.d<=r).slice(0,32);if(n.length<12)n=all.slice(0,12).filter(x=>x.d<=2200);return n},os=near(o,1100),dsx=near(d,1500);
- if(!os.length||!dsx.length)return (TRIPC[key]={t:Date.now(),v:{opts:[],why:'nostop'}}).v;
- const now=new Date(),fut=arriveBy&&arriveBy.getTime()>now.getTime()+30*6e4,from=fut?new Date(Math.max(now.getTime(),arriveBy.getTime()-150*6e4)):now,to=fut?arriveBy:new Date(now.getTime()+120*6e4);
- const q1=(st,a,b)=>api('/gtfs_ride_stops/list',{gtfs_stop_ids:st.id,arrival_time_from:isoTz(a),arrival_time_to:isoTz(b),order_by:'arrival_time asc',limit:400}).catch(()=>api('/gtfs_ride_stops/list',{gtfs_stop_ids:st.id,arrival_time_from:isoTz(a),arrival_time_to:isoTz(b),order_by:'arrival_time asc',limit:400})).catch(()=>[]);
- const FULL=90;/* the service may cap an answer; a full-looking answer is split in halves until each part is small, so no line is crowded out by a busy one */
- const qb=async(ch,a,b)=>{let got=null;try{got=await api('/gtfs_ride_stops/list',{gtfs_stop_ids:ch.map(x=>x.id).join(','),arrival_time_from:isoTz(a),arrival_time_to:isoTz(b),order_by:'arrival_time asc',limit:1000})}catch(e){got=null}
-  if(!Array.isArray(got)){if(ch.length>1){const m=Math.ceil(ch.length/2);return (await Promise.all([qb(ch.slice(0,m),a,b),qb(ch.slice(m),a,b)])).flat()}return q1(ch[0],a,b)}
-  if(got.length>=FULL&&ch.length>1){const m=Math.ceil(ch.length/2);return (await Promise.all([qb(ch.slice(0,m),a,b),qb(ch.slice(m),a,b)])).flat()}
-  if(got.length>=FULL&&ch.length==1){/* one very busy stop: also ask for the second half of the window so later buses are not cut off */const mid=new Date((+a+ +b)/2);const [x,y]=await Promise.all([q1(ch[0],a,mid),q1(ch[0],mid,b)]);return x.concat(y)}
-  return got};
- const q=async(ss,a,b)=>{const out=[];for(let i=0;i<ss.length;i+=6)out.push(...await qb(ss.slice(i,i+6),a,b));return out};
- const [A,B,live]=await Promise.all([q(os,from,to),q(dsx,from,new Date(to.getTime()+60*6e4)),liveNear(o).catch(()=>({}))]);
- if(!A.length&&!B.length){delete TRIPC[key];return{opts:[],why:'err'}}
+const hhmm=d=>ft(d.getHours()*60+d.getMinutes());
+const tripResultCache=new Map();
+async function findTrips(o,d,arriveBy,after=0,preferred){
+ const key=JSON.stringify([o.lat,o.lon,d.lat,d.lon,+arriveBy,after,preferred]);
+ const cached=tripResultCache.get(key);
+ if(cached&&Date.now()-cached.at<60000)return cached.result;
+ const result=searchTrips(o,d,arriveBy,after,preferred);
+ if(tripResultCache.size>=32)tripResultCache.delete(tripResultCache.keys().next().value);
+ tripResultCache.set(key,{at:Date.now(),result});
+ try{const value=await result;if(value.why==='err'&&tripResultCache.get(key)?.result===result)tripResultCache.delete(key);return value}
+ catch(e){if(tripResultCache.get(key)?.result===result)tripResultCache.delete(key);throw e}
+}
+async function searchTrips(o,d,arriveBy,after,preferred){
+ const now=new Date(),target=+arriveBy;
+ const from=new Date(Math.max(+now,after,target?target-150*6e4:0));
+ const to=new Date(target?Math.max(target,after,+now)+30*6e4:+now+120*6e4);
+ const stops=await stopsNear([o,d],from,to);
+ const os=nearest(stops,o,Infinity,2200),dsx=nearest(stops,d,Infinity,2200);
+ if(!os.length||!dsx.length)return {opts:[],why:'nostop'};
+ const query=async(stops,a,b)=>{
+  const params={gtfs_stop_ids:stops.map(x=>x.id).join(','),arrival_time_from:isoTz(a),arrival_time_to:isoTz(b),order_by:'arrival_time asc',limit:1000};
+  try{
+   const rows=await api('/gtfs_ride_stops/list',params);
+   const first=row=>JSON.stringify([row.gtfs_ride_id,row.gtfs_stop_id,row.stop_sequence,row.arrival_time]);
+   let page=rows;
+   while(page.length===100||page.length>=params.limit){
+    const next=await api('/gtfs_ride_stops/list',{...params,offset:rows.length});
+    if(next.length&&first(next[0])===first(page[0]))throw Error('Repeated timetable page');
+    rows.push(...next);page=next;
+   }
+   return rows;
+  }catch(e){
+   const repeated=e.message==='Repeated timetable page';
+   if(stops.length>1&&(repeated||/HTTP (400|414|422)$/.test(e.message))){
+    const mid=Math.ceil(stops.length/2);
+    const first=await query(stops.slice(0,mid),a,b);
+    return first.concat(await query(stops.slice(mid),a,b));
+   }
+   if(!repeated)throw e;
+   if(+b-+a<=60000)throw e;
+   const mid=new Date((+a+ +b)/2),first=await query(stops,a,mid);
+   return first.concat(await query(stops,mid,b));
+  }
+ };
+ const originStops=new Map(os.map(stop=>[stop.id,stop])),destinationStops=new Map(dsx.map(stop=>[stop.id,stop]));
+ const stopsToQuery=[...new Map([...originStops,...destinationStops]).values()],batches=[];
+ for(let i=0;i<stopsToQuery.length;i+=40)batches.push(stopsToQuery.slice(i,i+40));
+ const [pages,live]=await Promise.all([Promise.all(batches.map(batch=>query(batch,from,to))),target&&target>+now+90*6e4?{}:liveNear(o).catch(()=>({}))]);
+ const timetable=pages.flat().filter(r=>{
+  const type=pick(r,'gtfs_route','route_type');
+  return type==null||Number(type)===3||(Number(type)>=700&&Number(type)<800);
+ });
+ const A=timetable.filter(r=>originStops.has(r.gtfs_stop_id)),B=timetable.filter(r=>destinationStops.has(r.gtfs_stop_id));
  const nearBuses=(()=>{const m={};A.forEach(r=>{const st=os.find(x=>x.id==r.gtfs_stop_id);if(!st)return;const ln=String(pick(r,'gtfs_route','route_short_name')||'?'),at=new Date(r.arrival_time),w=est(o,st).w;if(at.getTime()<now0()+(w-1)*6e4)return;if(!m[ln]||at<m[ln].at)m[ln]={line:ln,at,stop:st,w}});return Object.values(m).sort((a,b)=>a.at-b.at).slice(0,4)})();
  /* every way to ride the same bus: any boarding stop near you, any stop near the destination, in the right order; keep the best of each ride by door-to-door time (with walking counting extra) and also the one with the least walking */
- const dmap={};B.forEach(r=>{const id=String(r.gtfs_ride_id),st=dsx.find(x=>x.id==r.gtfs_stop_id);if(!st)return;(dmap[id]=dmap[id]||[]).push({at:new Date(r.arrival_time),st,seq:+r.stop_sequence})});
- const per={};A.forEach(r=>{const id=String(r.gtfs_ride_id),ds=dmap[id],st=os.find(x=>x.id==r.gtfs_stop_id);if(!ds||!st)return;const at=new Date(r.arrival_time),wTo=est(o,st).w,line=pick(r,'gtfs_route','route_short_name');let dep=at,lv=false,sig='sched';const v=live[id];
-  if(v){const age=(now-v.rec)/6e4,dist=+pick(r,'gtfs_ride_stop','shape_dist_traveled');if(age<=8){let rem=dist-v.dj;if(!isFinite(rem)||Math.abs(rem)>60000)rem=hav({lat:v.lat,lon:v.lon},st)*1300;if(rem>=-80){dep=new Date(now.getTime()+Math.max(0,rem/6.1/60-age)*6e4);lv=true;sig=age<=3?'live':'weak'}}else if(age<=40)sig='lost'}
-  if(dep.getTime()<now.getTime()+(wTo-1)*6e4)return;
-  for(const dd of ds){if(dd.at<=at)continue;if(isFinite(+r.stop_sequence)&&isFinite(dd.seq)&&dd.seq<=+r.stop_sequence)continue;const wFrom=est(dd.st,d).w;
-   const x={ride:id,line,dep,depStop:st,arr:dd.at,arrStop:dd.st,depSeq:+r.stop_sequence,arrSeq:dd.seq,o,d,wTo,wFrom,live:lv,sig,leave:new Date(dep.getTime()-wTo*6e4),reach:new Date(dd.at.getTime()+wFrom*6e4)};x.walk=wTo+wFrom;x.total=Math.round((x.reach-x.leave)/6e4);x.score=x.total+.5*x.walk;
-   const e=per[id]=per[id]||{};if(!e.b||x.score<e.b.score)e.b=x;if(!e.w||x.walk<e.w.walk||(x.walk==e.w.walk&&x.total<e.w.total))e.w=x}});
+ const dmap={};B.forEach(r=>{if(+r.drop_off_type===1)return;const id=String(r.gtfs_ride_id),st=destinationStops.get(r.gtfs_stop_id);if(!st)return;(dmap[id]=dmap[id]||[]).push({at:new Date(r.arrival_time),st,seq:+r.stop_sequence})});
+ const per={};A.forEach(r=>{if(+r.pickup_type===1)return;const id=String(r.gtfs_ride_id),ds=dmap[id],st=originStops.get(r.gtfs_stop_id);if(!ds||!st)return;const at=new Date(pick(r,'gtfs_ride_stop','departure_time')||r.arrival_time),wTo=est(o,st).w,line=pick(r,'gtfs_route','route_short_name');let dep=at,lv=false,sig='sched';const v=live[id];
+  if(v&&Math.abs(at-now)<=60*6e4){const age=(now-v.rec)/6e4,dist=+pick(r,'gtfs_ride_stop','shape_dist_traveled');if(age>=0&&age<=8){let rem=dist-v.dj;if(!isFinite(rem)||Math.abs(rem)>60000)rem=hav({lat:v.lat,lon:v.lon},st)*1300;if(rem>=-80){dep=new Date(now.getTime()+Math.max(0,rem/6.1/60-age)*6e4);lv=true;sig=age<=3?'live':'weak'}}else if(age<=40)sig='lost'}
+  const delay=dep-at;
+  if(!Number.isFinite(+dep)||dep.getTime()-wTo*6e4<Math.max(after,+now-6e4))return;
+  for(const dd of ds){if(!Number.isFinite(+dd.at)||dd.at<=at)continue;if(isFinite(+r.stop_sequence)&&isFinite(dd.seq)&&dd.seq<=+r.stop_sequence)continue;const wFrom=est(dd.st,d).w;
+   const x={ride:id,line,dep,depStop:st,arr:new Date(+dd.at+delay),arrStop:dd.st,depSeq:+r.stop_sequence,arrSeq:dd.seq,o,d,wTo,wFrom,live:lv,sig,leave:new Date(dep.getTime()-wTo*6e4),reach:new Date(+dd.at+delay+wFrom*6e4)};x.walk=wTo+wFrom;x.total=Math.round((x.reach-x.leave)/6e4);x.score=x.total+.5*x.walk;
+   const e=per[id]=per[id]||{},late=target?Math.max(0,x.reach-target):0;
+   if(e.late==null||late<e.late){e.late=late;e.b=e.w=x;continue}
+   if(late!==e.late)continue;
+   if(x.score<e.b.score)e.b=x;
+   if(x.walk<e.w.walk||(x.walk===e.w.walk&&x.total<e.w.total))e.w=x}});
  let opts=[];Object.values(per).forEach(e=>{opts.push(e.b);if(e.w!==e.b&&(e.w.depStop.id!=e.b.depStop.id||e.w.arrStop.id!=e.b.arrStop.id)&&e.w.walk<e.b.walk-3&&e.w.total<=e.b.total+12)opts.push(e.w)});
- opts.sort((a,b)=>a.dep-b.dep);const pool=opts.slice();
- /* for a task at a set time: only the buses around that time (arriving within 90 minutes before it, and a couple just after), not everything since now */
- let rec=null;if(arriveBy){const all=opts.filter(x=>x.reach<=arriveBy),near=all.filter(x=>+x.reach>=+arriveBy-90*6e4),ok=near.length?near:all;rec=ok.reduce((m,x)=>!m||x.score<m.score-.01||(Math.abs(x.score-m.score)<=.01&&x.leave>m.leave)?x:m,null);opts=ok.length?ok.concat(opts.filter(x=>x.reach>arriveBy&&+x.reach<=+arriveBy+30*6e4).slice(0,2)):opts.slice(0,8)}else{rec=opts.reduce((m,x)=>!m||x.reach<m.reach?x:m,null)}if(rec)rec.rec=1;
- {const seen={},keep=[],recK=rec?String(rec.line):'';opts.slice().sort((a,b)=>a.dep-b.dep).forEach(x=>{const k=String(x.line);if(seen[k])return;seen[k]=1;keep.push(x)});if(rec){const kr=keep.find(x=>String(x.line)==recK);if(kr&&kr!==rec){rec.rec=0;kr.rec=1;rec=kr}}opts=keep.slice(0,16)}
- opts.forEach(x=>{x.nx=pool.filter(y=>String(y.line)==String(x.line)&&y.depStop.id==x.depStop.id&&+y.dep>=+x.dep).map(y=>y.dep).sort((a,b)=>a-b).filter((d,i,a)=>!i||+d!=+a[i-1]).slice(0,3)});
- opts.forEach(x=>x.late=!!(arriveBy&&x.reach>arriveBy));
- return (TRIPC[key]={t:Date.now(),v:{opts,why:opts.length?'':'nodirect',near:opts.length?[]:nearBuses}}).v}
+ const pool=opts.filter(x=>!target||x.reach<=target+30*6e4);
+ const near=pool.filter(x=>!target||x.reach>=target-90*6e4);
+ const byLine=new Map(),nearTrips=new Set(near);
+ const choose=(x,y)=>{
+  if(x.ride===preferred||y.ride===preferred)return x.ride===preferred?x:y;
+  if(!target)return x.leave<y.leave?x:y;
+  const lateX=Math.max(0,x.reach-target),lateY=Math.max(0,y.reach-target);
+  if(lateX!==lateY)return lateX<lateY?x:y;
+  if(Math.abs(x.score-y.score)>2)return x.score<y.score?x:y;
+  return (after?x.leave>y.leave:x.leave<y.leave)?x:y;
+ };
+ const linesNear=new Set(near.map(x=>String(x.line)));
+ for(const x of pool){
+  if(!nearTrips.has(x)&&linesNear.has(String(x.line))&&x.ride!==preferred)continue;
+  const key=String(x.line);
+  byLine.set(key,byLine.has(key)?choose(byLine.get(key),x):x);
+ }
+ opts=[...byLine.values()].sort((a,b)=>(after?Number(a.reach>target)-Number(b.reach>target):0)||a.leave-b.leave);
+ const onTime=opts.filter(x=>!target||x.reach<=target);
+ const rec=target?onTime.reduce((best,x)=>best?choose(best,x):x,null):opts.reduce((best,x)=>!best||x.reach<best.reach?x:best,null);
+ if(rec)rec.rec=1;
+ opts.forEach(x=>{
+  x.nx=pool.filter(y=>String(y.line)===String(x.line)&&y.depStop.id===x.depStop.id&&y.dep>=x.dep)
+   .map(y=>y.dep).sort((a,b)=>a-b).filter((d,i,a)=>!i||+d!==+a[i-1]).slice(0,3);
+  x.late=!!(target&&x.reach>target);
+ });
+ return {opts,why:opts.length?'':'nodirect',near:opts.length?[]:nearBuses};
+}
 const now0=()=>Date.now();
 /* live minutes: a ticking "in N min" that counts down by itself; green with a pulsing dot (and LIVE) when it comes from the bus's real position */
 const cdTxt=ms=>{const m=Math.ceil((ms-Date.now())/6e4);return m<=0?t('Now'):m>=60?hm(m):String(m)};
@@ -1253,11 +1486,13 @@ const chev=`<i class="sep">›</i>`;
 /* the top of the window: what the chosen bus asks of you, dynamically (walk to the stop, the bus, walk from the stop) */
 function tripTop(x){return `<div class="tph"><div class="tp1"><div class="tpc"><span class="cd ${x.sig=='live'?'lv':'sc'} tpcd" data-cd="${+x.leave}"><small>${ic('bus',14)}<em>${esc(x.line==null?'?':x.line)}</em>${x.sig=='live'?`<i></i>${t('LIVE')}`:`${t('Leaves in')}`}</small><span class="cdn"><b class="${isNaN(+cdTxt(+x.leave))?'lg':''}">${cdTxt(+x.leave)}</b><span class="cu" ${isNaN(+cdTxt(+x.leave))?'hidden':''}>${t('min')}</span></span></span></div><div class="tpt arv"><span><small>${t('Leave')}</small><b dir="ltr">${hhmm(x.leave)}</b></span><i>→</i><span><small>${t('Arrive')}</small><b dir="ltr">${hhmm(x.reach)}</b></span></div></div><div class="tpw mqw"><span class="mqi">${wkc(x.wTo)}${chev}<span class="ln">${ic('bus',15)}${esc(x.line==null?'?':x.line)}</span>${chev}${wkc(x.wFrom)}</span></div></div>`}
 function tripRow(x,sel){window.__MG[x.ride]=x;
- return `<div class="brw ${sel?'ch':''}"><button type="button" class="br brs" data-ride="${x.ride}"><span class="tlb"><span class="tlt"><span class="tls"><bdi dir="ltr">${hhmm(x.leave)}</bdi><i>↓</i><bdi dir="ltr">${hhmm(x.reach)}</bdi></span><span class="tls"><span class="lbh"><b class="lbn">${x.total}</b><small>${t('min')}</small></span></span></span><span class="tld"><i></i><i></i></span></span></span><span class="rt"><span class="stp mqw"><span class="mqi">${wkc(x.wTo)}${chev}<span class="bpill"><span class="bl">${ic('bus',15)}<b>${esc(x.line==null?'?':x.line)}</b></span></span>${chev}${wkc(x.wFrom)}</span></span>${lvs(x)}</span></button><button type="button" class="mgo" data-mg="${x.ride}" aria-label="${t('Open map')}">${ic('mapi',18)}</button></div>`}
+ return `<div class="brw ${sel?'ch':''}"><button type="button" class="br brs" data-ride="${x.ride}"><span class="tlb"><span class="tlt"><span class="tls"><bdi dir="ltr">${hhmm(x.leave)}</bdi><i>↓</i><bdi dir="ltr">${hhmm(x.reach)}</bdi></span><span class="tls"><span class="lbh"><b class="lbn">${x.total}</b><small>${t('min')}</small></span></span></span><span class="tld"><i></i><i></i></span></span></span><span class="rt"><span class="stp mqw"><span class="mqi">${wkc(x.wTo)}${chev}<span class="bpill"><span class="bl">${ic('bus',15)}<b>${esc(x.line==null?'?':x.line)}</b></span></span>${chev}${wkc(x.wFrom)}</span></span>${lvs(x)}${x.late?`<span class="sub trip-late">${t('Late arrival')}</span>`:''}</span></button><button type="button" class="mgo" data-mg="${x.ride}" aria-label="${t('Open map')}">${ic('mapi',18)}</button></div>`}
 document.addEventListener('click',e=>{const b=e.target.closest('[data-moreb]');if(!b)return;const g=b.nextElementSibling;if(g){g.classList.toggle('o');b.classList.toggle('op');setTimeout(fitRows,60)}});
 function tripBlock(r,p,chosenRide){if(!r)return `<div class="empty" style="padding:14px 0">${t('Finding buses…')}</div>`;
- if(r.opts&&r.opts.length){const sel=r.opts.find(x=>x.ride==chosenRide)||r.opts.find(x=>x.rec)||r.opts[0],first=r.opts.slice(0,4),rest=r.opts.slice(4);
-  return tripTop(sel)+`<div class="card bs" style="margin:0">${first.map(x=>tripRow(x,x===sel)).join('')}</div>`+(rest.length?`<button type="button" class="more2" data-moreb="1"><span>${t('Other buses')} · ${rest.length}</span>${ic('chev',14)}</button><div class="gx" id="obus"><div><div class="card bs" style="margin:6px 0 0">${rest.map(x=>tripRow(x,x===sel)).join('')}</div></div></div>`:'')}
+ if(r.opts&&r.opts.length){const sel=r.opts.find(x=>x.ride==chosenRide)||r.opts.find(x=>x.rec)||r.opts[0],first=r.opts.slice(0,4);
+  if(!first.includes(sel))first[3]=sel;
+  const rest=r.opts.filter(x=>!first.includes(x));
+  return tripTop(sel)+(sel.late?`<div class="sub" role="status" style="margin:0 0 10px;text-align:center;color:var(--r)">${t('Arrives after the task starts')}</div>`:'')+`<div class="card bs" style="margin:0">${first.map(x=>tripRow(x,x===sel)).join('')}</div>`+(rest.length?`<button type="button" class="more2" data-moreb="1"><span>${t('Other buses')} · ${rest.length}</span>${ic('chev',14)}</button><div class="gx" id="obus"><div><div class="card bs" style="margin:6px 0 0">${rest.map(x=>tripRow(x,x===sel)).join('')}</div></div></div>`:'')}
  const why=r.why=='nostop'?t('No bus stop near one of the places'):r.why=='noorigin'?t('Location unavailable. Pick a saved place.'):r.why=='err'?t("Couldn't load buses"):t('No direct bus found');
  const nb=(r.near||[]).length?`<div class="card bs" style="margin:0">${r.near.map(x=>`<div class="li"><span class="ln">${esc(x.line)}</span><span class="gt"><b><bdi dir="ltr">${hhmm(x.at)}</bdi></b><span class="sub">🚶 ${x.w} ${t('min')} · <bdi>${esc(x.stop.name)}</bdi></span></span></div>`).join('')}</div>`:'';
  return nb||`<div class="empty" style="padding:12px 0 6px">${why}</div>`}
@@ -1273,10 +1508,10 @@ function nextTrip(){const n=nowMin();for(const ds of [today(),addD(today(),1)]){
 async function busLoad(silent){if(!S.places.length){busDraw();return}if(BUS.loading)return;BUS.loading=true;if(!silent){BUS.res=null;BUS.err=null;BUS.trip=null;busDraw()}
  const nt=nextTrip();
  const tripP=(async()=>{if(!nt)return null;let o=nt.o;if(!o){try{const g=BUS.loc||await getLoc();BUS.loc=g;o={...g,name:t('Here')}}catch(e){o=null}}
-  if(!o)return{nt,opts:[],why:'noorigin'};const arriveBy=new Date(pd(nt.ds).getTime()+tm(nt.it.time)*6e4);try{return{nt,o,...await findTrips(o,nt.p,arriveBy)}}catch(e){return{nt,o,opts:[],why:'err'}}})();
- const aroundT=nt?new Date(pd(nt.ds).getTime()+tm(nt.it.time)*6e4):null;
+  if(!o)return{nt,opts:[],why:'noorigin'};const arriveBy=taskAt(nt.ds,tm(nt.it.time));try{return{nt,o,...await findTrips(o,nt.p,arriveBy,journeyContext(nt.it,nt.ds).after)}}catch(e){return{nt,o,opts:[],why:'err'}}})();
+ const aroundT=nt?taskAt(nt.ds,tm(nt.it.time)):null;
  const nearP=(async()=>{try{let p;if(BUS.from=='here'){try{p=await getLoc();BUS.loc=p}catch(e){const h=S.places.find(x=>x.home)||S.places[0];BUS.from=h.id;p={lat:h.lat,lon:h.lon}}}else{const pl=placeOf(BUS.from)||S.places[0];p={lat:pl.lat,lon:pl.lon}}
-  const stops=await stopsFor(S.set.city);if(!stops.length)throw new Error('no stops in '+S.set.city);const near=nearest(stops,p,1);
+  const stops=await stopsNear([p],aroundT||new Date(),aroundT||new Date());if(!stops.length)throw new Error('no stops in '+S.set.city);const near=nearest(stops,p,1);
   const [live,sc]=await Promise.all([liveNear(p).catch(e=>{BD.vlErr=e.message;return {}}),schedFor(near[0],aroundT).catch(e=>{BD.rsErr=e.message;return []})]);
   BUS.res=[{stop:near[0],walk:est(p,near[0]).w,rows:buildRows(sc,live,near[0],aroundT)}];BUS.far=near[0].d;BUS.err=null}catch(e){BUS.err=e.message||'error';BD.err=BUS.err}})();
  BUS.trip=await tripP;await nearP;BUS.t=Date.now();
@@ -1302,9 +1537,9 @@ function busDebug(){const short=o=>{try{return JSON.parse(JSON.stringify(o,(k,v)
  const d=JSON.stringify({city:S.set.city,from:BUS.from,loc:BUS.loc,counts:{vehicleRows:BD.vlCount,matchedRides:BD.vlMatched},errors:{main:BD.err,rideStops:BD.rsErr,vehicles:BD.vlErr},sample:{stop:short(BD.stop),rideStop:short(BD.rs),vehicle:short(BD.vl)}},null,1);
  openSh(`<div class="shd">${t('Debug')}</div><textarea class="f nt" rows="14" readonly onclick="this.select()" style="font-size:12px;font-family:ui-monospace,monospace">${esc(d)}</textarea>`)}
 /* ---------- boot ---------- */
-load();S.set.focusOn=false;applyLang();render(1);setTimeout(startWatch,1500);setTimeout(()=>{pushSync();cloudBackup(false)},3000);if(!S.set.onboarded)setTimeout(()=>onboard(false),250);
+load();S.set.focusOn=false;applyLang();render(1);setTimeout(initLocation,500);setTimeout(()=>{pushSync();cloudBackup(false)},3000);if(!S.set.onboarded)setTimeout(()=>onboard(false),250);
 
-setInterval(()=>{due();if(tab==0&&!$('#sh')){const H=heroNext(),u=(id,v)=>{const e=$('#'+id);if(e&&e.innerHTML!=v)e.innerHTML=v};u('hk',H.k);u('hv',H.h);u('hl',H.l);u('hf',freeLine());const bw=$('#bw');if(bw){const x=bar(today());if(bw.innerHTML!=x)bw.innerHTML=x}}},15000);
+setInterval(()=>{startWatch();due();if(tab==0&&!$('#sh')){const H=heroNext(),u=(id,v)=>{const e=$('#'+id);if(e&&e.innerHTML!=v)e.innerHTML=v};u('hk',H.k);u('hv',H.h);u('hl',H.l);u('hf',freeLine());const bw=$('#bw');if(bw){const x=bar(today());if(bw.innerHTML!=x)bw.innerHTML=x}}},15000);
 document.addEventListener('visibilitychange',()=>{if(!document.hidden){due();if(!$('#sh')){if(sel<today()&&tab!=1)sel=today();render(0,true)}}});
 due();
 if('serviceWorker'in navigator){const had=!!navigator.serviceWorker.controller;navigator.serviceWorker.register('sw.js').catch(()=>{});navigator.serviceWorker.addEventListener('controllerchange',()=>{if(had&&!$('#sh')&&!window.__rl){window.__rl=1;location.reload()}})}

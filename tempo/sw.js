@@ -1,6 +1,6 @@
 const C='tempo-v5-__BUILD__',FILES=['./','index.html','tokens.css','manifest.webmanifest','icon-180.png','icon-192.png','icon-512.png'];
 self.addEventListener('install',e=>{e.waitUntil(caches.open(C).then(c=>c.addAll(FILES.map(f=>new Request(f,{cache:'reload'})))));self.skipWaiting()});
-self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(k=>Promise.all(k.filter(x=>x!==C&&x!=='tempo-push').map(x=>caches.delete(x)))).then(()=>self.clients.claim()))});
+self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(k=>Promise.all(k.filter(x=>x!==C&&x!=='tempo-push'&&x!=='tempo-transit').map(x=>caches.delete(x)))).then(()=>self.clients.claim()))});
 // The app itself (page, styles, manifest): always try the network first so a new version shows up immediately,
 // fall back to the saved copy when offline or slow. Icons: saved copy first. Other sites (bus data): never touched.
 self.addEventListener('fetch',e=>{const r=e.request,u=new URL(r.url);if(r.method!=='GET'||u.origin!==location.origin)return;
