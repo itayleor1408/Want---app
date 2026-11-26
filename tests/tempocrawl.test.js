@@ -11,7 +11,7 @@ const steps = [
   ['new-day', p => p.evaluate(() => { edit(); const f = document.getElementById('fi'); f.value = 'Gym'; f.dispatchEvent(new Event('input', { bubbles: true })); F.rdy = true; document.getElementById('bn').click() })],
   ['new-time', p => p.evaluate(() => { edit(); const f = document.getElementById('fi'); f.value = 'Gym'; f.dispatchEvent(new Event('input', { bubbles: true })); F.rdy = true; document.getElementById('bn').click(); document.getElementById('bn').click() })],
   ['edit-task', p => p.evaluate(() => edit('a', '2026-11-23'))], ['edit-repeating', p => p.evaluate(() => edit('r', '2026-11-23'))], ['detail', p => p.evaluate(() => detail('a', '2026-11-23'))], ['detail-done', p => p.evaluate(() => { S.items[0].done = { '2026-11-23': 1 }; detail('a', '2026-11-23') })],
-  ['go-sheet', p => p.evaluate(() => goSheet('a', '2026-11-23'))], ['trip-issue', p => p.evaluate(() => legIssue('2026-11-23'))], ['category-popup', p => p.evaluate(() => catPopup(null, () => {}))],
+  ['go-sheet', p => p.evaluate(() => goSheet('a', '2026-11-23'))], ['trip-issue', p => p.evaluate(() => legIssue('2026-11-23'))], ['appearance-popup', p => p.evaluate(() => taskAppearance(taskLook({}), () => {}))], ['quick-update', p => p.evaluate(() => quickUpdate())], ['quick-editor', p => p.evaluate(() => quickTaskEditor('2026-11-23', 'a'))],
   ['finish-prompt', p => p.evaluate(() => { finAsk({ fin: { id: 'a', ds: '2026-11-23' } }) })],
 ];
 module.exports = async b => {
@@ -31,7 +31,7 @@ module.exports = async b => {
           if (r.right > vw + 2 || r.left < -2) out.push(`off-screen: ${(e.getAttribute('aria-label') || e.innerText || e.id || e.className).toString().slice(0, 30).replace(/\n/g, ' ')} [${Math.round(r.left)}..${Math.round(r.right)}]`) }
         const sh = document.getElementById('sh'); if (sh) { const r = sh.getBoundingClientRect(); if (r.top < -1 || r.bottom > innerHeight + 1) out.push(`sheet taller than screen (${Math.round(r.top)}..${Math.round(r.bottom)} of ${innerHeight})`) }
         return out });
-      const sheetSteps = !/^(today|schedule|finish-prompt|category-popup)/.test(name);
+      const sheetSteps = !/^(today|schedule|finish-prompt|appearance-popup)/.test(name);
       if (sheetSteps && !(await p.evaluate(() => !!document.getElementById('sh')))) problems.push(`${lang}/${theme}/${name}: the screen did not open`);
       r.forEach(m => problems.push(`${lang}/${theme}/${name}: ${m}`));
     }

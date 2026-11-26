@@ -24,8 +24,8 @@ async function newTask(b) {
   ok('after a short pause the window grows and the buttons appear', c.row >= 50 && c.sheet > a.sheet + 40 && c.op === '1', JSON.stringify(c));
   await p.fill('#fi', ''); await p.waitForTimeout(400);
   ok('clearing the name hides them again', (await m()).row === 0);
-  await p.fill('#fi', 'Read'); await p.click('[data-c="work"]'); await p.waitForTimeout(900);
-  ok('picking a category opens the buttons right away', (await m()).row >= 50);
+  await p.fill('#fi', 'Read'); await p.click('[data-task-look]'); await p.click('#look-save'); await p.waitForTimeout(1000);
+  ok('setting task appearance keeps the add flow available', (await m()).row >= 50);
   await p.evaluate(() => { document.querySelector('#bn').click() }); await p.waitForTimeout(700);
   ok('later steps always show the buttons', await p.evaluate(() => document.getElementById('trw').getBoundingClientRect().height >= 50));
   ok('new task: no JS errors', !p.errs.length, p.errs.join('|')); await p.context().close();
@@ -48,7 +48,7 @@ async function trips(b, lang) {
   const sh = await p.evaluate(() => document.getElementById('sh').innerText);
   ok(`${lang}: tapping the red mark explains the problem and offers "Fix it for me"`, (lang == 'en' ? /doesn't add up/.test(sh) && /only/.test(sh) && /Fix it for me/.test(sh) : /לא מסתדר/.test(sh) && /תתקן בשבילי/.test(sh)), sh.replace(/\n/g, ' | ').slice(0, 200));
   await p.evaluate(() => document.getElementById('lgF').click()); await p.waitForTimeout(700);
-  const f = await p.evaluate(() => { const m = legIssues('2026-11-23'), g = S.items.find(i => i.id == 'g'); return { left: Object.keys(m).length, time: g.time, trav: g.trav } });
+  const f = await p.evaluate(() => { const m = legIssues('2026-11-23'), g = occ('2026-11-23').find(i => i.id == 'g'); return { left: Object.keys(m).length, time: g.time, trav: g.trav } });
   ok(`${lang}: Fix it for me moves the task so the trip fits (no issues left)`, f.left === 0 && tmv(f.time) >= 14 * 60 + 30 + f.trav, JSON.stringify(f));
   ok(`${lang}: …and Undo puts everything back`, await (async () => { await p.evaluate(() => document.getElementById('tu').click()); await p.waitForTimeout(300); return p.evaluate(() => { const g = S.items.find(i => i.id == 'g'); return g.time === '14:40' && g.trav === 30 }) })());
   ok(`${lang}: trips: no JS errors`, !p.errs.length, p.errs.join('|')); await p.context().close();
@@ -62,13 +62,13 @@ async function tripsMore(b) {
   const r = await p.evaluate(() => { const m = legIssues('2026-11-23'); return m.f && m.f.issues.map(x => x.k) });
   ok('a trip set far too short for the distance is flagged', r && r.includes('short'), JSON.stringify(r));
   await p.evaluate(() => fixDay('2026-11-23', true)); 
-  const after = await p.evaluate(() => { const f = S.items.find(i => i.id == 'f'); return { trav: f.trav, issues: Object.keys(legIssues('2026-11-23')).length } });
+  const after = await p.evaluate(() => { const f = occ('2026-11-23').find(i => i.id == 'f'); return { trav: f.trav, issues: Object.keys(legIssues('2026-11-23')).length } });
   ok('fixing it sets a realistic trip length', after.trav > 20, JSON.stringify(after));
-  // a repeating task is never moved
+  // only the conflicting occurrence of a repeating task moves
   const r2 = item('r', 'Weekly', '14:40', 60, 'health'); r2.pl = 'f'; r2.rep = 'days'; r2.days = [1]; r2.trav = 60;
   const q = await open(b, 'en', [Object.assign({}, a), r2]); await q.evaluate(pl => { S.places = pl; S.set.travel = 'car'; save() }, places);
-  const out = await q.evaluate(() => { const fx = fixDay('2026-11-23', true); return { moved: fx.acts.filter(a => a.k == 'move').length, left: fx.left, time: S.items.find(i => i.id == 'r').time } });
-  ok('a repeating task is not moved, and Tempo says so', out.moved === 0 && out.left >= 1 && out.time === '14:40', JSON.stringify(out));
+  const out = await q.evaluate(() => { const fx = fixDay('2026-11-23', true); return { moved: fx.acts.filter(a => a.k == 'move').length, left: fx.left, time: S.items.find(i => i.id == 'r').time, actual: occ('2026-11-23').find(i => i.id == 'r').time } });
+  ok('a repeating task moves only on the day being sorted', out.moved >= 1 && out.left === 0 && out.time === '14:40' && out.actual > out.time, JSON.stringify(out));
   // nothing wrong -> no ⓘ
   const g2 = item('g', 'Gym', '17:00', 60, 'health'); g2.pl = 'o'; const ok1 = await open(b, 'en', [a, g2]);
   ok('a sensible day shows no red mark', await ok1.evaluate(pl => { S.places = pl; S.set.travel = 'car'; go(1); return Object.keys(legIssues('2026-11-23')).length === 0 && !document.querySelector('.lay.lgw') }, places));
