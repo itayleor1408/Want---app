@@ -76,7 +76,8 @@ module.exports = async browser => {
       return day.note==='Use side door'&&day.steps[0].t==='Pack cables'&&!task.note&&!task.steps;
     }));
     await p.evaluate(() => settings());
-    ok('settings and task creation have no category controls', await p.locator('#cts').count()===0);
+    ok('settings still has Categories, and the category sheet lists them', await p.locator('#cts').count()===1 && await p.evaluate(() => { closeSh(true); focusSheet(); return document.querySelectorAll('#fsb .cr').length === S.cats.length && S.cats.length > 0 }));
+    ok('a category chosen in the task editor is kept on the task and tints it', await p.evaluate(() => { closeSh(true); edit(null, today()); const id = S.cats[0].id; document.querySelector('#cat [data-c="' + id + '"]').click(); document.querySelector('#fi').value = 'Category check'; document.querySelector('#fi').dispatchEvent(new Event('input')); const area = F.area; return area === id && taskColor({ area: id }) === S.cats[0].color }));
     ok('quick update and sorting run without page errors', errors.length===0, errors.join('|'));
   } finally {
     await p.close();
