@@ -78,6 +78,7 @@ module.exports = async browser => {
     await p.evaluate(() => settings());
     ok('settings still has Categories, and the category sheet lists them', await p.locator('#cts').count()===1 && await p.evaluate(() => { closeSh(true); focusSheet(); return document.querySelectorAll('#fsb .cr').length === S.cats.length && S.cats.length > 0 }));
     ok('a category chosen in the task editor is kept on the task and tints it', await p.evaluate(() => { closeSh(true); edit(null, today()); const id = S.cats[0].id; document.querySelector('#cat [data-c="' + id + '"]').click(); document.querySelector('#fi').value = 'Category check'; document.querySelector('#fi').dispatchEvent(new Event('input')); const area = F.area; return area === id && taskColor({ area: id }) === S.cats[0].color }));
+    ok('a task takes its look (colour and icon) from its category, over its own', await p.evaluate(() => { const c = S.cats[0], it = { area: c.id, color: '#123456', emoji: '🙂' }; return taskColor(it) === c.color && taskLook(it).emoji === (c.emoji || '') }));
     ok('quick update and sorting run without page errors', errors.length===0, errors.join('|'));
   } finally {
     await p.close();

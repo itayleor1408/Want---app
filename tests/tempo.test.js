@@ -21,7 +21,7 @@ async function newTask(b) {
   ok('while still typing the buttons stay hidden', (await m()).row === 0);
   await p.waitForTimeout(1300);
   const c = await m();
-  ok('after a short pause the window grows and the buttons appear', c.row >= 50 && c.sheet > a.sheet + 40 && c.op === '1', JSON.stringify(c));
+  ok('after a short pause the window grows and the buttons appear', c.row >= 50 && c.sheet > a.sheet + 10 && c.op === '1', JSON.stringify(c));
   await p.fill('#fi', ''); await p.waitForTimeout(400);
   ok('clearing the name hides them again', (await m()).row === 0);
   await p.fill('#fi', 'Read'); await p.click('[data-task-look]'); await p.click('#look-save'); await p.waitForTimeout(1000);

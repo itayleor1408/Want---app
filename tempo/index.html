@@ -938,7 +938,7 @@ function quickTaskEditor(ds,id){
   <div class="f2"><label class="fld"><span>${t('Starts')}</span><input class="f" id="quick-start" type="time" value="${it?.time||''}"></label>
   <label class="fld"><span>${t('Ends')}</span><input class="f" id="quick-end" type="time" value="${it?taskEnd(it):''}"></label></div>
   ${S.places.length?`<label class="fld"><span>${t('Place')}</span><select class="f" id="quick-place"><option value="">—</option>${S.places.map(pl=>`<option value="${esc(pl.id)}" ${it?.pl===pl.id?'selected':''}>${esc(pl.name)}</option>`).join('')}</select></label>`:''}
-  <button class="pill task-look" id="quick-look">${ic('edit',16)} ${t('Task appearance')}</button>
+  <button class="pill task-look" id="quick-look" ${it?.area&&S.cats.some(c=>c.id===it.area)?'hidden':''}>${ic('edit',16)} ${t('Task appearance')}</button>
   <div class="trio"><button class="ib" id="quick-back" aria-label="${t('Back')}">${ic('left')}</button><button class="ib p" id="quick-save" aria-label="${t('Save')}">${ic('check')}</button></div><div class="why"></div>`,sheet=>{
   const name=$('#quick-name'),start=$('#quick-start'),end=$('#quick-end'),place=$('#quick-place');
   const sync=()=>{const reason=!name.value.trim()?t('Write what the task is first'):
@@ -1088,11 +1088,11 @@ const areaOf=k=>k?catList().find(a=>a[0]==k):null;
 const areaTint=k=>{const a=areaOf(k);return a?`background:color-mix(in srgb,${a[3]} 18%,var(--fl));color:color-mix(in srgb,${a[3]} 78%,var(--t))`:''};
 const guessArea=s=>{for(const[r,e]of EM)if(r.test(s)){const id=({'💼':'work','💪':'health','🩺':'health','📚':'study','👥':'social','🎉':'social','🏠':'home'})[e];if(id&&S.cats.some(c=>c.id==id))return id}return null};
 const legacyLook=it=>it.area&&S.cats?.find(x=>x.id===it.area);
-const taskColor=it=>{const color=it.color||legacyLook(it)?.color;return /^#[0-9a-f]{6}$/i.test(color||'')?color:'#8a8a91'};
+const taskColor=it=>{const color=legacyLook(it)?.color||it.color;return /^#[0-9a-f]{6}$/i.test(color||'')?color:'#8a8a91'};
 const taskPhoto=it=>/^data:image\/jpeg;base64,[A-Za-z0-9+/=]+$/.test(it.photo||'')?it.photo:'';
 const taskLook=it=>{const c=legacyLook(it);return {
- emoji:it.emoji&&it.emoji!=='📌'?it.emoji:c?.emoji||'',
- icon:CICONS.includes(it.icon)?it.icon:c?.icon||'',
+ emoji:c?(c.emoji||''):it.emoji&&it.emoji!=='📌'?it.emoji:'',
+ icon:c?(c.emoji?'':CICONS.includes(c.icon)?c.icon:''):CICONS.includes(it.icon)?it.icon:'',
  color:taskColor(it),photo:taskPhoto(it),priority:Number(it.priority)||0
 }};
 function migrateTaskLooks(){return false}
@@ -1222,7 +1222,7 @@ function edit(id,ds,opts){const it=id?S.items.find(i=>i.id==id):null,wz=!it;opts
   const drawCat=()=>{const cs=catList().sort((a,b)=>(a[0]==F.area?-1:b[0]==F.area?1:0)||((S.catUse[b[0]]||0)-(S.catUse[a[0]]||0)));
    $('#cat').innerHTML=`<button class="pill nw2" data-nc="1" type="button">+ ${t('New')}</button>${cs.map(x=>P('c',F.area==x[0]?'':x[0],F.area==x[0],x[1]+' '+esc(x[2])).replace('<button ',`<button data-cid="${x[0]}" `)).join('')}`;$('#cat').scrollLeft=0;fitRows()};
   const catLook=()=>{if(F.lookPick)return;const c=S.cats.find(x=>x.id==F.area);F.look=taskLook(Object.assign({},F.look,{emoji:'',icon:'',color:'',area:F.area}));if(c)F.look.color=c.color};
-  const drawLook=()=>{const chip=$('#task-look-preview');chip.innerHTML=iconOf(F.look);chip.style.cssText=taskTint(F.look)};
+  const drawLook=()=>{const lb=$('[data-task-look]');if(lb)lb.style.display=F.area?'none':'';const chip=$('#task-look-preview');chip.innerHTML=iconOf(F.look);chip.style.cssText=taskTint(F.look)};
   const travTxt=()=>{const pl=F.pl&&placeOf(F.pl);if(!pl||!F.time)return '';const og=originFor(F.pl,F.date,F.time),a=og&&autoTrav(og,pl),tv=F.trav||(a&&a.min)||0,md=F.mode||(a&&a.mode)||'walk';return tv?`${MODE[md][0]} ${t(MODE[md][1])} · ${hm(tv)}${og?' · '+fromTxt(og.name):''}`:''};
   const drawWhere=()=>{$('#rwh').innerHTML=`<button class="pill nw2" data-np="1" type="button">+ ${t('New place')}</button>`+recent(S.places,S.plUse,p=>p.id,F.pl).map(p=>P('wl',F.pl==p.id?'':p.id,F.pl==p.id,plIc(p)+' '+esc(p.name))).join('');
    $('#wtr').innerHTML=travTxt();$('#rwh').scrollLeft=0;fitRows()};
