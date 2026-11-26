@@ -242,6 +242,8 @@ a.lnk{display:block;text-align:center;color:var(--s2);text-decoration:none;font-
  .review-summary summary{cursor:pointer;font-weight:700}.review-summary summary bdi{margin-inline-start:5px;color:var(--s2)}
  .review-summary .card{margin:8px 0 0;padding-inline:10px}.finish-reason{margin-bottom:12px}
  .review-summary[open]+.review-day-flow{display:none}.review-changes{white-space:normal;overflow-wrap:anywhere}.auto-info{margin-inline-start:6px}.brw .rt{gap:2px}.trip-stop{display:block;font-size:12px;color:var(--s2);overflow-wrap:anywhere;line-height:1.15}
+ .trip-history{position:relative;overflow-y:auto;scrollbar-width:thin;overflow-anchor:none;-webkit-mask-image:linear-gradient(to bottom,transparent,#000 var(--ft,0px),#000 calc(100% - var(--fb,0px)),transparent);mask-image:linear-gradient(to bottom,transparent,#000 var(--ft,0px),#000 calc(100% - var(--fb,0px)),transparent)}
+ .trip-history>div{display:flow-root}.trip-history:not([data-ready])>.trip-history-earlier{display:none}.trip-history-link svg{transform:rotate(180deg)}.trip-no-rec{padding:14px 0}
 </style></head><body><div id="app"></div>
 <div class="fabs"><button class="ib p" id="fab" aria-label="Add" style="background:var(--t);color:var(--bg)"></button></div>
 <nav id="nav"></nav><div id="tp"></div><div id="ts"><span id="tt"></span><button id="tn" style="display:none"></button><button id="tu"></button></div>
@@ -345,6 +347,7 @@ const HE={'Leaves in':'יוצא בעוד','Arrive':'מגיעים','Weak signal':
 'info.notif':'התזכורות מגיעות גם כש-Tempo סגורה. באייפון צריך להוסיף את Tempo למסך הבית. רק זמני התזכורות נשלחים לשרת; הטקסט נשאר בטלפון.','info.rem':'כמה זמן לפני כל אירוע חדש להתריע.','info.quick':'אפשר לכתוב בשפה חופשית: "פגישה מחר 14:00 שעה" והאפליקציה תמלא לבד.','info.data':'הכול נשמר רק בטלפון הזה. מומלץ לייצא גיבוי מדי פעם.'};
 const EN={'info.cloud':'Keeps a copy of your plans on Penny\'s server, automatically every few minutes. Only someone with your recovery key can read it.','Missed':'Missed','info.busEmpty':'Add the places you go to (home, work, the gym) and Tempo will show only the next bus to each one.','info.places':'Save home, work, the gym and bus stops. Attach a place to any event to get a travel estimate.','info.day':'Free time is only counted between these hours.','info.notif':'Reminders arrive even when Tempo is closed. On iPhone, Tempo must be added to the Home Screen. Only the reminder times go to the server; the words stay on your phone.','info.rem':'How long before a new event to alert you.','info.quick':'Type naturally: "Dentist tomorrow 14:00 1h" and Tempo fills in the rest.','info.data':'Everything is stored only on this phone. Export a backup now and then.'};
 Object.assign(HE,{
+ 'Earlier departures':'יציאות מוקדמות יותר','No recommended departures':'אין יציאות מומלצות',
  'Upcoming departure':'היציאה הקרובה','Trip unavailable':'הנסיעה אינה זמינה',
  'Arrives {0} late':'מגיעים באיחור של {0}','Switch to line {0}':'החלפה לקו {0}',
  'Change time for this day':'שינוי שעה ליום הזה','One-time change':'שינוי חד־פעמי',
@@ -444,7 +447,18 @@ function goSheet(id,ds){const it=occurrence(S.items.find(i=>i.id==id),ds),p=it&&
    a1.onfinish=a1.oncancel=()=>{b.style.overflow=''}})};
  const draw0=s=>{const body=$('#gbody');if(!body)return;
   $('#gmode').innerHTML=[['walk','🚶','Walk'],['bus','🚌','Bus'],['drive','🚗','Car']].map(([k,em,l])=>`<button type="button" class="mtile ${mode==k?'on':''}" data-gm="${k}"><i>${em}</i><b>${t(l)}</b><small>${k=='bus'?(selected()?hm(selected().total):'—'):mins[k]!=null?'≈ '+hm(mins[k]):''}</small></button>`).join('');
-  if(mode=='bus'){body.innerHTML=`<div id="gbus">${tripBlock(R,p,selected()?.ride,tripDisruption(R,selected(),it,ds),selected()?.unavailable)}${R?.why==='noorigin'?`<button class="btn s" id="trip-loc">${t('Use my location')}</button>`:''}</div>`;return}
+  if(mode=='bus'){
+   const previous=body.querySelector('.trip-history');
+   const above=previous?previous.lastElementChild.offsetTop-previous.scrollTop:0;
+   body.innerHTML=`<div id="gbus">${tripBlock(R,p,selected()?.ride,tripDisruption(R,selected(),it,ds),selected()?.unavailable)}${R?.why==='noorigin'?`<button class="btn s" id="trip-loc">${t('Use my location')}</button>`:''}</div>`;
+   sizeTripHistory();
+   const current=body.querySelector('.trip-history');
+   if(current&&above>0&&!current.dataset.opened){
+    current.scrollTop=current.lastElementChild.offsetTop-above;
+    updateTripHistory(current);
+   }
+   return;
+  }
   const m=mins[mode]||0,lv=st-m,href=mode=='walk'?`https://www.google.com/maps/dir/?api=1&destination=${ll}&travelmode=walking`:`https://waze.com/ul?ll=${ll}&navigate=yes`;
   body.innerHTML=`<div class="rec ch" style="cursor:default"><span class="rrow"><span class="ln" style="background:var(--fl);color:var(--t);font-size:20px">${mode=='walk'?'🚶':'🚗'}</span><span class="gt"><b>${t('Leave')} <bdi dir="ltr">${ft(lv)}</bdi></b><span class="sub">≈ ${hm(m)} · ${t('arrive')} <bdi dir="ltr">${it.time}</bdi></span></span></span></div><a class="lnk" target="_blank" rel="noopener" href="${href}">${mode=='walk'?t('Directions'):t('Open in Waze')} ›</a>`};
  openSh(`<div class="shd">${plIc(p)} ${esc(p.name)}</div><div class="sub" style="text-align:center;margin:-8px 0 14px">${o?fromTxt(o.name)+' · ':''}${t('arrive by')} <bdi dir="ltr">${it.time}</bdi></div>
@@ -456,7 +470,7 @@ function goSheet(id,ds){const it=occurrence(S.items.find(i=>i.id==id),ds),p=it&&
    if(s!==$('#sh')||mode!=='bus'||request!==loadId)return;
    R=result;
    const old=selected(),rides=[...R.opts,...(R.more||[])],matched=rides.find(x=>x.ride===old?.ride);
-   const chosen=matched||(!old?(R.opts.find(x=>x.rec)||R.opts[0]):null);
+   const chosen=matched||(!old?(R.opts.find(x=>x.rec)||R.opts.find(x=>!longLate(x))):null);
    if(chosen){const manual=!!(old?.manual&&old.ride===chosen.ride);
     if(!old||old.ride!==chosen.ride||old.leave!==+chosen.leave||old.total!==chosen.total||old.late!==chosen.late||old.early!==chosen.early||old.unavailable||old.reach!==+chosen.reach)setT('bus',0,chosen,manual);
    }else if(old&&!old.unavailable&&R.why!=='err'){it.busPlans[ds]={...old,unavailable:true};save();render(0,true);pushSync(true)}
@@ -928,12 +942,12 @@ function delCat(id){const snap=JSON.stringify(S.cats),its=S.items.filter(i=>i.ar
 const chipRow=(h,st)=>`<div class="hrow hs"${st?` style="${st}"`:''}>${h}</div>`;
 const vlist=(h,n,rh,open)=>`<div class="vcl"><div class="vcs ${open?'x':''}" style="--n:${n};--rh:${rh||66}px">${h}</div><button class="vca ${open?'x':''}" type="button" data-va="1" aria-label="more">${ic('chev',18)}</button></div>`;
 const recent=(arr,use,id,sel)=>arr.slice().sort((a,b)=>(id(a)==sel?-1:id(b)==sel?1:0)||((use[id(b)]||0)-(use[id(a)]||0)));
-function fitRows(){$$('.hrow').forEach(r=>{const on=r.querySelector('.on');if(!on||!r.clientWidth)return;const rr=r.getBoundingClientRect(),o=on.getBoundingClientRect();if(o.right>rr.right-4||o.left<rr.left+4)r.scrollLeft+=(o.left+o.width/2)-(rr.left+rr.width/2)});$$('.hs').forEach(hsFade);$$('.shb,.egrid2').forEach(vsFade);$$('.tgs[data-scale]').forEach(x=>{const on=x.querySelector('.pill.on');if(!on||x.classList.contains('x'))return;const c=x.getBoundingClientRect(),r=on.getBoundingClientRect();if(c.width&&(r.right>c.right+1||r.left<c.left-1))x.prepend(on)});
+function fitRows(){sizeTripHistory();$$('.hrow').forEach(r=>{const on=r.querySelector('.on');if(!on||!r.clientWidth)return;const rr=r.getBoundingClientRect(),o=on.getBoundingClientRect();if(o.right>rr.right-4||o.left<rr.left+4)r.scrollLeft+=(o.left+o.width/2)-(rr.left+rr.width/2)});$$('.hs').forEach(hsFade);$$('.shb,.egrid2').forEach(vsFade);$$('.tgs[data-scale]').forEach(x=>{const on=x.querySelector('.pill.on');if(!on||x.classList.contains('x'))return;const c=x.getBoundingClientRect(),r=on.getBoundingClientRect();if(c.width&&(r.right>c.right+1||r.left<c.left-1))x.prepend(on)});
  $$('.tgw').forEach(w=>{const x=w.querySelector('.tgs');if(x)w.classList.toggle('has',x.classList.contains('x')||x.scrollWidth>x.clientWidth+2)});
  $$('.vcl').forEach(w=>{const x=w.querySelector('.vcs');if(x)w.classList.toggle('has',x.classList.contains('x')||x.scrollHeight>x.clientHeight+2)})}
 function vsFade(el){if(!el)return;const max=el.scrollHeight-el.clientHeight,top=el.scrollTop;el.style.setProperty('--ft',max>2&&top>2?'24px':'0px');el.style.setProperty('--fb',max>2&&top<max-2?'28px':'0px')}
 function hsFade(el){const max=el.scrollWidth-el.clientWidth,pos=Math.abs(el.scrollLeft);el.style.setProperty('--fs',max>2&&pos>2?'28px':'0px');el.style.setProperty('--fe',max>2&&pos<max-2?'28px':'0px')}
-document.addEventListener('scroll',e=>{const x=e.target;if(x&&x.classList){if(x.classList.contains('hs'))hsFade(x);else if(x.classList.contains('shb')||x.classList.contains('egrid2'))vsFade(x)}},true);
+document.addEventListener('scroll',e=>{const x=e.target;if(x&&x.classList){if(x.classList.contains('hs'))hsFade(x);else if(x.classList.contains('trip-history'))updateTripHistory(x);else if(x.classList.contains('shb')||x.classList.contains('egrid2'))vsFade(x)}},true);
 document.addEventListener('click',e=>{const b=e.target.closest('[data-ca],[data-va]');if(!b)return;const w=b.parentElement,x=w.querySelector('.tgs,.vcs');if(!x)return;
  x.style.setProperty('--full',x.scrollHeight+'px');x.classList.toggle('x');b.classList.toggle('x');if(x.classList.contains('x'))w.classList.add('has')});
 let F;
@@ -1540,9 +1554,10 @@ async function searchTrips(o,d,arriveBy,after,preferred,usual){
  for(const x of [...opts,...allRides])if(!departures.has(x.ride))departures.set(x.ride,x);
  for(const x of departures.values()){
   x.usual=usual!=null&&String(x.line)===usual;
-  x.nx=pool.filter(y=>String(y.line)===String(x.line)&&y.depStop.id===x.depStop.id&&y.dep>=x.dep)
-   .map(y=>y.dep).sort((a,b)=>a-b).filter((d,i,a)=>!i||+d!==+a[i-1]).slice(0,3);
-  x.late=!!(target&&x.reach>target);
+  x.nx=[x.dep,...allRides.filter(y=>String(y.line)===String(x.line)&&y.depStop.id===x.depStop.id&&y.dep>x.dep).map(y=>y.dep)]
+   .sort((a,b)=>a-b).filter((d,i,a)=>!i||+d!==+a[i-1]).slice(0,3);
+  x.lateMinutes=target?Math.max(0,(x.reach-target)/6e4):0;
+  x.late=x.lateMinutes>0;
  }
  const more=[...departures.values()].filter(x=>!opts.includes(x)).sort((a,b)=>Number(a.early)-Number(b.early)||a.leave-b.leave);
  return {opts,more,why:opts.length||more.length?'':'nodirect',near:opts.length||more.length?[]:nearBuses};
@@ -1624,18 +1639,58 @@ function tripDisruption(result,plan,it,ds){
   ${reach&&dk(new Date(reach))===ds?`<button class="pill" id="trip-retime" data-reach="${reach}">${t('Change time for this day')}</button>`:''}
  </div>`;
 }
+const longLate=x=>x.lateMinutes>=15;
+function updateTripHistory(viewport){
+ viewport.firstElementChild.inert=viewport.scrollTop>=viewport.lastElementChild.offsetTop-2;
+ vsFade(viewport);
+}
+function sizeTripHistory(){
+ for(const viewport of $$('.trip-history')){
+  const earlier=viewport.firstElementChild,current=viewport.lastElementChild;
+  if(!current.offsetHeight)continue;
+  const oldMax=viewport.scrollHeight-viewport.clientHeight;
+  const atRecommendations=!viewport.dataset.ready||viewport.scrollTop>=oldMax-2;
+  viewport.style.maxHeight=current.offsetHeight+'px';
+  viewport.dataset.ready='1';
+  const selected=earlier.querySelector('.ch');
+  if(!viewport.dataset.opened&&selected){
+   viewport.scrollTop+=selected.getBoundingClientRect().top-viewport.getBoundingClientRect().top;
+   viewport.dataset.opened='1';
+  }
+  else if(atRecommendations)viewport.scrollTop=current.offsetTop;
+  updateTripHistory(viewport);
+ }
+}
+document.addEventListener('click',e=>{
+ const trigger=e.target.closest('[data-trip-history]');
+ if(!trigger)return;
+ const viewport=trigger.nextElementSibling;
+ viewport.scrollTo({top:Math.max(0,viewport.lastElementChild.offsetTop-viewport.clientHeight),behavior:matchMedia('(prefers-reduced-motion:reduce)').matches?'instant':'smooth'});
+ viewport.focus({preventScroll:true});
+});
 function tripBlock(r,p,chosenRide,resolution='',unavailable=false){if(!r)return `<div class="empty" style="padding:14px 0">${t('Finding buses…')}</div>`;
  const choices=[...(r.opts||[]),...(r.more||[])];
  if(choices.length){
-  const sel=unavailable?null:choices.find(x=>x.ride==chosenRide)||choices.find(x=>x.rec)||r.opts[0];
-  const ranked=r.opts.slice().sort((a,b)=>Number(!!b.rec)-Number(!!a.rec)||Number(!!a.late)-Number(!!b.late)||(a.score??a.total)-(b.score??b.total));
+  const sel=unavailable?null:choices.find(x=>x.ride==chosenRide)||choices.find(x=>x.rec)||r.opts.find(x=>!longLate(x));
+  const ranked=r.opts.filter(x=>!longLate(x)).sort((a,b)=>Number(!!b.rec)-Number(!!a.rec)||Number(!!a.late)-Number(!!b.late)||(a.score??a.total)-(b.score??b.total));
   const first=ranked.slice(0,3);
-  if(sel&&!first.includes(sel)){first.splice(2,1,sel)}
-  const rest=choices.filter(x=>!first.includes(x)),early=rest.filter(x=>x.early),other=rest.filter(x=>!x.early);
+  if(sel&&!longLate(sel)&&!sel.early&&!first.includes(sel))first.splice(2,1,sel);
+  // Keep deliberately early departures and earlier runs of the recommended lines above the main list.
+  const lines=new Map(first.map(x=>[String(x.line),+x.leave]));
+  const rest=choices.filter(x=>!first.includes(x));
+  const early=rest.filter(x=>!longLate(x)&&(x.early||+x.leave<lines.get(String(x.line))))
+   .sort((a,b)=>a.leave-b.leave);
+  const other=rest.filter(x=>!early.includes(x));
+
   const list=(items)=>`<div class="card bs" style="margin:6px 0 0">${items.map(x=>tripRow(x,x===sel)).join('')}</div>`;
+  const recs=first.length?list(first):`<div class="empty trip-no-rec">${t('No recommended departures')}</div>`;
+  const departures=early.length&&first.length?`<button type="button" class="more2 trip-history-link" data-trip-history>${ic('chev',14)} <span>${t('Earlier departures')} · ${early.length}</span></button>
+   <div class="trip-history" tabindex="0" aria-label="${t('Earlier departures')}">
+    <div class="trip-history-earlier" inert>${list(early)}</div><div class="trip-history-current">${recs}</div>
+   </div>`:early.length?list(early):recs;
   const warning=resolution?'':sel?.early?t('Leave before the previous task ends'):sel?.late?t('Arrives after the task starts'):'';
   return (sel?tripTop(sel)+tripLiveStatus(sel):'')+resolution+(warning?`<div class="sub trip-late" role="status" style="text-align:center">${warning}</div>`:'')+
-   (first.length?list(first):'')+(rest.length?`<button type="button" class="more2" data-moreb="1" aria-expanded="false"><span>${t('Other buses')} · ${rest.length}</span>${ic('chev',14)}</button><div class="gx" id="obus"><div>${early.length?`<div class="lb">${t('Early departure')}</div>${list(early)}`:''}${other.length?list(other):''}</div></div>`:'');
+   departures+(other.length?`<button type="button" class="more2" data-moreb="1" aria-expanded="false"><span>${t('Other buses')} · ${other.length}</span>${ic('chev',14)}</button><div class="gx" id="obus"><div>${list(other)}</div></div>`:'');
  }
  const why=r.why=='nostop'?t('No bus stop near one of the places'):r.why=='noorigin'?t('Location unavailable. Pick a saved place.'):r.why=='err'?t("Couldn't load buses"):t('No direct bus found');
  const nb=(r.near||[]).length?`<div class="card bs" style="margin:0">${r.near.map(x=>`<div class="li"><span class="ln">${esc(x.line)}</span><span class="gt"><b><bdi dir="ltr">${hhmm(x.at)}</bdi></b><span class="sub">🚶 ${x.w} ${t('min')} · <bdi>${esc(x.stop.name)}</bdi></span></span></div>`).join('')}</div>`:'';

@@ -34,7 +34,7 @@ module.exports = async browser => {
     window.fetch = async input => {
       const url = String(input);
       const rows = url.includes('/gtfs_stops/list') ? stops : url.includes('/gtfs_ride_stops/list') ?
-        [...ride('early', '3', '15:45', '16:08'), ...ride('on-time', '3', '16:05', '16:26'), ...(window.hideLate?[]:ride('late', '5', '16:12', '16:37'))] : [];
+        [...ride('early', '3', '15:45', '16:08'), ...ride('on-time', '3', '16:05', '16:26'), ...(window.hideLate?[]:ride('late', '5', '16:12', '16:37')), ...ride('late-14', '14', '16:17', '16:48'), ...ride('late-15', '15', '16:18', '16:49')] : [];
       return new Response(JSON.stringify(rows));
     };
   });
@@ -42,12 +42,20 @@ module.exports = async browser => {
     await page.goto(URL);
     await page.evaluate(() => goSheet('gym', today()));
     await page.locator('.tph').waitFor();
-    ok('early departures are kept under more and nearby lines remain available', await page.evaluate(() => {
+    ok('early departures are above the recommendations and nearby lines remain available', await page.evaluate(() => {
       const plan = busPlan(occ(today()).find(x => x.id === 'gym'), today());
       return plan.ride === 'on-time' && document.querySelector('[data-ride="late"]') &&
-        !!document.querySelector('#obus [data-ride="early"]');
+        !!document.querySelector('.trip-history-earlier [data-ride="early"]');
     }));
-    await page.locator('[data-moreb]').click();
+    ok('14 minutes late stays eligible and exactly 15 minutes late is listed only under Other buses', await page.evaluate(() =>
+      !!document.querySelector('.trip-history-current [data-ride="late-14"]') &&
+      !!document.querySelector('#obus [data-ride="late-15"]') &&
+      !document.querySelector('.trip-history-current [data-ride="late-15"]')));
+    const departures=page.locator('.trip-history');
+    await departures.hover();
+    const topBefore=await departures.evaluate(el=>el.scrollTop);
+    await page.mouse.wheel(0,-300);
+    await page.waitForFunction(top=>$('.trip-history').scrollTop<top,topBefore);
     await page.locator('[data-ride="early"]').click();
     ok('an early departure can be selected explicitly without moving the task', await page.evaluate(() => {
       const task = S.items.find(x => x.id === 'gym');
