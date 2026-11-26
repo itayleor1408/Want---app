@@ -42,11 +42,23 @@ module.exports = async browser => {
     await page.goto(URL);
     await page.evaluate(() => goSheet('gym', today()));
     await page.locator('.tph').waitFor();
-    ok('bus candidates respect the previous task end and include other nearby lines', await page.evaluate(() => {
+    ok('early departures are kept under more and nearby lines remain available', await page.evaluate(() => {
       const plan = busPlan(occ(today()).find(x => x.id === 'gym'), today());
       return plan.ride === 'on-time' && document.querySelector('[data-ride="late"]') &&
-        !document.querySelector('[data-ride="early"]');
+        !!document.querySelector('#obus [data-ride="early"]');
     }));
+    await page.locator('[data-moreb]').click();
+    await page.locator('[data-ride="early"]').click();
+    ok('an early departure can be selected explicitly without moving the task', await page.evaluate(() => {
+      const task = S.items.find(x => x.id === 'gym');
+      return task.time === '16:35' && busPlan(task, today()).early &&
+        document.querySelector('#gbus [role="status"]').textContent.includes('previous task ends');
+    }));
+    await page.locator('[data-ride="on-time"]').click();
+    ok('an on-time choice is remembered per route, and live statuses distinguish estimates from lost signal', await page.evaluate(() =>
+      S.busHabits[JSON.stringify(['school','gym'])] === '3' &&
+      tripLiveStatus({sig:'live',delayMinutes:4}).includes('Estimated delay') &&
+      tripLiveStatus({sig:'lost'}).includes('scheduled time')));
     await page.locator('[data-ride="late"]').click();
     ok('the plan and the bus sheet show the same selected departure and flag late arrival', await page.evaluate(() =>
       [...document.querySelectorAll('.cn')].some(x => x.textContent.includes(document.querySelector('.arv b').textContent)) &&
