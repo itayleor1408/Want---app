@@ -128,3 +128,9 @@ rebuilds `worker.js`, fails if it is stale, and runs the suite on every push and
   Scheduled Task every 4 hours — it only syncs while that PC is on. Apple Pay and Back Tap
   quick-add send straight from the phone and don't need the PC.
 - Sync keys are secrets: never commit a real one, and never paste one into the page source.
+
+### Ask Tempo
+
+The microphone beside **Add** opens a recording sheet. Pause to edit the transcript, or send while recording. Typed requests work even on browsers without speech recognition. Common commands and assistant undo run locally. Voice recognition may use the browser or device provider's speech service.
+
+For more conversational requests, the optional Workers AI interpreter uses the authenticated Tempo backup account and a free-plan quota. Keep the Cloudflare account on **Workers Free** for this mode, deploy the Worker with the `AI` binding, and set the Worker variable `TEMPO_AI_FREE=1`. The route stays disabled without the flag. The user then enables **Language model** in Ask Tempo. The service receives the request, recent conversation and a bounded list of nearby task titles and times. When the model or quota is unavailable, Tempo offers its local commands. [Cloudflare Workers AI pricing](https://developers.cloudflare.com/workers-ai/platform/pricing/)

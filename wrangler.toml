@@ -8,3 +8,6 @@ id = "824a051377e942d886532d76caeb5353"
 
 [triggers]
 crons = ["*/2 * * * *"]
+
+[ai]
+binding = "AI"

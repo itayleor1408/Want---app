@@ -253,8 +253,22 @@ a.lnk{display:block;text-align:center;color:var(--s2);text-decoration:none;font-
  @keyframes tempo-layout-out{to{opacity:0;transform:translateY(-5px)}}
  @keyframes tempo-layout-in{from{opacity:0;transform:translateY(5px)}}
  .file-pill{display:inline-flex;cursor:pointer;position:relative}.file-pill input{position:absolute;inset:0;opacity:0;width:100%;cursor:pointer}
+ #ask-fab[hidden]{display:none}.ask-head{display:grid;grid-template-columns:38px 1fr 52px;align-items:center;gap:5px;margin-bottom:10px}.ask-head .shd{margin:0}
+ .ask-head select{min-width:0;width:100%;border:0;border-radius:12px;background:var(--fl);color:var(--t);padding:5px;font:inherit;font-size:12px}
+ .ask-log{max-height:min(32vh,252px);overflow:auto;display:flex;gap:8px;flex-direction:column;margin-bottom:8px;scrollbar-width:thin}
+ .ask-log>*{flex:none}.ask-log>button{align-self:flex-start}.ask-log{mask-image:linear-gradient(to bottom,transparent,#000 var(--ft,0px),#000 calc(100% - var(--fb,0px)),transparent)}.ask-turn{background:var(--fl);padding:10px 12px;border-radius:14px;white-space:pre-wrap;overflow-wrap:anywhere;align-self:flex-start;max-width:95%;font-size:14px}
+ .ask-turn.user{align-self:flex-end;background:color-mix(in srgb,var(--a) 13%,var(--fl))}
+ .ask-options{display:flex;flex-wrap:wrap;gap:6px}.ask-options button{max-width:100%;overflow-wrap:anywhere}
+ .ask-wave{display:none;height:48px;justify-content:center;align-items:center;gap:5px;color:var(--a)}
+ .listening .ask-wave{display:flex}.ask-wave i{width:4px;border-radius:4px;height:var(--height);background:currentColor;animation:ask-wave 950ms ease-in-out infinite alternate;animation-delay:calc(-125ms * var(--beat))}
+ @keyframes ask-wave{from{transform:scaleY(.35)}to{transform:scaleY(1)}}
+ @media(prefers-reduced-motion:reduce){.ask-wave i{animation:none}}
+ .ask-sheet #ask-status:empty{display:none}.ask-sheet #ask-status{margin:0 0 8px;min-height:1em;text-align:center}.ask-sheet #ask-text{resize:vertical;min-height:76px;max-height:160px}
+ .ask-actions{display:flex;align-items:center;gap:10px}.ask-actions .btn{flex:1}.ask-actions button:disabled{opacity:.45}
+ .ask-pause{width:13px;height:16px;border-inline:4px solid currentColor}.ask-model{margin-top:12px;color:var(--s2);font-size:13px}.ask-model label{display:block;margin-top:8px}
+
 </style></head><body><div id="app"></div>
-<div class="fabs"><button class="ib p" id="fab" aria-label="Add" style="background:var(--t);color:var(--bg)"></button></div>
+<div class="fabs"><button class="ib" id="ask-fab" type="button" aria-label="Ask Tempo"></button><button class="ib p" id="fab" aria-label="Add" style="background:var(--t);color:var(--bg)"></button></div>
 <nav id="nav"></nav><div id="tp"></div><div id="ts"><span id="tt"></span><button id="tn" style="display:none"></button><button id="tu"></button></div>
 <script>
 const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
@@ -355,6 +369,55 @@ const HE={'Leaves in':'יוצא בעוד','Arrive':'מגיעים','Weak signal':
 'Where?':'איפה?','Cloud backup':'גיבוי בענן','Last backup':'גיבוי אחרון','Waiting for the first backup':'ממתין לגיבוי הראשון','Off':'כבוי','Back up now':'גיבוי עכשיו','Recovery key':'מפתח שחזור','Restore from cloud':'שחזור מהענן','Keep it somewhere safe. With it you can bring your plans back on a new phone.':'שמרו אותו במקום בטוח. בעזרתו תוכלו להחזיר את התוכניות בטלפון חדש.','Copy key':'העתקת המפתח','Copied':'הועתק','Paste your recovery key. This replaces what is on this phone.':'הדביקו את מפתח השחזור. זה יחליף את מה שיש בטלפון הזה.','Paste the key first':'קודם הדביקו את המפתח','That key is not valid':'המפתח לא תקין','No backup found for this key':'לא נמצא גיבוי למפתח הזה','Restored':'שוחזר','Couldn\'t reach the backup server':'אין חיבור לשרת הגיבוי','Turning on…':'מפעיל…','Backing up…':'מגבה…','Backed up':'גובה','I have a recovery key':'יש לי מפתח שחזור','Turn off cloud backup? Your saved backup stays on the server, and your recovery key still works.':'לכבות את הגיבוי בענן? הגיבוי השמור נשאר בשרת, ומפתח השחזור עדיין עובד.','info.cloud':'שומר עותק של התוכניות בשרת של Penny, אוטומטית כל כמה דקות. רק מי שיש לו את מפתח השחזור יכול לקרוא אותו.','Edit place':'עריכת מקום','Location':'מיקום','Task name':'שם המשימה','Delete category':'מחיקת קטגוריה','Cancel':'ביטול','task keeps its plan but loses this category.':'משימה תישאר, בלי הקטגוריה הזו.','tasks keep their plan but lose this category.':'משימות יישארו, בלי הקטגוריה הזו.','No tasks use it.':'אף משימה לא משתמשת בה.','Finding you…':'מאתר אתכם…','Open in Google Maps':'פתיחה ב-Google Maps','You\'re at the stop':'הגעתם לתחנה','Walk to the stop':'הליכה לתחנה','You left':'יצאתם מ','Mark as done?':'לסמן כבוצע?','Saved':'נשמר','Hold a category to edit it':'לחיצה ארוכה על קטגוריה לעריכה','Choose on map':'בחירה במפה','On the map':'במפה','I\'m here':'אני כאן','My location':'המיקום שלי','Move the map to the place':'הזיזו את המפה אל המקום','Finding the address…':'מחפש כתובת…','Use this spot':'בחירת המקום הזה','Pinned spot':'נקודה במפה','The map couldn\'t load':'המפה לא נטענה','Or search: street and number':'או חיפוש: רחוב ומספר','Recommended':'מומלץ','Your bus':'האוטובוס שלך','Other buses':'אוטובוסים נוספים','arrive by':'להגיע עד','arrive':'הגעה','Directions':'הוראות הגעה','Open in Waze':'פתיחה ב-Waze','Your choice is saved for this task.':'הבחירה נשמרת למשימה הזו.','to':'אל','A new week started':'התחיל שבוע חדש','Do you have a focus this week?':'יש לכם מיקוד לשבוע הזה?','On what?':'על מה?','How many hours this week?':'כמה שעות השבוע?','No':'לא','Back':'חזרה','Close':'סגירה','Task':'משימה','Day':'יום','Place':'מקום','Reminder & travel':'תזכורת ונסיעה','Finish later':'להמשיך אחר כך','Let\'s build your week':'בואו נבנה את השבוע שלכם','A few quick questions, one at a time. You can change everything later.':'כמה שאלות קצרות, אחת בכל פעם. אפשר לשנות הכול אחר כך.','Start':'מתחילים','Skip setup':'דלגו על ההגדרה','Skip':'דלגו','What should we call you?':'איך לקרוא לכם?','Your name':'השם שלכם','Where\'s home?':'איפה הבית?','Used for travel times and the buses you need.':'משמש לזמני נסיעה ולאוטובוסים שתצטרכו.','What fills most of your week?':'מה ממלא את רוב השבוע שלכם?','Army service':'שירות צבאי','Something else':'משהו אחר','Nothing fixed':'שום דבר קבוע','What is it?':'מה זה?','Write what it is first':'קודם כתבו מה זה','Where is it?':'איפה זה?','Which days?':'באילו ימים?','What hours?':'באילו שעות?','From':'מ-','To':'עד','Anything else you do regularly?':'עוד משהו שאתם עושים באופן קבוע?','Anything else?':'עוד משהו?','Gym, classes, family dinner…':'חדר כושר, שיעורים, ארוחה משפחתית…','Gym':'חדר כושר','Sport':'ספורט','Class':'שיעור','Family':'משפחה','Hobby':'תחביב','Add':'הוספה','That\'s it':'זהו','How do you usually get around?':'איך אתם בדרך כלל מתניידים?','Car':'רכב','When does your day start and end?':'מתי היום שלכם מתחיל ונגמר?','Free time is counted between these hours.':'הזמן הפנוי נספר בין השעות האלה.','Wake up':'קמים','Wind down':'מסיימים','Remind you before things start?':'להזכיר לכם לפני שדברים מתחילים?','A short alert, with the time to leave if there is travel.':'התראה קצרה, עם שעת יציאה אם יש נסיעה.','Yes, remind me':'כן, תזכירו לי','Not now':'לא עכשיו','Track your hours each week?':'לעקוב אחרי השעות שלכם בכל שבוע?','For example':'למשל','a week':'בשבוע','Yes':'כן','No thanks':'לא תודה','Here\'s your week':'הנה השבוע שלכם','You can change anything later.':'אפשר לשנות הכול אחר כך.','Nothing fixed yet. Add things as they come.':'עוד אין דברים קבועים. הוסיפו כשמגיע.','Looks good':'נראה טוב','Change something':'לשנות משהו','Your week is ready':'השבוע שלכם מוכן','I\'m there now':'אני שם עכשיו','Or search an address':'או חפשו כתובת','Chosen place':'מקום שנבחר','Schedule':'לוח זמנים','Which day?':'באיזה יום?','What time?':'באיזו שעה?','Repeat?':'לחזור?','How long?':'כמה זמן?','Save now':'שמירה עכשיו','Auto':'אוטומטי','Set a time to get reminders.':'קבעו שעה כדי לקבל תזכורות.','Next':'הבא','ends':'מסתיים','leave':'צאו','task left':'משימה נשארה','tasks left':'משימות נשארו','All done':'הכול בוצע','Nothing planned':'אין תוכניות','free':'פנוי','biggest gap':'החלון הגדול','missed':'הוחמצו','done':'בוצעו','Add for someday':'הוסיפו למתישהו','Things without a date land here.':'דברים בלי תאריך יופיעו כאן.','Categories':'קטגוריות','Tap one to edit it':'הקישו כדי לערוך','My routine':'השגרה שלי','Redo the setup':'לעשות את ההגדרה מחדש','Answer a few questions to rebuild your week':'כמה שאלות כדי לבנות מחדש את השבוע','How you get around':'איך מתניידים','Set a goal of hours for one category':'יעד שעות לקטגוריה אחת','Bus city':'עיר לאוטובוסים','Look':'מראה','Backup':'גיבוי','Repeat':'חזרה','Repeats':'חוזר','On these days':'בימים האלה','Pick the days':'בחרו ימים','Pick at least one day':'בחרו לפחות יום אחד','Every day':'כל יום','Sun–Thu':'א׳–ה׳','Mon–Fri':'ב׳–ו׳','Weekends':'סופ״ש','More icons':'עוד סמלים','Type any emoji':'הקלידו כל אימוג׳י','Use your emoji keyboard':'ממקלדת האימוג׳י','task':'משימה','Version':'גרסה','local':'מקומית','Your plan':'התוכנית שלך','New place':'מקום חדש','Type':'סוג','e.g. Gym':'למשל: חדר כושר','Street, city':'רחוב, עיר','Getting there':'איך מגיעים','Direct buses':'אוטובוסים ישירים','Finding buses…':'מחפש אוטובוסים…','No direct bus found':'לא נמצא אוטובוס ישיר','No bus stop near one of the places':'אין תחנה ליד אחד המקומות','Late':'מאחר','Open Moovit':'פתיחה ב-Moovit','Next trip':'הנסיעה הבאה','Nearest stop':'התחנה הקרובה','Show only the buses you need':'רק האוטובוסים שאתם צריכים','Add a place':'הוסיפו מקום','Add a place to a task to see the bus you need for it.':'הוסיפו מקום למשימה כדי לראות את האוטובוס שצריך אליה.','info.busEmpty':'הוסיפו את המקומות שאתם הולכים אליהם (בית, עבודה, חדר כושר), ו-Tempo יראה רק את האוטובוס הבא לכל אחד.',
 'info.notif':'התזכורות מגיעות גם כש-Tempo סגורה. באייפון צריך להוסיף את Tempo למסך הבית. רק זמני התזכורות נשלחים לשרת; הטקסט נשאר בטלפון.','info.rem':'כמה זמן לפני כל אירוע חדש להתריע.','info.quick':'אפשר לכתוב בשפה חופשית: "פגישה מחר 14:00 שעה" והאפליקציה תמלא לבד.','info.data':'הכול נשמר רק בטלפון הזה. מומלץ לייצא גיבוי מדי פעם.'};
 const EN={'info.cloud':'Keeps a copy of your plans on Penny\'s server, automatically every few minutes. Only someone with your recovery key can read it.','Missed':'Missed','info.busEmpty':'Add the places you go to (home, work, the gym) and Tempo will show only the next bus to each one.','info.places':'Save home, work, the gym and bus stops. Attach a place to any event to get a travel estimate.','info.day':'Free time is only counted between these hours.','info.notif':'Reminders arrive even when Tempo is closed. On iPhone, Tempo must be added to the Home Screen. Only the reminder times go to the server; the words stay on your phone.','info.rem':'How long before a new event to alert you.','info.quick':'Type naturally: "Dentist tomorrow 14:00 1h" and Tempo fills in the rest.','info.data':'Everything is stored only on this phone. Export a backup now and then.'};
+Object.assign(HE,{
+ "Ask Tempo": "שאלו את Tempo",
+ "Recording language": "שפת ההקלטה",
+ "Your request": "הבקשה שלך",
+ "Tell Tempo what to change": "מה תרצו לשנות?",
+ "Pause recording": "השהיית הקלטה",
+ "Record": "הקלטה",
+ "Resume recording": "המשך הקלטה",
+ "Listening…": "מקשיב…",
+ "Checking your request…": "בודק את הבקשה…",
+ "Finishing transcription…": "מסיים תמלול…",
+ "Send": "שליחה",
+ "Voice is unavailable here. You can type.": "הקלטה אינה זמינה כאן. אפשר להקליד.",
+ "Voice recording was interrupted. You can edit or type your request.": "ההקלטה נקטעה. אפשר לערוך או להקליד את הבקשה.",
+ "Language model": "מודל שפה",
+ "Use the free cloud model": "שימוש במודל בענן במסלול החינמי",
+ "Sends your request and nearby task titles and times to Cloudflare.": "הבקשה, שמות המשימות הקרובות והשעות שלהן יישלחו ל־Cloudflare.",
+ "Undid the last assistant change.": "השינוי האחרון של העוזר בוטל.",
+ "There is no assistant change to undo.": "אין שינוי של העוזר שאפשר לבטל.",
+ "A task was edited afterward. I left those changes in place.": "משימה נערכה אחרי הפעולה. השינויים החדשים נשמרו.",
+ "The language model is unavailable. Trying a basic command.": "מודל השפה אינו זמין. מנסה להבין כפקודה פשוטה.",
+ "Tell me the action, the task and the day. For example, “Move gym today to 7 PM.”": "אפשר לציין פעולה, משימה ויום. למשל, ״תזיז את חדר כושר היום ל־19:00״.",
+ "Which task did you mean?": "לאיזו משימה התכוונת?",
+ "I couldn’t find that task. Which task and day did you mean?": "לא מצאתי את המשימה. לאיזו משימה ולאיזה יום התכוונת?",
+ "Added": "נוסף",
+ "Skipped": "דילגתי על",
+ "Updated": "עודכן",
+ "Note added to": "הערה נוספה ל",
+ "Step added to": "צעד נוסף ל",
+ "Choose photo": "בחירת תמונה",
+ "Choose a photo for this task.": "בחרו תמונה למשימה.",
+ "Which departure should I use?": "איזו יציאה לבחור?",
+ "No changes were made. Try the request again.": "לא נעשו שינויים. אפשר לנסות שוב.",
+ "What would you like to change?": "מה תרצו לשנות?",
+ "What should I write?": "מה לכתוב?",
+ "This note is full. Open the task to edit it.": "ההערה מלאה. אפשר לפתוח את המשימה כדי לערוך אותה.",
+ "No changes were needed.": "לא היה צורך בשינוי.",
+ "Could you give me the task and the change again?": "אפשר לחזור על המשימה ועל השינוי?",
+ "What is the task and what time should it start?": "מה המשימה ובאיזו שעה היא מתחילה?",
+ "This task needs a time and two saved places to find buses.": "צריך להגדיר שעה ושני מקומות שמורים כדי למצוא אוטובוסים.",
+ "Couldn't find a bus for that task.": "לא נמצא אוטובוס למשימה.",
+ "Couldn't find that departure. Choose another one.": "היציאה לא נמצאה. אפשר לבחור יציאה אחרת.",
+ "The schedule changed while I was checking. Please send that again.": "הלו״ז השתנה בזמן הבדיקה. אפשר לשלוח שוב.",
+ "Choose the task photo in a separate request.": "אפשר לבחור תמונה למשימה בבקשה נפרדת.",
+ "That task is no longer on the selected day.": "המשימה כבר אינה בתאריך שבחרת.",
+ "The route changed. Choose a bus again.": "המסלול השתנה. צריך לבחור שוב אוטובוס.",
+ "What new start time should I use?": "מה שעת ההתחלה החדשה?",
+ "What start and end time should I use?": "מה שעות ההתחלה והסיום?"
+});
 Object.assign(HE,{
  "The photo couldn't load":'לא ניתן לטעון את התמונה','Quick update':'עדכון מהיר' ,'Remove for this day':'הסרה מהיום הזה','Edit for this day':'עריכה ליום הזה',
  'Sort schedule':'סידור הלו״ז','Sort':'סידור','Priority':'עדיפות','High':'גבוהה','Normal':'רגילה','Low':'נמוכה',
@@ -727,6 +790,372 @@ function parse(txt,base){
  else for(let w=0;w<7&&!r.date;w++){const re=new RegExp(U+'(?:next\\s|יום\\s)?('+DAYS[w].join('|')+')'+V,'iu');if(cut(re)){const d=pd(T);r.date=addD(T,((w-d.getDay()+7)%7)||7)}}
  r.title=r.title.replace(/\s+/g,' ').trim();for(let k=0;k<3;k++)r.title=r.title.replace(/(^|\s)(at|for|on|next)$/i,'').replace(/^(at|for|on)\s/i,'').replace(/(^|\s)ב-?$/,'').trim();
  return r}
+/* ---------- Ask Tempo ---------- */
+const assistantMic='<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="9" y="2" width="6" height="13" rx="3"/><path d="M5 10v2a7 7 0 0 0 14 0v-2m-7 9v3m-3 0h6"/></svg>';
+const askNormalize=value=>String(value||'').normalize('NFKC').toLowerCase().replace(/[\p{P}\p{S}]/gu,' ').replace(/\s+/g,' ').trim();
+const askTimeText=value=>'\u2066'+value+'\u2069';
+const askValidTime=value=>typeof value==='string'&&/^([01]\d|2[0-3]):[0-5]\d$/.test(value);
+const askValidDate=value=>typeof value==='string'&&/^\d{4}-\d{2}-\d{2}$/.test(value)&&dk(pd(value))===value;
+const askUndoWords=/^(?:(?:no|please)[, ]+)?(?:undo(?: (?:the |your |my )?last change| (?:that|it|what you did))?|(?:that|it) (?:was wrong|wasn.t right|is wrong)|that.s (?:wrong|not what i meant)|go back|revert(?: that| the last change)?|(?:בטל|בטלי|לבטל)(?: את)?(?: השינוי(?: האחרון)?| הפעולה(?: האחרונה)?| זה)?|זה (?:היה לא נכון|לא נכון|היה שגוי)|תחזיר(?:י)? (?:לאחור|לקודם))(?:\s+please)?[.!?\s]*$/iu;
+const askDayRaw=text=>parse(text,today()).date;
+function askClock(text,suffix=''){
+ const match=String(text||'').trim().match(/^(\d{1,2})(?::([0-5]\d))?\s*(a\.?m\.?|p\.?m\.?|בבוקר|בערב|בצהריים)?$/i);
+ if(!match)return null;
+ let hour=Number(match[1]);const half=(match[3]||suffix).toLowerCase();
+ if(half){if(hour<1||hour>12)return null;hour=hour%12+(/p|בערב|בצהריים/.test(half)?12:0)}
+ if(hour>23)return null;
+ return ft(hour*60+Number(match[2]||0));
+}
+const maskAssistantQuotes=text=>text.replace(/"[^"]*"|“[^”]*”|(?<!\p{L})'[^']*'(?!\p{L})/gu,
+ quoted=>'\uE000'.repeat(quoted.length));
+function splitAssistantText(text,separators){
+ const pieces=[];let start=0;
+ for(const match of maskAssistantQuotes(text).matchAll(separators)){
+  pieces.push(text.slice(start,match.index));start=match.index+match[0].length;
+ }
+ pieces.push(text.slice(start));return pieces;
+}
+function localAssistant(text){
+ const s=text.trim().replace(/(?<=[בלמ])[־‐‑‒–](?=\d)/gu,'-').replace(/[.!?]+$/,'').replace(/^(?:please|hey tempo|can you|could you|תוכל(?:י)?|בבקשה)\s*[, ]\s*/iu,'');
+ if(askUndoWords.test(s))return {actions:[{kind:'undo'}]};
+ if(/\b(?:if|unless|before you|instead of)\b|(?<!\p{L})(?:אם|בתנאי)(?!\p{L})/iu.test(maskAssistantQuotes(s)))return null;
+ const actions=[];
+ const parts=splitAssistantText(s,/\s*(?:;|\band then\b|\band\s+(?=(?:add|move|rename|skip|remove|change|note)\s)|\s+ואז\s+)\s*/giu);
+ for(const raw of parts){
+  const correction=splitAssistantText(raw,/\s*[,—-]?\s*(?:\bactually\b|\bi mean\b|(?<!\p{L})בעצם(?!\p{L}))\s*/giu);
+  let part=correction[0].trim(),revised=correction.at(-1).trim(),match;
+  const date=askDayRaw(revised)||askDayRaw(part)||today();
+  const target=value=>value.replace(/\b(?:today(?:’s|'s)?|tomorrow(?:’s|'s)?|the)\b|(?<!\p{L})(?:היום|מחר|את)(?!\p{L})/giu,' ').trim();
+  if(correction.length>1){
+   if(/^(add|move|change|shift|rename|skip|remove|note|תוסיף|הוסף|תזיז|תשנה|תבטל)/iu.test(revised)){part=revised;revised=''}
+   else if(!askClock(revised.replace(/^(?:make it|at|to|ל[- ]?|ב[- ]?)\s*/iu,'')))return null;
+  }else revised='';
+  const clock=(value,suffix)=>askClock(revised?revised.replace(/^(?:make it|at|to|ל[- ]?|ב[- ]?)\s*/iu,''):value,suffix);
+  if(match=part.match(/^(?:add (?:a )?(note|step)\s*[: ]*|(?:תוסיף|הוסף)\s+(הערה|צעד)\s*)(.+)\s+(?:(?:to|for)\s+|ל[- ]?)(.+)$/iu)){
+   actions.push({kind:/step|צעד/iu.test(match[1]||match[2])?'step':'note',date:askDayRaw(match[4])||today(),target:target(match[4]),text:match[3].trim().replace(/^[“"']|[”"']$/g,'')});continue;
+  }
+  if(match=part.match(/^(?:rename|שנה(?: את)? השם של)\s+(.+?)\s+(?:to|ל[- ]?)\s*(.+)$/iu)){
+   actions.push({kind:'edit',date,target:target(match[1]),title:match[2]});continue;
+  }
+  if(match=part.match(/^(?:(?:change|set|replace) (?:the )?(?:picture|photo|image) (?:for|of|on)|(?:שנה|תשנה|החלף|תחליף) (?:את )?(?:התמונה|תמונה) (?:של|ל)) (.+)$/iu)){
+   actions.push({kind:'photo',date,target:target(match[1])});continue;
+  }
+  if(match=part.match(/^(?:set|change) (?:the )?colo[u]?r (?:for|of) (.+?) to (#[a-f\d]{6})$/iu)){
+   actions.push({kind:'edit',date,target:target(match[1]),color:match[2]});continue;
+  }
+  if(match=part.match(/^(?:move|shift) (.+?) (?:by )?(\d{1,3}) (minutes?|hours?) (earlier|later)$/iu)){
+   const shift=Number(match[2])*(match[3].toLowerCase().startsWith('hour')?60:1)*(match[4].toLowerCase()==='earlier'?-1:1);
+   actions.push({kind:'edit',date,target:target(match[1]),shift});continue;
+  }
+  if(match=part.match(/^(?:change|switch) (?:the )?bus for (.+?) to (?:bus |line )?(\S+)(?: at (.+))?$/iu)){
+   const time=match[3]&&askClock(match[3]);if(match[3]&&!time)return null;
+   actions.push({kind:'bus',date,target:target(match[1]),line:match[2],time});continue;
+  }
+  if(match=part.match(/^(?:use|take|בחר|תבחר)\s+(?:bus|line|קו|אוטובוס)\s+(\S+)\s+(?:for|to|ל[- ]?)\s*(.+)$/iu)){
+   actions.push({kind:'bus',date,target:target(match[2]),line:match[1]});continue;
+  }
+  if(match=part.match(/^(?:skip|remove|cancel|delete|דלג על|תדלג על|הסר|תסיר|בטל|תבטל)\s+(.+)$/iu)){
+   if(/\b(?:every|all|series|forever)\b|כל המופעים|תמיד/iu.test(part))return null;
+   actions.push({kind:'skip',date,target:target(match[1])});continue;
+  }
+  if(match=part.match(/^(?:move|shift|reschedule|change|הזז|תזיז|תעביר|העבר|שנה|תשנה)\s+(.+?)\s+(?:(?:to|at)\s+|ל[- ]?)(.+)$/iu)){
+   const time=clock(match[2]);if(!time)return null;
+   actions.push({kind:'edit',date,target:target(match[1]),time,move:true});continue;
+  }
+  if(match=part.match(/^(?:add|schedule|create|תוסיף|הוסף|תכנן)\s+(.+)$/iu)){
+   const phrase=target(match[1]);let title=phrase,time,end;
+   const range=phrase.match(/^(.+?)\s+(?:from|מ[- ])\s*(.+?)\s+(?:to|until|עד)\s+(.+)$/iu);
+   const at=phrase.match(/^(.+?)\s+(?:at\s+|ב[- ]?)(\d{1,2}(?::\d\d)?\s*(?:am|pm|בבוקר|בערב|בצהריים)?)$/iu);
+   if(range){title=range[1];const suffix=range[3].match(/(?:am|pm)$/i)?.[0];time=clock(range[2],suffix);end=askClock(range[3]);if(!time||!end)return null}
+   else if(at){title=at[1];time=clock(at[2]);if(!time)return null}
+   else if(/\d|\b(?:after|before|when|for an hour)\b/iu.test(phrase))return null;
+   actions.push({kind:'add',date,title,time,end});continue;
+  }
+  return null;
+ }
+ return {actions};
+}
+function assistantContext(){
+ const tasks=[];
+ for(let offset=-1;offset<14&&tasks.length<45;offset++){
+  const date=addD(today(),offset);
+  for(const task of occ(date)){
+   if(tasks.length===45)break;
+   tasks.push({id:task.id,date,title:task.title.slice(0,90),time:task.time||undefined,end:taskEnd(task)||undefined,done:isDone(task,date)||undefined});
+  }
+ }
+ return tasks;
+}
+async function askModel(turns,signal){
+ const response=await fetch(CLOUD+'/api/tempo/assistant',{method:'POST',signal,
+  headers:{authorization:'Bearer '+S.set.cloudKey,'content-type':'application/json'},
+  body:JSON.stringify({today:today(),now:ft(nowMin()),locale:lang(),turns:turns.slice(-6),tasks:assistantContext()})});
+ if(!response.ok)throw Error('unavailable');
+ return (await response.json()).plan;
+}
+function assistantTargets(action){
+ const options=occ(action.date);
+ if(action.id)return options.filter(task=>task.id===action.id);
+ const target=askNormalize(action.target);if(!target)return [];
+ const exact=options.filter(task=>askNormalize(task.title)===target);
+ return exact.length?exact:options.filter(task=>(' '+askNormalize(task.title)+' ').includes(' '+target+' '));
+}
+const assistantUndoKey='tempo.assistant.undo';
+let assistantUndo=null;
+try{assistantUndo=JSON.parse(sessionStorage.getItem(assistantUndoKey))}catch(e){}
+function rememberAssistantUndo(value){
+ assistantUndo=value;
+ try{if(value)sessionStorage.setItem(assistantUndoKey,JSON.stringify(value));else sessionStorage.removeItem(assistantUndoKey)}catch(e){}
+}
+function undoAssistant(){
+ if(!assistantUndo)return t('There is no assistant change to undo.');
+ const {items,fired}=assistantUndo,live=new Map(S.items.map(it=>[it.id,JSON.stringify(it)]));
+ if(items.some(change=>live.get(change.id)!==change.after))return t('A task was edited afterward. I left those changes in place.');
+ for(const change of items){
+  const index=S.items.findIndex(it=>it.id===change.id);
+  if(change.before===undefined){if(index>=0)S.items.splice(index,1)}
+  else if(index>=0)S.items[index]=JSON.parse(change.before);
+ }
+ for(const {key,before,after} of fired){
+  if(S.fired[key]!==after)continue;
+  if(before===undefined)delete S.fired[key];else S.fired[key]=before;
+ }
+ rememberAssistantUndo(null);save();render(0,true);pushSync(true);
+ return t('Undid the last assistant change.');
+}
+async function applyAssistant(plan,signal){
+ if(typeof plan?.question==='string'&&plan.question.trim())return {text:plan.question.slice(0,300)};
+ const list=plan?.actions;
+ if(!Array.isArray(list)||!list.length||list.length>8)return {text:t('What would you like to change?')};
+ if(list.length===1&&list[0]?.kind==='undo')return {text:undoAssistant()};
+ const ready=[];
+ for(let index=0;index<list.length;index++){
+  const a=list[index];
+  if(!a||!['add','edit','note','step','skip','bus','photo'].includes(a.kind)||!askValidDate(a.date)||Math.abs(dayDiff(today(),a.date))>366||
+   ['time','end'].some(key=>a[key]!=null&&!askValidTime(a[key])))return {text:t('Could you give me the task and the change again?')};
+  if(a.kind==='add'){
+   if(typeof a.title!=='string'||!a.title.trim()||a.end&&!a.time||a.end&&a.end===a.time)return {text:t('What is the task and what time should it start?')};
+   ready.push({a});continue;
+  }
+  const matches=assistantTargets(a);
+  if(matches.length!==1)return {text:t(matches.length?'Which task did you mean?':'I couldn’t find that task. Which task and day did you mean?'),
+   choices:matches.slice(0,8).map(task=>({label:task.title+(task.time?' · '+askTimeText(task.time):''),plan:{actions:list.map((entry,i)=>i===index?{...a,id:task.id}:entry)}}))};
+  const task=matches[0],before=JSON.stringify(S.items.find(it=>it.id===task.id));
+  if(a.kind==='photo'){
+   if(list.length!==1)return {text:t('Choose the task photo in a separate request.')};
+   return {text:t('Choose a photo for this task.'),photo:{date:a.date,id:task.id}};
+  }
+  if(['note','step'].includes(a.kind)&&(typeof a.text!=='string'||!a.text.trim()))return {text:t('What should I write?')};
+  let bus=null;
+  if(a.kind==='bus'){
+   const context=task.time&&journeyContext(task,a.date),dest=placeOf(task.pl);
+   if(!context?.origin||!dest)return {text:t('This task needs a time and two saved places to find buses.')};
+   let result;
+   try{result=await findTrips(context.origin,dest,taskAt(a.date,tm(task.time)),context.after,busPlan(task,a.date)?.ride)}catch(e){return {text:t("Couldn't load buses")}}
+   if(signal?.aborted)return {};
+   const rides=[...result.opts,...(result.more||[])];
+   if(!rides.length)return {text:t("Couldn't find a bus for that task.")};
+   const requested=rides.filter(x=>(!a.line||String(x.line)===String(a.line))&&(!a.time||hhmm(x.dep)===a.time||hhmm(x.leave)===a.time));
+   if(a.ride)bus=requested.find(x=>x.ride===a.ride);
+   else if(requested.length===1&&(a.time||!requested[0].late&&!requested[0].early))bus=requested[0];
+   if(!bus){
+    return {text:t(requested.length?'Which departure should I use?':"Couldn't find that departure. Choose another one."),
+     choices:(requested.length?requested:rides).slice(0,8).map(x=>({label:t('Bus')+' '+x.line+' · '+askTimeText(hhmm(x.dep))+(x.late?' · '+t('Late arrival'):x.early?' · '+t('Early departure'):''),
+      plan:{actions:list.map((entry,i)=>i===index?{...a,ride:x.ride,line:x.line,time:hhmm(x.dep)}:entry)}}))};
+   }
+  }
+  ready.push({a,task,before,bus});
+ }
+ if(signal?.aborted)return {};
+ if(ready.some(entry=>entry.task&&JSON.stringify(S.items.find(it=>it.id===entry.task.id))!==entry.before))return {text:t('The schedule changed while I was checking. Please send that again.')};
+ const original=S.items,originalFired=S.fired;
+ S.items=JSON.parse(JSON.stringify(original));S.fired={...originalFired};
+ const affected=new Map(),summary=[];
+ const clear=message=>{S.items=original;S.fired=originalFired;return {text:t(message)}};
+ try{
+  for(const {a,task,bus} of ready){
+   const item=task&&S.items.find(it=>it.id===task.id),current=item&&occurrence(item,a.date);
+   const day=item&&taskDay(item,a.date);
+   const title=item?current.title:a.title.trim().slice(0,120);
+   if(item&&!hit(item,a.date))return clear('That task is no longer on the selected day.');
+   if(a.kind==='add'){
+    const id=uid();
+    S.items.push({id,date:a.date,title,rep:'none',created:Date.now(),time:a.time||'',dur:a.end?(tm(a.end)-tm(a.time)+1440)%1440:30,rem:S.set.rem,done:{},emoji:guess(title)});
+    affected.set(a.date,id);summary.push(t('Added')+' '+title+' · '+fmtD(a.date,{weekday:'short',day:'numeric'})+(a.time?' · '+askTimeText(a.time):''));
+   }else if(a.kind==='skip'){
+    day.removed=true;affected.set(a.date,null);summary.push(t('Skipped')+' '+title);
+   }else if(a.kind==='note'||a.kind==='step'){
+    if(a.kind==='note'){
+     const note=[day.note,a.text.trim()].filter(Boolean).join('\n');
+     if(note.length>1500)return clear('This note is full. Open the task to edit it.');
+     day.note=note;
+    }
+    else (day.steps??=[]).push({id:uid(),t:a.text.trim().slice(0,80),d:0});
+    summary.push(t(a.kind==='note'?'Note added to':'Step added to')+' '+title);
+   }else if(a.kind==='bus'){
+    const context=journeyContext(current,a.date);
+    if(+bus.reach<+bus.leave||!context.origin||context.origin.lat!==bus.o.lat||context.origin.lon!==bus.o.lon||
+       placeOf(current.pl)?.lat!==bus.d.lat||placeOf(current.pl)?.lon!==bus.d.lon)return clear('The route changed. Choose a bus again.');
+    item.busPlans??={};item.busPlans[a.date]={key:context.key,ride:bus.ride,line:bus.line,leave:+bus.leave,reach:+bus.reach,total:bus.total,late:+bus.reach>+taskAt(a.date,tm(current.time)),early:+bus.leave<context.after,manual:true};
+    day.mode='bus';delete S.fired[item.id+a.date];
+    summary.push(title+' · '+t('Bus')+' '+bus.line+' · '+askTimeText(hhmm(bus.leave)));
+   }else{
+    let start=a.time||current.time,end=a.end||(a.move===true&&a.time&&current.time?ft((tm(a.time)+current.dur)%1440):taskEnd(current));
+    if(a.shift!=null){
+     if(!current.time||!Number.isInteger(a.shift)||Math.abs(a.shift)>720||tm(current.time)+a.shift<0||tm(current.time)+a.shift>=1440)return clear('What new start time should I use?');
+     start=ft(tm(current.time)+a.shift);end=ft((tm(start)+current.dur)%1440);
+    }
+    if(start!==current.time||end!==taskEnd(current)){
+     if(start&&!end)end=ft((tm(start)+30)%1440);
+     if(!start||!end||start===end)return clear('What start and end time should I use?');
+     setDaySpan(item,a.date,start,end);affected.set(a.date,item.id);
+    }
+    if(typeof a.title==='string'&&a.title.trim())day.title=a.title.trim().slice(0,120);
+    if(typeof a.photo==='string'&&a.photo.length<64000&&taskPhoto(a))day.photo=a.photo;
+    if(typeof a.color==='string'&&/^#[a-f\d]{6}$/i.test(a.color))day.color=a.color;
+    if(typeof a.emoji==='string'&&graphemes(a.emoji).length===1&&/\p{Extended_Pictographic}/u.test(a.emoji))day.emoji=a.emoji;
+    summary.push(t('Updated')+' '+(day.title||title)+(start?' · '+askTimeText(start+(end?'–'+end:'')):''));
+   }
+  }
+  for(const [date,preferred] of affected){
+   const adjustment=scheduleDay(date,preferred,true);
+   if(adjustment.unresolved)summary.push(t('Some tasks could not fit today'));
+   else for(const {entry,start} of adjustment.moves)summary.push(entry.task.title+' · '+askTimeText(ft(start)));
+  }
+  const old=new Map(original.map(item=>[item.id,JSON.stringify(item)]));
+  const items=S.items.map(item=>({id:item.id,before:old.get(item.id),after:JSON.stringify(item)})).filter(change=>change.before!==change.after);
+  const fired=[...new Set([...Object.keys(originalFired),...Object.keys(S.fired)])].filter(key=>originalFired[key]!==S.fired[key]).map(key=>({key,before:originalFired[key],after:S.fired[key]}));
+  if(!items.length){S.items=original;S.fired=originalFired;return {text:t('No changes were needed.')}}
+  rememberAssistantUndo({items,fired});save();render(0,true);pushSync(true);
+  return {text:summary.join('\n'),undo:true};
+ }catch(e){return clear('No changes were made. Try the request again.')}
+}
+
+function assistantSheet(){
+ const Speech=window.SpeechRecognition||window.webkitSpeechRecognition;
+ let box,recognition=null,listenMode='idle',spoken='',finalWords='',queued=false,working=false,controller=null;
+ let enabled=!!S.set.assistantCloud&&!!S.set.cloudKey,turns=[],pending=null;
+ const draw=(result={})=>{
+  const log=box.querySelector('#ask-log');
+  log.innerHTML=turns.slice(-6).map(turn=>`<div class="ask-turn ${turn.role==='user'?'user':''}" dir="auto">${esc(turn.text)}</div>`).join('')+
+   (result.choices?.length?`<div class="ask-options">${result.choices.map((choice,i)=>`<button type="button" class="pill" data-ask-choice="${i}" dir="auto">${esc(choice.label)}</button>`).join('')}</div>`:'')+
+   (result.photo?`<button type="button" class="pill" id="ask-photo">${t('Choose photo')}</button>`:'')+
+   (result.undo?`<button type="button" class="pill" id="ask-undo">${t('Undo')}</button>`:'');
+  log.scrollTop=log.scrollHeight;vsFade(log);
+ };
+ const update=()=>{
+  const input=box.querySelector('#ask-text'),mic=box.querySelector('#ask-record'),send=box.querySelector('#ask-send');
+  box.classList.toggle('listening',listenMode==='recording');
+  box.querySelector('#ask-status').textContent=working?t('Checking your request…'):
+   listenMode==='recording'?t('Listening…'):listenMode==='stopping'?t('Finishing transcription…'):Speech?'':t('Voice is unavailable here. You can type.');
+  input.readOnly=listenMode!=='idle'||working;
+  mic.disabled=!Speech||working||listenMode==='stopping';
+  const action=listenMode==='recording'?'Pause recording':input.value.trim()?'Resume recording':'Record';
+  mic.setAttribute('aria-label',t(action));mic.title=t(action);
+  mic.innerHTML=listenMode==='recording'?'<span class="ask-pause" aria-hidden="true"></span>':assistantMic;
+  send.disabled=working||listenMode==='stopping'||(listenMode!=='recording'&&!input.value.trim());
+  vsFade(box.querySelector('.shb'));
+ };
+ const repeat=result=>{
+  pending=result;
+  if(result.text)turns.push({role:'assistant',text:result.text});
+  draw(result);update();
+ };
+ const apply=async plan=>{
+  controller=new AbortController();working=true;update();
+  try{const result=await applyAssistant(plan,controller.signal);if(box.id==='sh')repeat(result)}
+  catch(e){if(box.id==='sh')repeat({text:t('No changes were made. Try the request again.')})}
+  finally{working=false;if(box.id==='sh')update()}
+ };
+ const submit=async()=>{
+  if(working||listenMode==='stopping')return;
+  if(listenMode==='recording'){queued=true;stop();return}
+  const input=box.querySelector('#ask-text'),text=input.value.trim();
+  if(!text)return;
+  turns.push({role:'user',text});input.value='';pending=null;draw();
+  if(askUndoWords.test(text)){await apply({actions:[{kind:'undo'}]});return}
+  let plan;
+  if(enabled){
+   working=true;controller=new AbortController();update();
+   const current=controller,timeout=setTimeout(()=>current.abort(),14000);
+   try{plan=await askModel(turns,current.signal)}
+   catch(e){if(box.id==='sh')turns.push({role:'assistant',text:t('The language model is unavailable. Trying a basic command.')})}
+   finally{clearTimeout(timeout);working=false}
+  }
+  if(box.id!=='sh')return;
+  plan=plan||localAssistant(text);
+  if(!plan){repeat({text:t('Tell me the action, the task and the day. For example, “Move gym today to 7 PM.”')});return}
+  await apply(plan);
+ };
+ const stop=()=>{if(!recognition||listenMode!=='recording')return;listenMode='stopping';update();try{recognition.stop()}catch(e){recognition.abort()}};
+ const record=()=>{
+  if(!Speech||listenMode!=='idle'||working)return;
+  const input=box.querySelector('#ask-text'),base=input.value.trim();
+  spoken='';finalWords='';
+  const active=new Speech();recognition=active;
+  active.lang=box.querySelector('#ask-language').value;
+  active.interimResults=true;active.continuous=true;
+  active.onresult=event=>{
+   if(recognition!==active||box.id!=='sh')return;
+   spoken=Array.from(event.results).map(result=>result[0]?.transcript||'').join(' ').trim();
+   finalWords=Array.from(event.results).filter(result=>result.isFinal).map(result=>result[0]?.transcript||'').join(' ').trim();
+   input.value=[base,spoken].filter(Boolean).join(' ');update();
+  };
+  active.onerror=()=>{
+   if(recognition!==active||box.id!=='sh')return;
+   queued=false;repeat({text:t('Voice recording was interrupted. You can edit or type your request.')});
+  };
+  active.onend=()=>{
+   if(recognition!==active||box.id!=='sh')return;
+   input.value=[base,spoken||finalWords].filter(Boolean).join(' ');
+   recognition=null;listenMode='idle';update();
+   if(queued){queued=false;submit()}
+  };
+  try{active.start();listenMode='recording';update()}
+  catch(e){recognition=null;listenMode='idle';repeat({text:t('Voice recording was interrupted. You can edit or type your request.')})}
+ };
+ openSh(`<section class="ask-sheet" aria-label="${t('Ask Tempo')}">
+  <div class="ask-head"><button type="button" class="xs" id="ask-close" aria-label="${t('Close')}">${ic('x',20)}</button><div class="shd">${t('Ask Tempo')}</div>
+  ${Speech?`<select id="ask-language" aria-label="${t('Recording language')}"><option value="en-US" ${lang()==='en'?'selected':''}>EN</option><option value="he-IL" ${lang()==='he'?'selected':''}>עב׳</option></select>`:'<span></span>'}</div>
+  <div id="ask-log" class="ask-log" role="log" aria-live="polite"></div>
+  <div class="ask-wave" aria-hidden="true">${Array.from({length:15},(_,i)=>`<i style="--beat:${i%6};--height:${12+Math.sin(i/14*Math.PI)*18}px"></i>`).join('')}</div>
+  <div id="ask-status" class="sub" role="status"></div>
+  <textarea class="f" id="ask-text" dir="auto" rows="3" maxlength="1000" aria-label="${t('Your request')}" placeholder="${t('Tell Tempo what to change')}"></textarea>
+  <div class="ask-actions"><button type="button" class="ib" id="ask-record"></button><button type="button" class="btn" id="ask-send">${t('Send')}</button></div>
+  ${S.set.cloudKey?`<details class="ask-model"><summary>${t('Language model')}</summary><label><input type="checkbox" id="ask-cloud" ${enabled?'checked':''}> ${t('Use the free cloud model')}</label><div class="sub">${t('Sends your request and nearby task titles and times to Cloudflare.')}</div></details>`:''}
+ </section>`,sheet=>{
+  box=sheet;sheet.dataset.askTempo='1';
+  const onBackground=()=>{if(document.hidden){queued=false;stop()}};
+  document.addEventListener('visibilitychange',onBackground);
+  sheet.addEventListener('tempo-close',()=>{
+   document.removeEventListener('visibilitychange',onBackground);
+   controller?.abort();queued=false;const active=recognition;recognition=null;active?.abort();
+  },{once:true});
+  const input=sheet.querySelector('#ask-text');
+  input.oninput=update;
+  input.onkeydown=e=>{if(e.key==='Enter'&&(e.ctrlKey||e.metaKey)){e.preventDefault();submit()}};
+  sheet.querySelector('#ask-close').onclick=()=>closeSh(true);
+  sheet.querySelector('#ask-record').onclick=()=>listenMode==='recording'?stop():record();
+  sheet.querySelector('#ask-send').onclick=submit;
+  const cloud=sheet.querySelector('#ask-cloud');
+  if(cloud)cloud.onchange=()=>{enabled=cloud.checked;S.set.assistantCloud=enabled;save()};
+  sheet.querySelector('#ask-log').onclick=e=>{
+   if(working||listenMode!=='idle')return;
+   const button=e.target.closest('button');if(!button)return;
+   if(button.id==='ask-undo'){apply({actions:[{kind:'undo'}]});return}
+   const choice=pending?.choices?.[Number(button.dataset.askChoice)];
+   if(choice){pending=null;draw();apply(choice.plan);return}
+   if(button.id==='ask-photo'&&pending?.photo){
+    const {id,date}=pending.photo,task=occ(date).find(it=>it.id===id);if(!task)return;
+    taskAppearance(taskLook(task),look=>{
+     if(box.id==='sh'&&look.photo)apply({actions:[{kind:'edit',id,date,photo:look.photo}]});
+    });
+   }
+  };
+  update();if(Speech)record();else input.focus({preventScroll:true});
+ });
+}
+
 /* ---------- UI plumbing ---------- */
 let showBar=false;const toggleBar=()=>{showBar=!showBar;const g=$('#bg'),c=$('#cv');g&&g.classList.toggle('o',showBar);c&&c.classList.toggle('up',showBar);const label=$('#hf');if(label){label.innerHTML=showBar?freeLine():t('Free');label.parentElement.setAttribute('aria-expanded',showBar)}};
 let tab=0,sel=today(),editing=null;const TABS=['Today','Schedule','Later','Buses'],TI=['today','week','later','bus'];
@@ -1060,7 +1489,7 @@ function view(){
  tab=1;return view()}
 function render(anim,keep){const y=scrollY;$('#app').innerHTML=`<div class="${anim?'va':''}">${view()}</div>`;
  if(tab>1)tab=1;$('#nav').innerHTML=[0,1].map(i=>`<button class="${i==tab?'on':''}" onclick="go(${i})">${ic(TI[i])}<span>${t(TABS[i])}</span></button>`).join('');
- $('#fab').innerHTML=ic('plus',26);fitRows();if(keep)scrollTo(0,y)}
+ $('#fab').innerHTML=ic('plus',26);const ask=$('#ask-fab');ask.hidden=tab!==0;ask.innerHTML=assistantMic;ask.setAttribute('aria-label',t('Ask Tempo'));fitRows();if(keep)scrollTo(0,y)}
 function go(i){if(i==tab)return scrollTo({top:0,behavior:'smooth'});tab=i;showSome=false;sel=i==1?today():sel;render(1);scrollTo(0,0);if(i==3){busDraw();busLoad()}}
 let slideDir=0;function shift(n){sel=addD(sel,n);slideDir=n>0?1:-1;render(0,true);slideDir=0}
 /* swipe between days on Week */
@@ -1075,7 +1504,7 @@ function closePop(now){const o=$('#ov2'),s=$('#sh2');if(!o)return;o.id=s.id='';o
 /* a button that can't be used yet is grey and the reason is written under it; tapping it explains again */
 function gate(btn,reason,why,focus){if(!btn)return;btn.classList.toggle('dis',!!reason);btn.setAttribute('aria-disabled',reason?'true':'false');if(focus)btn.dataset.f=focus;if(why)why.textContent=reason||''}
 document.addEventListener('click',e=>{const b=e.target.closest('.dis');if(!b)return;e.preventDefault();e.stopPropagation();const box=b.closest('.shi')||document,w=box.querySelector('.why');if(w){w.classList.remove('shk');void w.offsetWidth;w.classList.add('shk')}navigator.vibrate&&navigator.vibrate([12,40,12]);const f=b.dataset.f&&document.getElementById(b.dataset.f);if(f)f.focus()},true);
-function closeSh(now){const o=$('#ov'),s=$('#sh');if(!o)return;o.id=s.id='';o.classList.remove('o');s.classList.remove('o');if(now){o.remove();s.remove()}else setTimeout(()=>{o.remove();s.remove()},380)}
+function closeSh(now){const o=$('#ov'),s=$('#sh');if(!o)return;if(s.dataset.askTempo)s.dispatchEvent(new Event('tempo-close'));o.id=s.id='';o.classList.remove('o');s.classList.remove('o');if(now){o.remove();s.remove()}else setTimeout(()=>{o.remove();s.remove()},380)}
 function segPlace(el,i,anim){const b=el.querySelectorAll('button')[i],h=el.querySelector('i');if(!b||!b.offsetWidth)return;if(!anim)h.style.transition='none';h.style.left=b.offsetLeft+'px';h.style.width=b.offsetWidth+'px';if(!anim){void h.offsetWidth;h.style.transition=''}}
 const REMS=[[-1,'Off'],[0,'At time'],[5,'5'],[10,'10'],[30,'30'],[60,'60']],DURS=[15,30,45,60,90,120],REPS=[['none','Never'],['daily','Daily'],['weekly','Weekly']];
 const COLORS=['#4f8cff','#f0a050','#ee5d7a','#9b7cf0','#2fb8a0','#e5c33c','#6c7a89','#d96ad0'];
@@ -1138,7 +1567,7 @@ function fitRows(){sizeTripHistory();$$('.hrow').forEach(r=>{const on=r.querySel
  $$('.vcl').forEach(w=>{const x=w.querySelector('.vcs');if(x)w.classList.toggle('has',x.classList.contains('x')||x.scrollHeight>x.clientHeight+2)})}
 function vsFade(el){if(!el)return;const max=el.scrollHeight-el.clientHeight,top=el.scrollTop;el.style.setProperty('--ft',max>2&&top>2?'24px':'0px');el.style.setProperty('--fb',max>2&&top<max-2?'28px':'0px')}
 function hsFade(el){const max=el.scrollWidth-el.clientWidth,pos=Math.abs(el.scrollLeft);el.style.setProperty('--fs',max>2&&pos>2?'28px':'0px');el.style.setProperty('--fe',max>2&&pos<max-2?'28px':'0px')}
-document.addEventListener('scroll',e=>{const x=e.target;if(x&&x.classList){if(x.classList.contains('hs'))hsFade(x);else if(x.classList.contains('trip-history'))updateTripHistory(x);else if(x.classList.contains('shb')||x.classList.contains('egrid2'))vsFade(x)}},true);
+document.addEventListener('scroll',e=>{const x=e.target;if(x&&x.classList){if(x.classList.contains('hs'))hsFade(x);else if(x.classList.contains('trip-history'))updateTripHistory(x);else if(x.classList.contains('shb')||x.classList.contains('egrid2')||x.classList.contains('ask-log'))vsFade(x)}},true);
 /* long-press any category chip to edit it */
 (()=>{let tm0=null,x0=0,y0=0,el=null,fired=0;const end=()=>{clearTimeout(tm0);tm0=null;if(el)el.classList.remove('lp');el=null};
  document.addEventListener('pointerdown',e=>{if(e.target.closest('.ck'))return;const tb=e.target.closest('[data-tid]');if(tb&&!e.target.closest('[data-cid]')){el=tb;x0=e.clientX;y0=e.clientY;tb.classList.add('lp');tm0=setTimeout(()=>{fired=Date.now();end();navigator.vibrate&&navigator.vibrate(12);edit(tb.dataset.tid,tb.dataset.tds||null)},500);return}const b=e.target.closest('[data-cid]');if(!b)return;const cat=S.cats.find(c=>c.id==b.dataset.cid);if(!cat)return;el=b;x0=e.clientX;y0=e.clientY;b.classList.add('lp');
@@ -1335,7 +1764,7 @@ function detail(id,ds,fromReview=false,viewDay=true,openReason=false){const it=o
   s.addEventListener('keydown',e=>{if(e.target.id==='sn'&&e.key==='Enter'){e.preventDefault();addStep()}});
   s.addEventListener('focusout',e=>{if(e.target.id=='nt')svNote()});s.addEventListener('input',e=>{if(e.target.id=='nt'){e.target.style.height='auto';e.target.style.height=Math.max(54,e.target.scrollHeight)+'px'}});
   const ov=$('#ov');const oc=ov.onclick;ov.onclick=()=>{svNote();oc()}})}
-$('#fab').onclick=()=>edit();
+$('#fab').onclick=()=>edit();$('#ask-fab').onclick=assistantSheet;
 /* toast + top pill */
 let tto;function toast(m,undo,label){$('#ts').classList.remove('fin');$('#tn').style.display='none';$('#tt').textContent=m;$('#tu').textContent=label||t('Undo');$('#tu').style.display=undo?'':'none';$('#tu').onclick=()=>{undo&&undo();$('#ts').classList.remove('o')};$('#ts').classList.add('o');clearTimeout(tto);tto=setTimeout(()=>$('#ts').classList.remove('o'),4500)}
 let pto;function pillMsg(m){$('#tp').textContent=m;$('#tp').classList.add('o');clearTimeout(pto);pto=setTimeout(()=>$('#tp').classList.remove('o'),5000)}

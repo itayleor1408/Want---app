@@ -121,7 +121,7 @@ export default {{
     switch(url.pathname){{
       case '/api/product':return product(url.searchParams.get('u')||'');
       case '/api/ping':case '/api/state':case '/api/ingest':case '/api/bank':case '/api/card':case '/api/ack':case '/api/reset-seen':case '/api/wish':case '/api/join':case '/api/config':case '/api/google':case '/api/google-cb':case '/api/email-start':case '/api/email-verify':case '/api/backup':case '/api/forget':return syncApi(req,env,url.pathname);
-      case '/api/tempo/vapid':case '/api/tempo/push':case '/api/tempo/backup':return tempoApi(req,env,url.pathname);
+      case '/api/tempo/vapid':case '/api/tempo/push':case '/api/tempo/backup':case '/api/tempo/assistant':return tempoApi(req,env,url.pathname);
       case '/manifest.webmanifest':return new Response(MANIFEST,{{headers:{{'content-type':'application/manifest+json'}}}});
       case '/version':return new Response(BUILD,{{headers:{{'content-type':'text/plain','cache-control':'no-store'}}}});
       case '/sw.js':return new Response(SW,{{headers:{{'content-type':'text/javascript','cache-control':'no-cache'}}}});
