@@ -48,3 +48,8 @@ Not verifiable from the sandbox: real bus data, the live Tempo site, real phones
 - Claude Code branches `claude/**` auto-merge to `main` via `.github/workflows/auto-merge-claude.yml`. Other tools' branches do not: open a PR or push to `main` deliberately.
 - Pull before starting; commit small; run `node tests/run.js` before every push to `main`.
 - Don't both edit `tempo/index.html` at the same time: it is one big file and merges conflict easily.
+
+## Find code fast (read before searching)
+- `docs/PROJECT_MAP.md`: how the pieces connect. `docs/CODE_INDEX.md`: every function with its line number per file.
+- Look the symbol up in the index, then read only that part of the file. Don't scan the big single files end to end.
+- After large edits run `python3 tools/code_index.py` to refresh the index.
