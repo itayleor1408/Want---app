@@ -1,10 +1,10 @@
 const { ok } = require('./lib');
-const { pathToFileURL } = require('url');
 const path = require('path');
-const URL = pathToFileURL(path.join(__dirname, '../tempo/index.html')).href;
+const URL = 'https://tempo.test/';
 
 module.exports = async browser => {
-  const page = await browser.newPage({ viewport: { width: 390, height: 844 } });
+  const page = await browser.newPage({ viewport: { width: 390, height: 844 }, serviceWorkers: 'block' });
+  await page.route(URL, route => route.fulfill({ path: path.join(__dirname, '../tempo/index.html') }));
   const errors = [];
   page.on('pageerror', error => errors.push(error.message));
   await page.addInitScript(() => {

@@ -1,9 +1,10 @@
 const { ok } = require('./lib');
-const { pathToFileURL } = require('url');
 const path = require('path');
 
 module.exports = async browser => {
-  const page = await browser.newPage({ viewport: { width: 390, height: 844 } });
+  const page = await browser.newPage({ viewport: { width: 390, height: 844 }, serviceWorkers: 'block' });
+  const url = 'https://tempo.test/';
+  await page.route(url, route => route.fulfill({ path: path.join(__dirname, '../tempo/index.html') }));
   const errors = [];
   page.on('pageerror', error => errors.push(error.message));
   await page.addInitScript(() => {
@@ -40,7 +41,7 @@ module.exports = async browser => {
     };
   });
   try {
-    await page.goto(pathToFileURL(path.join(__dirname, '../tempo/index.html')).href);
+    await page.goto(url);
     await page.getByRole('button', { name: 'Ask Tempo' }).click();
     ok('the microphone opens a recording sheet', await page.locator('.listening .ask-wave').isVisible());
     await page.evaluate(() => say('Move gym to 6 PM, actually 7 PM'));
@@ -93,9 +94,13 @@ module.exports = async browser => {
     }));
     await page.locator('#ask-undo').waitFor();
     await page.reload();
-    ok('the last action can still be undone after reloading the same session',await page.evaluate(()=>{
-      const output=undoAssistant();return output.includes('Undid')&&!occ(addD(today(),1)).some(x=>x.title==='dentist');
+    const reloadedUndo = await page.evaluate(() => ({
+      before: occ(addD(today(),1)).some(x=>x.title==='dentist'),
+      output: undoAssistant(),
+      after: occ(addD(today(),1)).some(x=>x.title==='dentist'),
     }));
+    ok('the last action can still be undone after reloading the same session',
+      reloadedUndo.before && reloadedUndo.output.includes('Undid') && !reloadedUndo.after, JSON.stringify(reloadedUndo));
     ok('a bus request selects an actual timetable ride and can be undone',await page.evaluate(async()=>{
       const home={id:'home',home:true,lat:33,lon:35},gym={id:'place',lat:33.01,lon:35};
       S.places=[home,gym];S.items.find(x=>x.id==='gym').pl=gym.id;
@@ -161,6 +166,19 @@ module.exports = async browser => {
       const result=await applyAssistant(localAssistant('Remind me every morning to water the plants'));
       const reminder=S.items.find(x=>x.title==='water the plants');
       return result.undo&&reminder?.time==='09:00'&&reminder.rep==='daily'&&hit(reminder,addD(today(),1));
+    }));
+    ok('the Hebrew dog-walk report logs a completed past activity and leaves existing tasks untouched',await page.evaluate(async()=>{
+      const before=JSON.stringify(S.items),date=today();
+      const result=await applyAssistant(localAssistant('היה לי טיול עם הכלב שלי של עשר דק לפני ארבעים דק'));
+      const walk=occ(date).find(x=>x.title==='טיול עם הכלב שלי');
+      if(!result.undo||walk?.time!=='08:20'||walk?.dur!==10||!isDone(walk,date)||walk.rem!==-1)return false;
+      if(JSON.stringify(S.items.filter(x=>x.id!==walk.id))!==before)return false;
+      undoAssistant();return JSON.stringify(S.items)===before;
+    }));
+    ok('an English past activity uses its stated duration and an ongoing one is not marked completed',await page.evaluate(()=>{
+      const past=localAssistant('I went for a walk with my dog for ten minutes forty minutes ago')?.actions[0];
+      const incomplete=localAssistant('היה לי טיול עם הכלב של עשר דקות לפני ארבע דקות');
+      return past?.kind==='log'&&past.time==='08:20'&&past.duration===10&&incomplete===null;
     }));
     ok('the assistant flow has no page errors', errors.length===0, errors.join('|'));
   } finally {

@@ -405,6 +405,8 @@ Object.assign(HE,{
  "What would you like to change?": "מה תרצו לשנות?",
  "Reminder": "תזכורת",
  "Reminder saved": "התזכורת נשמרה",
+ "Logged as completed": "נרשם כבוצע",
+ "When did the activity start, and how long did it last?": "מתי הפעילות התחילה וכמה זמן היא נמשכה?",
  "What time should I remind you?": "באיזו שעה להזכיר לך?",
  "That time has passed. What new time should I use?": "השעה הזו כבר עברה. באיזו שעה להזכיר?",
  "Enable notifications for phone alerts.": "כדי לקבל התראה בטלפון צריך להפעיל התראות.",
@@ -828,10 +830,10 @@ const askNumberWords={
  a:1,an:1,one:1,two:2,three:3,four:4,five:5,six:6,seven:7,eight:8,nine:9,ten:10,eleven:11,twelve:12,
  thirteen:13,fourteen:14,fifteen:15,sixteen:16,seventeen:17,eighteen:18,nineteen:19,twenty:20,thirty:30,forty:40,fifty:50,
  'אחת':1,'אחד':1,'שתי':2,'שתיים':2,'שניים':2,'שלוש':3,'שלושה':3,'ארבע':4,'ארבעה':4,'חמש':5,'חמישה':5,
- 'שש':6,'שישה':6,'שבע':7,'שבעה':7,'שמונה':8,'תשע':9,'תשעה':9,'עשר':10,'עשרה':10,'עשרים':20,'שלושים':30
+ 'שש':6,'שישה':6,'שבע':7,'שבעה':7,'שמונה':8,'תשע':9,'תשעה':9,'עשר':10,'עשרה':10,'עשרים':20,'שלושים':30,'ארבעים':40,'חמישים':50,'שישים':60
 };
 const askAmount=`(\\d{1,3}|half an?|(?:twenty|thirty|forty|fifty)[ -](?:one|two|three|four|five|six|seven|eight|nine)|${Object.keys(askNumberWords).join('|')})`;
-const askUnit='(minutes?|mins?|hours?|hrs?|דקות|דקה|שעות|שעה)';
+const askUnit='(minutes?|mins?|hours?|hrs?|דקות|דקה|דק[׳״\u0027]?|שעות|שעה)';
 function askMinutes(amount,unit){
  const word=amount.toLowerCase(),parts=word.split(/[ -]/);
  const number=/^\d+$/.test(word)?Number(word):word.startsWith('half ')?0.5:parts.reduce((sum,x)=>sum+askNumberWords[x],0);
@@ -926,6 +928,19 @@ function localReminder(text,requestedDate){
  return {kind:'remind',date,time,repeat,title:title||t('Reminder')};
 }
 
+const elapsedActivity=new RegExp(
+ '^(?:I had|I went for|I did|log (?:a|an)|היה לי|הייתה לי|היתה לי|עשיתי|יצאתי ל[-־]?)\\s*(.+?)\\s+'+
+ '(?:(?:that lasted|lasting|for|של|שנמשך|שנמשכה|במשך)\\s+)?(?:(?:roughly|about|around|בערך)\\s+)?'+askAmount+'\\s+'+askUnit+
+ '\\s*[,–—]?\\s*(?:(?:that (?:was|started)|starting)\\s+)?(?:(?:roughly|about|around|בערך)\\s+)?(?:(?:לפני|כבר לפני)\\s+'+
+ askAmount+'\\s+'+askUnit+'|'+askAmount+'\\s+'+askUnit+'\\s+ago)$','iu');
+function localPastActivity(text){
+ const match=text.match(elapsedActivity);if(!match)return undefined;
+ const duration=askMinutes(match[2],match[3]),elapsed=askMinutes(match[4]||match[6],match[5]||match[7]);
+ if(!Number.isInteger(duration)||duration<1||duration>720||!Number.isInteger(elapsed)||elapsed<duration||elapsed>10080)return null;
+ const start=new Date(Date.now()-elapsed*6e4);
+ const title=match[1].trim().replace(/^(?:a|an)\s+/i,'').trim().replace(/^\p{Ll}/u,c=>c.toUpperCase());
+ return title?{kind:'log',date:dk(start),time:hhmm(start),duration,title}:null;
+}
 function localAssistant(text){
  const s=text.trim().replace(/(?<=[בלמ])[־‐‑‒–](?=\d)/gu,'-').replace(/[.!?]+$/,'').replace(/^(?:(?:please|hey tempo|can you|could you|תוכל(?:י)?|בבקשה)\s*[, ]\s*)+/iu,'');
  if(askUndoWords.test(s))return {actions:[{kind:'undo'}]};
@@ -953,6 +968,9 @@ function localAssistant(text){
    if(revised&&!askClock(revised.replace(/^(?:make it|at|to|ל[- ]?|ב[- ]?)\s*/iu,'')))return null;
   }else revised='';
   if(!revised){
+   const past=localPastActivity(part);
+   if(past===null)return null;
+   if(past){actions.push(past);continue}
    const reminder=localReminder(part,askDayRaw(maskAssistantQuotes(part)));
    if(reminder===null)return null;
    if(reminder){actions.push(reminder);continue}
@@ -1070,7 +1088,7 @@ async function applyAssistant(plan,signal){
  const ready=[];
  for(let index=0;index<list.length;index++){
   const a=list[index];
-  if(!a||!['add','remind','edit','note','step','skip','bus','photo'].includes(a.kind)||!askValidDate(a.date)||Math.abs(dayDiff(today(),a.date))>366||
+  if(!a||!['add','log','remind','edit','note','step','skip','bus','photo'].includes(a.kind)||!askValidDate(a.date)||Math.abs(dayDiff(today(),a.date))>366||
    ['time','end'].some(key=>a[key]!=null&&!askValidTime(a[key])))return {text:t('Could you give me the task and the change again?')};
   if(a.kind==='remind'&&!a.time){
    return {text:t('What time should I remind you?')+' · '+fmtD(a.date,{weekday:'long',day:'numeric'}),
@@ -1078,7 +1096,9 @@ async function applyAssistant(plan,signal){
   }
   if(a.kind==='remind'&&a.date===today()&&tm(a.time)<nowMin())return {text:t('That time has passed. What new time should I use?'),
    followup:{actions:list,index,date:a.date}};
-  if(a.kind==='add'||a.kind==='remind'){
+  if(a.kind==='log'&&(!a.time||!Number.isInteger(a.duration)||+taskAt(a.date,tm(a.time)+a.duration)>Date.now()))
+   return {text:t('When did the activity start, and how long did it last?')};
+  if(a.kind==='add'||a.kind==='remind'||a.kind==='log'){
    if(typeof a.title!=='string'||!a.title.trim()||a.end&&!a.time||a.end&&a.end===a.time||a.duration!=null&&(!Number.isInteger(a.duration)||a.duration<1||a.duration>720))return {text:t('What is the task and what time should it start?')};
    ready.push({a,created:{id:uid(),title:a.title.trim().slice(0,120),date:a.date}});continue;
   }
@@ -1137,6 +1157,9 @@ async function applyAssistant(plan,signal){
     const id=created.id;
     S.items.push({id,date:a.date,title,rep:'none',created:Date.now(),time:a.time||'',dur:a.end?(tm(a.end)-tm(a.time)+1440)%1440:(a.duration??30),rem:S.set.rem,done:{},emoji:guess(title)});
     affected.set(a.date,id);summary.push(t('Added')+' '+title+' · '+fmtD(a.date,{weekday:'short',day:'numeric'})+(a.time?' · '+askTimeText(a.time):'')+(a.duration?' · '+hm(a.duration):''));
+   }else if(a.kind==='log'){
+    S.items.push({id:created.id,date:a.date,title,rep:'none',created:Date.now(),time:a.time,dur:a.duration,rem:-1,done:{[a.date]:1},emoji:guess(title)});
+    summary.push(t('Logged as completed')+' · '+title+' · '+fmtD(a.date,{weekday:'short',day:'numeric'})+' · '+askTimeText(a.time)+' · '+hm(a.duration));
    }else if(a.kind==='remind'){
     S.items.push({id:created.id,date:a.date,title,rep:['daily','weekly'].includes(a.repeat)?a.repeat:'none',created:Date.now(),time:a.time,dur:0,
      rem:0,reminderOnly:true,done:{},emoji:'🔔'});
