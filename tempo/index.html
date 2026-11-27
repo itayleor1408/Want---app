@@ -265,7 +265,7 @@ a.lnk{display:block;text-align:center;color:var(--s2);text-decoration:none;font-
  @media(prefers-reduced-motion:reduce){.ask-wave i{animation:none}}
  .ask-sheet #ask-status:empty{display:none}.ask-sheet #ask-status{margin:0 0 8px;min-height:1em;text-align:center}.ask-sheet #ask-text{resize:vertical;min-height:76px;max-height:160px}
  .ask-actions{display:flex;align-items:center;gap:10px}.ask-actions .btn{flex:1}.ask-actions button:disabled{opacity:.45}
- .ask-pause{width:13px;height:16px;border-inline:4px solid currentColor}.ask-model{margin-top:12px;color:var(--s2);font-size:13px}.ask-model label{display:block;margin-top:8px}
+ .ask-pause{width:13px;height:16px;border-inline:4px solid currentColor}
 
 </style></head><body><div id="app"></div>
 <div class="fabs"><button class="ib" id="ask-fab" type="button" aria-label="Ask Tempo"></button><button class="ib p" id="fab" aria-label="Add" style="background:var(--t);color:var(--bg)"></button></div>
@@ -403,6 +403,14 @@ Object.assign(HE,{
  "Which departure should I use?": "איזו יציאה לבחור?",
  "No changes were made. Try the request again.": "לא נעשו שינויים. אפשר לנסות שוב.",
  "What would you like to change?": "מה תרצו לשנות?",
+ "Reminder": "תזכורת",
+ "Reminder saved": "התזכורת נשמרה",
+ "What time should I remind you?": "באיזו שעה להזכיר לך?",
+ "That time has passed. What new time should I use?": "השעה הזו כבר עברה. באיזו שעה להזכיר?",
+ "Enable notifications for phone alerts.": "כדי לקבל התראה בטלפון צריך להפעיל התראות.",
+ "Enable notifications": "הפעלת התראות",
+ "Notifications enabled": "ההתראות הופעלו",
+ "That is a lot for one request. Split it into two and try again.": "הבקשה ארוכה מדי. אפשר לחלק אותה לשתי בקשות ולנסות שוב.",
  "What should I write?": "מה לכתוב?",
  "This note is full. Open the task to edit it.": "ההערה מלאה. אפשר לפתוח את המשימה כדי לערוך אותה.",
  "No changes were needed.": "לא היה צורך בשינוי.",
@@ -730,7 +738,7 @@ function delPlace(id){const i=S.places.findIndex(p=>p.id==id),old=S.places[i],it
 const hm=m=>lang()=='he'?(m>=60?`${Math.floor(m/60)} ש׳${m%60?' '+m%60+' ד׳':''}`:`${m} ד׳`):(m>=60?`${Math.floor(m/60)}h${m%60?' '+m%60+'m':''}`:`${m}m`);
 const hh=h=>lang()=='he'?h+' ש׳':h+'h';
 const WIN=()=>[S.set.ds*60,S.set.de*60],up5=m=>Math.ceil(m/5)*5;
-function busy(ds){const a=[];occ(ds).forEach(i=>{if(!i.time||isDone(i,ds))return;const s=tm(i.time);a.push([s-(i.trav||0),s+Math.max(i.dur||0,15),i])});return a.sort((x,y)=>x[0]-y[0])}
+function busy(ds){const a=[];occ(ds).forEach(i=>{if(!i.time||i.reminderOnly||isDone(i,ds))return;const s=tm(i.time);a.push([s-(i.trav||0),s+Math.max(i.dur||0,15),i])});return a.sort((x,y)=>x[0]-y[0])}
 function merge(a){const o=[];a.forEach(([s,e])=>{const l=o[o.length-1];if(l&&s<=l[1])l[1]=Math.max(l[1],e);else o.push([s,e])});return o}
 function gaps(ds,from,extra){const[ws,we]=WIN();let cur=Math.max(ws,from||0);const out=[];for(const[s,e]of merge([...busy(ds),...(extra||[])].sort((x,y)=>x[0]-y[0]))){if(e<=cur)continue;if(s>cur)out.push([cur,Math.min(s,we)]);cur=Math.max(cur,e);if(cur>=we)break}if(cur<we)out.push([cur,we]);return out.filter(g=>g[1]>g[0])}
 const gFrom=d=>d==today()?up5(nowMin()):0;
@@ -799,7 +807,7 @@ const askValidDate=value=>typeof value==='string'&&/^\d{4}-\d{2}-\d{2}$/.test(va
 const askUndoWords=/^(?:(?:no|please)[, ]+)?(?:undo(?: (?:the |your |my )?last change| (?:that|it|what you did))?|(?:that|it) (?:was wrong|wasn.t right|is wrong)|that.s (?:wrong|not what i meant)|go back|revert(?: that| the last change)?|(?:בטל|בטלי|לבטל)(?: את)?(?: השינוי(?: האחרון)?| הפעולה(?: האחרונה)?| זה)?|זה (?:היה לא נכון|לא נכון|היה שגוי)|תחזיר(?:י)? (?:לאחור|לקודם))(?:\s+please)?[.!?\s]*$/iu;
 const askDayRaw=text=>parse(text,today()).date;
 function askClock(text,suffix=''){
- const match=String(text||'').trim().match(/^(\d{1,2})(?::([0-5]\d))?\s*(a\.?m\.?|p\.?m\.?|בבוקר|בערב|בצהריים)?$/i);
+ const match=String(text||'').trim().match(/^(\d{1,2})(?::([0-5]\d))?\s*(a\.?m\.?|p\.?m\.?|בבוקר|בערב|בצהריים|בלילה)?$/i);
  if(!match)return null;
  let hour=Number(match[1]);const half=(match[3]||suffix).toLowerCase();
  if(half){if(hour<1||hour>12)return null;hour=hour%12+(/p|בערב|בצהריים/.test(half)?12:0)}
@@ -815,21 +823,140 @@ function splitAssistantText(text,separators){
  }
  pieces.push(text.slice(start));return pieces;
 }
+const askMaxActions=16,askMaxTranscript=3200;
+const askNumberWords={
+ a:1,an:1,one:1,two:2,three:3,four:4,five:5,six:6,seven:7,eight:8,nine:9,ten:10,eleven:11,twelve:12,
+ thirteen:13,fourteen:14,fifteen:15,sixteen:16,seventeen:17,eighteen:18,nineteen:19,twenty:20,thirty:30,forty:40,fifty:50,
+ 'אחת':1,'אחד':1,'שתי':2,'שתיים':2,'שניים':2,'שלוש':3,'שלושה':3,'ארבע':4,'ארבעה':4,'חמש':5,'חמישה':5,
+ 'שש':6,'שישה':6,'שבע':7,'שבעה':7,'שמונה':8,'תשע':9,'תשעה':9,'עשר':10,'עשרה':10,'עשרים':20,'שלושים':30
+};
+const askAmount=`(\\d{1,3}|half an?|(?:twenty|thirty|forty|fifty)[ -](?:one|two|three|four|five|six|seven|eight|nine)|${Object.keys(askNumberWords).join('|')})`;
+const askUnit='(minutes?|mins?|hours?|hrs?|דקות|דקה|שעות|שעה)';
+function askMinutes(amount,unit){
+ const word=amount.toLowerCase(),parts=word.split(/[ -]/);
+ const number=/^\d+$/.test(word)?Number(word):word.startsWith('half ')?0.5:parts.reduce((sum,x)=>sum+askNumberWords[x],0);
+ return number*(/^(?:h|ש)/i.test(unit)?60:1);
+}
+const askRelativeStart=new RegExp(`(?<!\\p{L})(?:(?:i(?:['’]m| am) (?:going|leaving|starting)|i(?:['’]ll| will) (?:go|leave|start)|we(?:['’]re| are) (?:going|leaving|starting)|(?:it )?starts?|starting|leaving)\\s+)?(?:in|בעוד|עוד)\\s+(?:(?:about|around|roughly|בערך)\\s+)?${askAmount}\\s+${askUnit}(?!\\p{L})`,'giu');
+const askRelativeDuration=new RegExp(`(?<!\\p{L})(?:for|(?:it(?:['’]s| is) (?:going to be|going to take)|it (?:will be|will take|takes)|it['’]ll (?:be|take))|(?:למשך|במשך|ייקח|יקח))\\s+(?:(?:about|around|roughly|approximately|כ|בערך)\\s*)?${askAmount}\\s+${askUnit}(?!\\p{L})`,'giu');
+function relativeAssistantAdd(phrase,requestedDate){
+ const masked=maskAssistantQuotes(phrase);
+ const starts=[...masked.matchAll(askRelativeStart)],durations=[...masked.matchAll(askRelativeDuration)];
+ if(!starts.length&&!durations.length)return undefined;
+ if(starts.length>1||durations.length>1)return null;
+ const timing=[...starts,...durations].sort((a,b)=>a.index-b.index);
+ let title=phrase.slice(0,timing[0].index).replace(/^(?:(?:for|on)\s+)?(?:today|tomorrow)\b[,:\s]*|^(?:היום|מחר)[,:\s]*/iu,'')
+  .replace(/\s+(?:(?:for|on)\s+)?(?:today|tomorrow)\b|\s+(?:היום|מחר)(?!\p{L})/giu,' ')
+  .trim().replace(/[,.!?;–—\s]+$/u,'');
+ let extra='',cursor=timing[0].index;
+ for(const part of timing){extra+=phrase.slice(cursor,part.index);cursor=part.index+part[0].length}
+ extra+=phrase.slice(cursor);
+ if(extra.replace(/\band\b|[\p{P}\s]+/giu,''))return null;
+ const timedTitle=title.match(/^(.+?)\s+(?:at\s+|ב[-־ ]?)(\d{1,2}(?::\d\d)?\s*(?:a\.?m\.?|p\.?m\.?|בבוקר|בערב|בצהריים)?)$/iu);
+ const time=timedTitle?askClock(timedTitle[2]):undefined;
+ if(timedTitle&&(!time||starts.length))return null;
+ if(timedTitle)title=timedTitle[1];
+ const correction=title.match(/^(.+?)(,\s*|\s+)(like|rather)\s+(.+)$/iu);
+ if(correction){
+  const ending=askNormalize(correction[4]).split(' ').slice(-2).join(' ');
+  if(correction[2].includes(',')||correction[3].toLowerCase()==='rather'||(ending.includes(' ')&&askNormalize(correction[1]).endsWith(' '+ending)))title=correction[4];
+ }
+ title=title.replace(/^(?:a|an)\s+/i,'').trim().replace(/^\p{Ll}/u,c=>c.toUpperCase());
+ if(!title)return null;
+ const duration=durations.length?askMinutes(durations[0][1],durations[0][2]):30;
+ if(!Number.isInteger(duration)||duration<1||duration>720)return null;
+ if(!starts.length)return {kind:'add',date:requestedDate||today(),title,time,duration};
+ const delay=askMinutes(starts[0][1],starts[0][2]);
+ if(!Number.isInteger(delay)||delay<1||delay>1440)return null;
+ const start=new Date(Date.now()+delay*6e4),date=dk(start);
+ if(requestedDate&&requestedDate!==date)return null;
+ return {kind:'add',date,title,time:hhmm(start),duration};
+}
+
+const askMeridiem='(?:a\\.?m\\.?|p\\.?m\\.?|בבוקר|בערב|בצהריים|בלילה)';
+const askReminderClock=new RegExp(`(?<![\\p{L}\\d])(?:(?:at around|at about|in around|in about|at|around|about|בשעה|בסביבות)\\s+|ב[-־]?)?(\\d{1,2}(?::[0-5]\\d)?\\s*${askMeridiem})(?!\\p{L})`,'iu');
+const askBareReminderClock=/(?<![\p{L}\d])(?:at\s+|בשעה\s+|ב[-־]?)(\d{1,2}:[0-5]\d|\d{1,2})(?![\p{L}\d:])/iu;
+const reminderDays=[
+ [/\b(?:tomorrow|tmrw)\b|(?<!\p{L})מחר(?!\p{L})/iu,1],
+ [/\btoday\b|(?<!\p{L})היום(?!\p{L})/iu,0]
+];
+const reminderPeriods=[
+ [/\b(?:in the morning|in the am|morning)\b|(?<!\p{L})(?:בבוקר|בוקר)(?!\p{L})/iu,'09:00'],
+ [/\b(?:in the afternoon|afternoon|noon)\b|(?<!\p{L})(?:בצהריים|צהריים)(?!\p{L})/iu,'13:00'],
+ [/\b(?:in the evening|evening|tonight)\b|(?<!\p{L})(?:בערב|ערב)(?!\p{L})/iu,'19:00']
+];
+function reminderClockAnswer(text){
+ const value=text.trim().replace(/[.!?]+$/,'');
+ const explicit=askClock(value.replace(/^(?:at|around|about|בשעה|בסביבות)\s+|^ב[-־]/iu,''));
+ if(explicit)return explicit;
+ return reminderPeriods.find(([pattern])=>pattern.test(value)&&/^(?:today|tomorrow|היום|מחר)?$/iu.test(value.replace(pattern,' ').trim()))?.[1]||null;
+}
+function localReminder(text,requestedDate){
+ text=text.replace(/^(?:אפשר\s+)?(?=(?:בעוד|עוד)\s)/iu,'').replace(/^(?=(?:around|about|roughly)\s)/iu,'in ');
+ const power=text.match(/^(?:remind\s+me|meant to remind me|תזכיר(?:י)?\s+לי|הזכר(?:י)?\s+לי|אפשר\s+להזכיר\s+לי|תזכורת)\s*(.*)$/iu);
+ if(!power&&!/^(?:in|בעוד|עוד)\s+/iu.test(text))return undefined;
+ let content=(power?power[1]:text).replace(/(?<!\p{L})בעוד\s+(?:כ)?שעה(?!\p{L})/iu,'בעוד אחת שעה');
+ const relative=[...maskAssistantQuotes(content).matchAll(askRelativeStart)];
+ if(relative.length>1)return null;
+ let date=requestedDate||today(),time=null,repeat='none';
+ const daily=/\b(?:every day|daily|every morning|every evening)\b|(?<!\p{L})(?:כל יום|מדי יום|כל בוקר|כל ערב)(?!\p{L})/iu;
+ const weekly=/\b(?:every week|weekly)\b|(?<!\p{L})(?:כל שבוע|מדי שבוע)(?!\p{L})/iu;
+ if(daily.test(content)){repeat='daily';content=content.replace(/\b(?:every morning|every evening)\b|כל בוקר|כל ערב/iu,value=>value.replace(/^every\s+|^כל\s+/iu,'')).replace(daily,' ')}
+ if(weekly.test(content)){if(repeat!=='none')return null;repeat='weekly';content=content.replace(weekly,' ')}
+ if(/\bevery\b|(?<!\p{L})(?:בכל|כל)\s+(?:יום|שבוע)(?!\p{L})/iu.test(maskAssistantQuotes(content)))return null;
+ const repeatedRelative=[...maskAssistantQuotes(content).matchAll(askRelativeStart)];
+ if(repeatedRelative.length){
+  const m=repeatedRelative[0],delay=askMinutes(m[1],m[2]);
+  if(!Number.isInteger(delay)||delay<1||delay>1440)return null;
+  const start=new Date(Date.now()+delay*6e4);date=dk(start);time=hhmm(start);
+  if(requestedDate&&requestedDate!==date)return null;
+  content=content.slice(0,m.index)+content.slice(m.index+m[0].length);
+ }else{
+  const marked=reminderDays.find(([pattern])=>pattern.test(maskAssistantQuotes(content)));
+  if(marked){date=addD(today(),marked[1]);content=content.replace(marked[0],' ')}
+  const clock=maskAssistantQuotes(content).match(askReminderClock)||maskAssistantQuotes(content).match(askBareReminderClock);
+  const period=reminderPeriods.find(([pattern])=>pattern.test(maskAssistantQuotes(content)));
+  if(clock){time=askClock(clock[1]);if(!time)return null;content=content.slice(0,clock.index)+content.slice(clock.index+clock[0].length)}
+  else if(period)time=period[1];
+  if(period)content=content.replace(period[0],' ');
+  if(time&&!requestedDate&&!marked&&tm(time)<nowMin())date=addD(today(),1);
+ }
+ const title=content.trim().replace(/^(?:to\s+|about\s+|that\s+|on\s+|על\s+|ש[-־]\s*)/iu,'')
+  .replace(/[,.!?;–—\s]+$/u,'').replace(/^[“"']|[”"']$/g,'').trim();
+ return {kind:'remind',date,time,repeat,title:title||t('Reminder')};
+}
+
 function localAssistant(text){
- const s=text.trim().replace(/(?<=[בלמ])[־‐‑‒–](?=\d)/gu,'-').replace(/[.!?]+$/,'').replace(/^(?:please|hey tempo|can you|could you|תוכל(?:י)?|בבקשה)\s*[, ]\s*/iu,'');
+ const s=text.trim().replace(/(?<=[בלמ])[־‐‑‒–](?=\d)/gu,'-').replace(/[.!?]+$/,'').replace(/^(?:(?:please|hey tempo|can you|could you|תוכל(?:י)?|בבקשה)\s*[, ]\s*)+/iu,'');
  if(askUndoWords.test(s))return {actions:[{kind:'undo'}]};
  if(/\b(?:if|unless|before you|instead of)\b|(?<!\p{L})(?:אם|בתנאי)(?!\p{L})/iu.test(maskAssistantQuotes(s)))return null;
  const actions=[];
- const parts=splitAssistantText(s,/\s*(?:;|\band then\b|\band\s+(?=(?:add|move|rename|skip|remove|change|note)\s)|\s+ואז\s+)\s*/giu);
+ const parts=splitAssistantText(s,/\s*(?:;|[,.]?\s*\b(?:and then|then)\b|(?:[,;.]+|\band\b)\s*(?:also\s+)?(?=(?:add|schedule|create|move|rename|skip|remove|change|remind)\s)|\s+ואז\s+)\s*/giu);
  for(const raw of parts){
   const correction=splitAssistantText(raw,/\s*[,—-]?\s*(?:\bactually\b|\bi mean\b|(?<!\p{L})בעצם(?!\p{L}))\s*/giu);
-  let part=correction[0].trim(),revised=correction.at(-1).trim(),match;
+  let part=correction[0].trim().replace(/^also\s+/iu,''),revised=correction.at(-1).trim(),match;
+  if(actions.at(-1)?.kind==='add'&&
+     !/^(?:add|schedule|create|remind|תזכיר|תזכירי|הזכר|move|shift|reschedule|rename|skip|remove|cancel|delete|change|use|take|תוסיף|הוסף|תכנן|הזז|תזיז|תעביר|העבר|שנה|תשנה|דלג|תדלג|הסר|תסיר|בטל|תבטל|בחר|תבחר)(?!\p{L})/iu.test(part)&&
+     /\b(?:at|from|today|tomorrow|in)\b|(?<!\p{L})(?:היום|מחר|בעוד)(?!\p{L})/iu.test(part))part='Add '+part;
   const date=askDayRaw(revised)||askDayRaw(part)||today();
   const target=value=>value.replace(/\b(?:today(?:’s|'s)?|tomorrow(?:’s|'s)?|the)\b|(?<!\p{L})(?:היום|מחר|את)(?!\p{L})/giu,' ').trim();
   if(correction.length>1){
    if(/^(add|move|change|shift|rename|skip|remove|note|תוסיף|הוסף|תזיז|תשנה|תבטל)/iu.test(revised)){part=revised;revised=''}
-   else if(!askClock(revised.replace(/^(?:make it|at|to|ל[- ]?|ב[- ]?)\s*/iu,'')))return null;
+   else {
+    const original=localReminder(part,askDayRaw(maskAssistantQuotes(part)));
+    const replacement=original&&localReminder('remind me '+revised,askDayRaw(maskAssistantQuotes(revised)));
+    if(original&&replacement?.time&&replacement.title===t('Reminder')){
+     const revisedDate=askDayRaw(revised)||[...revised.matchAll(askRelativeStart)].length;
+     actions.push({...original,time:replacement.time,date:revisedDate?replacement.date:original.date});continue;
+    }
+   }
+   if(revised&&!askClock(revised.replace(/^(?:make it|at|to|ל[- ]?|ב[- ]?)\s*/iu,'')))return null;
   }else revised='';
+  if(!revised){
+   const reminder=localReminder(part,askDayRaw(maskAssistantQuotes(part)));
+   if(reminder===null)return null;
+   if(reminder){actions.push(reminder);continue}
+  }
   const clock=(value,suffix)=>askClock(revised?revised.replace(/^(?:make it|at|to|ל[- ]?|ב[- ]?)\s*/iu,''):value,suffix);
   if(match=part.match(/^(?:add (?:a )?(note|step)\s*[: ]*|(?:תוסיף|הוסף)\s+(הערה|צעד)\s*)(.+)\s+(?:(?:to|for)\s+|ל[- ]?)(.+)$/iu)){
    actions.push({kind:/step|צעד/iu.test(match[1]||match[2])?'step':'note',date:askDayRaw(match[4])||today(),target:target(match[4]),text:match[3].trim().replace(/^[“"']|[”"']$/g,'')});continue;
@@ -863,6 +990,11 @@ function localAssistant(text){
    actions.push({kind:'edit',date,target:target(match[1]),time,move:true});continue;
   }
   if(match=part.match(/^(?:add|schedule|create|תוסיף|הוסף|תכנן)\s+(.+)$/iu)){
+   if(!revised){
+    const relative=relativeAssistantAdd(match[1],askDayRaw(match[1]));
+    if(relative===null)return null;
+    if(relative){actions.push(relative);continue}
+   }
    const phrase=target(match[1]);let title=phrase,time,end;
    const range=phrase.match(/^(.+?)\s+(?:from|מ[- ])\s*(.+?)\s+(?:to|until|עד)\s+(.+)$/iu);
    const at=phrase.match(/^(.+?)\s+(?:at\s+|ב[- ]?)(\d{1,2}(?::\d\d)?\s*(?:am|pm|בבוקר|בערב|בצהריים)?)$/iu);
@@ -887,9 +1019,15 @@ function assistantContext(){
  return tasks;
 }
 async function askModel(turns,signal){
+ const payload={today:today(),now:ft(nowMin()),locale:lang(),turns:turns.slice(-6),tasks:assistantContext()};
+ const bytes=value=>new TextEncoder().encode(value).length;
+ let body=JSON.stringify(payload);
+ while(bytes(body)>11500&&(payload.tasks.length||payload.turns.length>1)){
+  if(payload.turns.length>1)payload.turns.shift();else payload.tasks.pop();
+  body=JSON.stringify(payload);
+ }
  const response=await fetch(CLOUD+'/api/tempo/assistant',{method:'POST',signal,
-  headers:{authorization:'Bearer '+S.set.cloudKey,'content-type':'application/json'},
-  body:JSON.stringify({today:today(),now:ft(nowMin()),locale:lang(),turns:turns.slice(-6),tasks:assistantContext()})});
+  headers:{authorization:'Bearer '+S.set.cloudKey,'content-type':'application/json'},body});
  if(!response.ok)throw Error('unavailable');
  return (await response.json()).plan;
 }
@@ -926,20 +1064,37 @@ function undoAssistant(){
 async function applyAssistant(plan,signal){
  if(typeof plan?.question==='string'&&plan.question.trim())return {text:plan.question.slice(0,300)};
  const list=plan?.actions;
- if(!Array.isArray(list)||!list.length||list.length>8)return {text:t('What would you like to change?')};
+ if(!Array.isArray(list)||!list.length)return {text:t('What would you like to change?')};
+ if(list.length>askMaxActions)return {text:t('That is a lot for one request. Split it into two and try again.')};
  if(list.length===1&&list[0]?.kind==='undo')return {text:undoAssistant()};
  const ready=[];
  for(let index=0;index<list.length;index++){
   const a=list[index];
-  if(!a||!['add','edit','note','step','skip','bus','photo'].includes(a.kind)||!askValidDate(a.date)||Math.abs(dayDiff(today(),a.date))>366||
+  if(!a||!['add','remind','edit','note','step','skip','bus','photo'].includes(a.kind)||!askValidDate(a.date)||Math.abs(dayDiff(today(),a.date))>366||
    ['time','end'].some(key=>a[key]!=null&&!askValidTime(a[key])))return {text:t('Could you give me the task and the change again?')};
-  if(a.kind==='add'){
-   if(typeof a.title!=='string'||!a.title.trim()||a.end&&!a.time||a.end&&a.end===a.time)return {text:t('What is the task and what time should it start?')};
-   ready.push({a});continue;
+  if(a.kind==='remind'&&!a.time){
+   return {text:t('What time should I remind you?')+' · '+fmtD(a.date,{weekday:'long',day:'numeric'}),
+    followup:{actions:list,index,date:a.date}};
   }
-  const matches=assistantTargets(a);
+  if(a.kind==='remind'&&a.date===today()&&tm(a.time)<nowMin())return {text:t('That time has passed. What new time should I use?'),
+   followup:{actions:list,index,date:a.date}};
+  if(a.kind==='add'||a.kind==='remind'){
+   if(typeof a.title!=='string'||!a.title.trim()||a.end&&!a.time||a.end&&a.end===a.time||a.duration!=null&&(!Number.isInteger(a.duration)||a.duration<1||a.duration>720))return {text:t('What is the task and what time should it start?')};
+   ready.push({a,created:{id:uid(),title:a.title.trim().slice(0,120),date:a.date}});continue;
+  }
+  const linked=Number.isInteger(a.createdIndex)&&['note','step'].includes(a.kind)&&ready[a.createdIndex]?.created;
+  const matches=linked&&linked.date===a.date?[linked]:assistantTargets(a);
+  if(!linked&&!a.id&&['note','step'].includes(a.kind)&&a.target){
+   const title=askNormalize(a.target);
+   for(const {created} of ready)if(created&&created.date===a.date&&askNormalize(created.title)===title)matches.push(created);
+  }
   if(matches.length!==1)return {text:t(matches.length?'Which task did you mean?':'I couldn’t find that task. Which task and day did you mean?'),
-   choices:matches.slice(0,8).map(task=>({label:task.title+(task.time?' · '+askTimeText(task.time):''),plan:{actions:list.map((entry,i)=>i===index?{...a,id:task.id}:entry)}}))};
+   choices:matches.slice(0,8).map(task=>{
+    const createdIndex=ready.findIndex(entry=>entry.created?.id===task.id);
+    const selection=createdIndex>=0?{...a,createdIndex}:{...a,id:task.id};
+    const label=task.title+(task.time?' · '+askTimeText(task.time):createdIndex>=0?' · '+t('New task'):'');
+    return {label,plan:{actions:list.map((entry,i)=>i===index?selection:entry)}};
+   })};
   const task=matches[0],before=JSON.stringify(S.items.find(it=>it.id===task.id));
   if(a.kind==='photo'){
    if(list.length!==1)return {text:t('Choose the task photo in a separate request.')};
@@ -973,15 +1128,19 @@ async function applyAssistant(plan,signal){
  const affected=new Map(),summary=[];
  const clear=message=>{S.items=original;S.fired=originalFired;return {text:t(message)}};
  try{
-  for(const {a,task,bus} of ready){
+  for(const {a,task,bus,created} of ready){
    const item=task&&S.items.find(it=>it.id===task.id),current=item&&occurrence(item,a.date);
    const day=item&&taskDay(item,a.date);
    const title=item?current.title:a.title.trim().slice(0,120);
    if(item&&!hit(item,a.date))return clear('That task is no longer on the selected day.');
    if(a.kind==='add'){
-    const id=uid();
-    S.items.push({id,date:a.date,title,rep:'none',created:Date.now(),time:a.time||'',dur:a.end?(tm(a.end)-tm(a.time)+1440)%1440:30,rem:S.set.rem,done:{},emoji:guess(title)});
-    affected.set(a.date,id);summary.push(t('Added')+' '+title+' · '+fmtD(a.date,{weekday:'short',day:'numeric'})+(a.time?' · '+askTimeText(a.time):''));
+    const id=created.id;
+    S.items.push({id,date:a.date,title,rep:'none',created:Date.now(),time:a.time||'',dur:a.end?(tm(a.end)-tm(a.time)+1440)%1440:(a.duration??30),rem:S.set.rem,done:{},emoji:guess(title)});
+    affected.set(a.date,id);summary.push(t('Added')+' '+title+' · '+fmtD(a.date,{weekday:'short',day:'numeric'})+(a.time?' · '+askTimeText(a.time):'')+(a.duration?' · '+hm(a.duration):''));
+   }else if(a.kind==='remind'){
+    S.items.push({id:created.id,date:a.date,title,rep:['daily','weekly'].includes(a.repeat)?a.repeat:'none',created:Date.now(),time:a.time,dur:0,
+     rem:0,reminderOnly:true,done:{},emoji:'🔔'});
+    summary.push(t('Reminder saved')+' · '+title+' · '+fmtD(a.date,{weekday:'short',day:'numeric'})+' · '+askTimeText(a.time));
    }else if(a.kind==='skip'){
     day.removed=true;affected.set(a.date,null);summary.push(t('Skipped')+' '+title);
    }else if(a.kind==='note'||a.kind==='step'){
@@ -1027,19 +1186,23 @@ async function applyAssistant(plan,signal){
   const fired=[...new Set([...Object.keys(originalFired),...Object.keys(S.fired)])].filter(key=>originalFired[key]!==S.fired[key]).map(key=>({key,before:originalFired[key],after:S.fired[key]}));
   if(!items.length){S.items=original;S.fired=originalFired;return {text:t('No changes were needed.')}}
   rememberAssistantUndo({items,fired});save();render(0,true);pushSync(true);
-  return {text:summary.join('\n'),undo:true};
+  const reminder=ready.some(({a})=>a.kind==='remind');
+  const enableAlerts=reminder&&(!S.set.notif||window.Notification?.permission!=='granted');
+  if(enableAlerts)summary.push(t('Enable notifications for phone alerts.'));
+  return {text:summary.join('\n'),undo:true,enableAlerts};
  }catch(e){return clear('No changes were made. Try the request again.')}
 }
 
 function assistantSheet(){
  const Speech=window.SpeechRecognition||window.webkitSpeechRecognition;
  let box,recognition=null,listenMode='idle',spoken='',finalWords='',queued=false,working=false,controller=null;
- let enabled=!!S.set.assistantCloud&&!!S.set.cloudKey,turns=[],pending=null;
+ const enabled=!!S.set.assistantCloud&&!!S.set.cloudKey;let turns=[],pending=null;
  const draw=(result={})=>{
   const log=box.querySelector('#ask-log');
   log.innerHTML=turns.slice(-6).map(turn=>`<div class="ask-turn ${turn.role==='user'?'user':''}" dir="auto">${esc(turn.text)}</div>`).join('')+
    (result.choices?.length?`<div class="ask-options">${result.choices.map((choice,i)=>`<button type="button" class="pill" data-ask-choice="${i}" dir="auto">${esc(choice.label)}</button>`).join('')}</div>`:'')+
    (result.photo?`<button type="button" class="pill" id="ask-photo">${t('Choose photo')}</button>`:'')+
+   (result.enableAlerts&&typeof Notification!=='undefined'?`<button type="button" class="pill" id="ask-alerts">${t('Enable notifications')}</button>`:'')+
    (result.undo?`<button type="button" class="pill" id="ask-undo">${t('Undo')}</button>`:'');
   log.scrollTop=log.scrollHeight;vsFade(log);
  };
@@ -1072,7 +1235,14 @@ function assistantSheet(){
   if(listenMode==='recording'){queued=true;stop();return}
   const input=box.querySelector('#ask-text'),text=input.value.trim();
   if(!text)return;
+  if(text.length>askMaxTranscript){repeat({text:t('That is a lot for one request. Split it into two and try again.')});return}
+  const followup=pending?.followup;
   turns.push({role:'user',text});input.value='';pending=null;draw();
+  if(followup){
+   const time=reminderClockAnswer(text);
+   if(time){await apply({actions:followup.actions.map((a,index)=>index===followup.index?{...a,time}:a)});return}
+   if(!localAssistant(text)){repeat({text:t('What time should I remind you?'),followup});return}
+  }
   if(askUndoWords.test(text)){await apply({actions:[{kind:'undo'}]});return}
   let plan;
   if(enabled){
@@ -1120,9 +1290,8 @@ function assistantSheet(){
   <div id="ask-log" class="ask-log" role="log" aria-live="polite"></div>
   <div class="ask-wave" aria-hidden="true">${Array.from({length:15},(_,i)=>`<i style="--beat:${i%6};--height:${12+Math.sin(i/14*Math.PI)*18}px"></i>`).join('')}</div>
   <div id="ask-status" class="sub" role="status"></div>
-  <textarea class="f" id="ask-text" dir="auto" rows="3" maxlength="1000" aria-label="${t('Your request')}" placeholder="${t('Tell Tempo what to change')}"></textarea>
+  <textarea class="f" id="ask-text" dir="auto" rows="3" aria-label="${t('Your request')}" placeholder="${t('Tell Tempo what to change')}"></textarea>
   <div class="ask-actions"><button type="button" class="ib" id="ask-record"></button><button type="button" class="btn" id="ask-send">${t('Send')}</button></div>
-  ${S.set.cloudKey?`<details class="ask-model"><summary>${t('Language model')}</summary><label><input type="checkbox" id="ask-cloud" ${enabled?'checked':''}> ${t('Use the free cloud model')}</label><div class="sub">${t('Sends your request and nearby task titles and times to Cloudflare.')}</div></details>`:''}
  </section>`,sheet=>{
   box=sheet;sheet.dataset.askTempo='1';
   const onBackground=()=>{if(document.hidden){queued=false;stop()}};
@@ -1137,11 +1306,21 @@ function assistantSheet(){
   sheet.querySelector('#ask-close').onclick=()=>closeSh(true);
   sheet.querySelector('#ask-record').onclick=()=>listenMode==='recording'?stop():record();
   sheet.querySelector('#ask-send').onclick=submit;
-  const cloud=sheet.querySelector('#ask-cloud');
-  if(cloud)cloud.onchange=()=>{enabled=cloud.checked;S.set.assistantCloud=enabled;save()};
   sheet.querySelector('#ask-log').onclick=e=>{
    if(working||listenMode!=='idle')return;
    const button=e.target.closest('button');if(!button)return;
+   if(button.id==='ask-alerts'){
+    button.disabled=true;
+    (async()=>{
+     try{
+      if(Notification.permission==='default')await Notification.requestPermission();
+      if(box.id!=='sh')return;
+      if(Notification.permission==='granted'){S.set.notif=true;save();pushSync(true);repeat({text:t('Notifications enabled'),undo:!!assistantUndo})}
+      else repeat({text:t('Blocked in browser settings'),undo:!!assistantUndo});
+     }catch(e){if(box.id==='sh')repeat({text:t('Notifications are not supported here.'),undo:!!assistantUndo})}
+    })();
+    return;
+   }
    if(button.id==='ask-undo'){apply({actions:[{kind:'undo'}]});return}
    const choice=pending?.choices?.[Number(button.dataset.askChoice)];
    if(choice){pending=null;draw();apply(choice.plan);return}
@@ -1255,7 +1434,7 @@ function scheduleDay(ds,preferred,apply=false){
  if(ds<today())return {moves:[],travelChanges:[],unresolved:0};
  const now=ds===today()?nowMin():0,home=S.places.find(p=>p.home),fixed=[],flexible=[];
  for(const task of occ(ds)){
-  if(!task.time)continue;
+  if(!task.time||task.reminderOnly)continue;
   const start=tm(task.time),duration=Math.max(1,task.dur||0),bus=busPlan(task,ds);
   const plan={task,start,end:start+duration,duration};
   const departure=bus&&!bus.unavailable&&bus.reach<=+taskAt(ds,start)&&dk(new Date(bus.leave))===ds
@@ -1272,7 +1451,7 @@ function scheduleDay(ds,preferred,apply=false){
  const travelChanges=[],originalOrigins=new Map(),estimates=new Map();
  let originId=home?.id;
  for(const task of occ(ds)){
-  if(!task.time||!placeOf(task.pl))continue;
+  if(!task.time||task.reminderOnly||!placeOf(task.pl))continue;
   originalOrigins.set(task.id,originId);
   if(originId&&originId!==task.pl){
    const origin=placeOf(originId),dest=placeOf(task.pl),mode=task.mode||'walk',expected=expMin(origin,dest,mode);
@@ -1780,6 +1959,7 @@ function settings(){_g=0;openSh(`<div class="shd">${t('Settings')}</div>`+
  <div class="gw"><div class="gr"><span class="gt">${t('Day starts')}</span>${infoBtn}<select id="d1">${[5,6,7,8,9,10,11,12].map(h=>`<option value="${h}" ${S.set.ds==h?'selected':''}>${z(h)}:00</option>`).join('')}</select></div>${info('info.day')}</div><div class="gw"><div class="gr"><span class="gt">${t('Day ends')}</span><select id="d2">${[16,17,18,19,20,21,22,23,24].map(h=>`<option value="${h}" ${S.set.de==h?'selected':''}>${z(h%24)}:00</option>`).join('')}</select></div></div>
  <div class="gw"><div class="gr" role="button" id="cts"><span class="gt">${t('Categories')}<div class="sub">${S.cats.length}</div></span>${ic('right',18)}</div></div>
  `)+
+ (S.set.cloudKey?group('Ask Tempo',`<div class="gw"><div class="gr"><span class="gt">${t('Use the free cloud model')}</span><button type="button" role="switch" class="tg ${S.set.assistantCloud?'on':''}" id="ask-cloud" aria-label="${t('Use the free cloud model')}" aria-checked="${!!S.set.assistantCloud}"></button></div><div class="sub" style="padding:0 6px 12px">${t('Sends your request and nearby task titles and times to Cloudflare.')}</div></div>`):'')+
  group('Places',`<div class="gw"><div class="gr"><span class="gt">${t('Location in Tempo')}<div class="sub">${t('Use location while Tempo is open')}</div></span><button class="tg ${locationOpt()==='on'||(locationOpt()!=='off'&&locationPermission?.state==='granted')?'on':''}" id="geo-setting" role="switch" aria-label="${t('Location in Tempo')}"></button></div></div>
  <div class="gw"><div class="gr" role="button" id="pls"><span class="gt">${t('My places')}<div class="sub">${S.places.length||''}</div></span>${infoBtn}${ic('right',18)}</div>${info('info.places')}</div>
  <div class="gw"><div class="gr" role="button" id="cyr"><span class="gt">${t('Bus city')}<div class="sub">${esc(S.set.city)}</div></span>${ic('right',18)}</div></div>
@@ -1792,6 +1972,8 @@ function settings(){_g=0;openSh(`<div class="shd">${t('Settings')}</div>`+
  ${S.set.cloudKey?`<div class="gw"><div class="gr" role="button" id="cbn"><span class="gt">${t('Back up now')}</span></div></div><div class="gw"><div class="gr" role="button" id="cbk"><span class="gt">${t('Recovery key')}</span>${ic('right',18)}</div></div>`:''}
  <div class="gw"><div class="gr" role="button" id="cbr"><span class="gt">${t('Restore from cloud')}</span>${ic('right',18)}</div></div>
  <div class="gw"><div class="gr" role="button" id="ex"><span class="gt">${t('Export backup')}</span>${infoBtn}</div>${info('info.data')}</div><div class="gw"><label class="gr" role="button"><span class="gt">${t('Import backup')}</span><input type="file" id="im" accept="application/json" hidden></label></div><div class="gw"><div class="gr" role="button" id="er"><span class="gt neg">${t('Erase everything')}</span></div></div>`)+`<div class="ver" id="ver">${t('Version')} ${APP_VER}${APP_BUILD.startsWith('__')?' · '+t('local'):' · <bdi dir="ltr">'+esc(APP_BUILD)+'</bdi>'}</div>`,s=>{
+  const cloud=s.querySelector('#ask-cloud');
+  if(cloud)cloud.onclick=()=>{S.set.assistantCloud=!S.set.assistantCloud;cloud.classList.toggle('on',S.set.assistantCloud);cloud.setAttribute('aria-checked',S.set.assistantCloud);save()};
   const geo=s.querySelector('#geo-setting');geo.setAttribute('aria-checked',geo.classList.contains('on'));
   geo.onclick=async()=>{
    if(geo.classList.contains('on')){localStorage.setItem('tempo.location','off');stopWatch();lastPos=null;visited.clear();geo.classList.remove('on')}

@@ -66,8 +66,12 @@ module.exports = async browser => {
       const item=S.items.find(x=>x.id==='afternoon-call');
       return item.review?.[today()]?.note==='Check again tomorrow'&&!item.review[addD(today(),1)]&&!!$('#ask-text');
     }));
-    await page.locator('.ask-model summary').click();
-    await page.locator('#ask-cloud').check();
+    await page.evaluate(()=>settings());
+    await page.getByRole('button',{name:'Ask Tempo',exact:true}).last().click();
+    await page.locator('#ask-cloud').click();
+    await page.evaluate(()=>assistantSheet());
+    await page.getByRole('button',{name:'Pause recording'}).click();
+    await page.waitForFunction(()=>!document.querySelector('#ask-text').readOnly);
     await send('Give the gym a training theme, and make packing a towel a step');
     ok('the optional language model sends a limited task context and can return multiple validated changes', await page.evaluate(() => {
       const item=occ(today()).find(x=>x.id==='gym');
@@ -87,6 +91,7 @@ module.exports = async browser => {
       const plan=localAssistant('תוסיף אימון מחר ב־19:00');return plan?.actions[0].title==='אימון'&&
        plan.actions[0].time==='19:00'&&plan.actions[0].date===addD(today(),1);
     }));
+    await page.locator('#ask-undo').waitFor();
     await page.reload();
     ok('the last action can still be undone after reloading the same session',await page.evaluate(()=>{
       const output=undoAssistant();return output.includes('Undid')&&!occ(addD(today(),1)).some(x=>x.title==='dentist');
@@ -100,6 +105,62 @@ module.exports = async browser => {
       const chosen=busPlan(occ(today()).find(x=>x.id==='gym'),today());
       if(!response.undo||chosen?.ride!=='5-actual')return false;
       undoAssistant();return !busPlan(occ(today()).find(x=>x.id==='gym'),today());
+    }));
+    ok('the exact dog-walk request creates a ten-minute task four minutes from now',await page.evaluate(async()=>{
+      const result=await applyAssistant(localAssistant("Please add for today trip with my dog, like a walk with my dog. It's going to be around ten minutes and I'm going in four minutes."));
+      const walk=occ(today()).find(x=>x.title==='Walk with my dog');
+      return result.undo&&walk?.time==='09:04'&&walk?.dur===10;
+    }));
+    ok('the same request works when speech recognition omits punctuation',await page.evaluate(()=>{
+      const walk=localAssistant("please add for today trip with my dog like a walk with my dog it's going to be around ten minutes and i'm going in four minutes")?.actions[0];
+      return walk?.title==='Walk with my dog'&&walk?.time==='09:04'&&walk?.duration===10;
+    }));
+    ok('relative times also accept figures and a Hebrew request',await page.evaluate(()=>{
+      const en=localAssistant('Add a walk for 15 minutes starting in 5 minutes')?.actions[0];
+      const he=localAssistant('תוסיף טיול בעוד ארבע דקות למשך עשר דקות')?.actions[0];
+      const byTime=localAssistant('Add a walk at 5 PM for twenty minutes')?.actions[0];
+      return en?.time==='09:05'&&en?.duration===15&&he?.time==='09:04'&&he?.duration===10&&byTime?.time==='17:00'&&byTime?.duration===20;
+    }));
+    ok('one local request adds multiple tasks and attaches a note to a task created in the same batch',await page.evaluate(async()=>{
+      const plan=localAssistant('Add a walk in four minutes for ten minutes, then lunch at 12:30, then add dentist tomorrow at 6 PM and add note "bring forms" to dentist tomorrow');
+      if(plan?.actions.length!==4)return false;
+      const before=JSON.stringify(S.items),result=await applyAssistant(plan);
+      const dentist=occ(addD(today(),1)).find(x=>x.title==='dentist');
+      if(!result.undo||dentist?.review?.[addD(today(),1)]?.note!=='bring forms'||!occ(today()).some(x=>x.title==='lunch'))return false;
+      undoAssistant();return JSON.stringify(S.items)===before;
+    }));
+    ok('spoken reminder phrases support relative time, morning, evening and explicit AM/PM in both languages',await page.evaluate(()=>{
+      const cases=[
+       ['Can you remind me in ten minutes?','09:10'],
+       ['Can you in around one hour?','10:00'],
+       ['Can you remind me tomorrow morning to call Mom?','09:00'],
+       ['Can you remind me tomorrow evening about my forms?','19:00'],
+       ['Can you remind me tomorrow in around 1 p.m. to call Mom?','13:00'],
+       ['Can you remind me tomorrow at 1 a.m. to check the oven?','01:00'],
+       ['תזכיר לי בעוד עשר דקות להוציא את הכלב','09:10'],
+       ['אפשר בעוד כשעה','10:00'],
+       ['תזכירי לי מחר בבוקר להתקשר לאמא','09:00'],
+       ['תזכיר לי מחר ב־1 בלילה לבדוק משהו','01:00'],
+       ['Remind me tomorrow at 1 AM, actually 1 PM','13:00'],
+      ];
+      return cases.every(([text,time])=>{const a=localAssistant(text)?.actions[0];return a?.kind==='remind'&&a.time===time&&a.repeat==='none'});
+    }));
+    await page.evaluate(()=>assistantSheet());
+    await page.getByRole('button', { name: 'Pause recording' }).click();
+    await page.waitForFunction(()=>!document.querySelector('#ask-text').readOnly);
+    await send('Can you remind me tomorrow about the forms?');
+    await page.locator('#ask-log').getByText(/What time should I remind you/).waitFor();
+    await send('Around 1 p.m.');
+    ok('a reminder clarification stays in the sheet and saves a one-time alert without moving tasks',await page.evaluate(()=>{
+      const date=addD(today(),1),reminder=occ(date).find(x=>x.title==='the forms');
+      return reminder?.rem===0&&reminder.time==='13:00'&&reminder.reminderOnly&&
+       !occ(addD(date,1)).some(x=>x.id===reminder.id)&&alertsAhead().some(a=>a.tag===reminder.id+date&&a.at===+taskAt(date,13*60))&&!busy(date).some(x=>x[2].id===reminder.id)&&
+       !!$('#ask-text')&&!!$('#ask-alerts');
+    }));
+    ok('explicit recurrence creates only the requested recurrence',await page.evaluate(async()=>{
+      const result=await applyAssistant(localAssistant('Remind me every morning to water the plants'));
+      const reminder=S.items.find(x=>x.title==='water the plants');
+      return result.undo&&reminder?.time==='09:00'&&reminder.rep==='daily'&&hit(reminder,addD(today(),1));
     }));
     ok('the assistant flow has no page errors', errors.length===0, errors.join('|'));
   } finally {
